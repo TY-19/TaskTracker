@@ -23,9 +23,8 @@ public static class ConfigureServices
         services.ConfigureOptions<IdentityConfigOptions>();
 
         services.AddAuthentication()
-            .AddJwtBearer();
+            .AddJwtBearer(new JwtBearerConfigOptions(configuration).Configure);
         services.ConfigureOptions<AuthenticationConfigOptions>();
-        services.ConfigureOptions<JwtBearerConfigOptions>();
 
         services.AddControllers()
             .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);

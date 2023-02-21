@@ -130,7 +130,7 @@ public class AccountService : IAccountService
         return await _userManager.CheckPasswordAsync(user, password);
     }
 
-    private LoginResponseModel GetLoginFailedResult()
+    private static LoginResponseModel GetLoginFailedResult()
     {
         return new LoginResponseModel
         {
@@ -140,7 +140,7 @@ public class AccountService : IAccountService
         };
     }
 
-    private LoginResponseModel GetLoginSucceedResult(string? token)
+    private static LoginResponseModel GetLoginSucceedResult(string? token)
     {
         if (string.IsNullOrEmpty(token))
             return GetLoginFailedResult();

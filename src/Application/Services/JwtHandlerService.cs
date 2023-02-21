@@ -59,7 +59,7 @@ public class JwtHandlerService
         return claims;
     }
 
-    private void EnsureUserIsNotNull(User user)
+    private static void EnsureUserIsNotNull(User user)
     {
         if (user == null)
             throw new ArgumentNullException(nameof(user));
