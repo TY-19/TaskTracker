@@ -14,6 +14,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<SeedData>();
+
 builder.Services.AddCors(options => options.AddPolicy(name: "ConfiguredPolicy",
     cfg =>
     {
@@ -25,6 +27,13 @@ builder.Services.AddCors(options => options.AddPolicy(name: "ConfiguredPolicy",
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<SeedData>();
+    await seeder.SeedDefaultRolesAndUsers();
+}
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -34,7 +43,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("ConfiguredPolicy");
 app.UseHttpsRedirection();
 
-app.MapGet("/api/test", () => new { Response = "The server return result" });
+app.MapGet("/api/test", () => new { Response = "The server has returned result" });
 
 app.UseAuthentication();
 app.UseAuthorization();
