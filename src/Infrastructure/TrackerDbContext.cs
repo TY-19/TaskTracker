@@ -1,15 +1,15 @@
 ﻿using Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Infrastructure;
 
-public class TrackerDbContext : IdentityDbContext<User>
+public class TrackerDbContext : IdentityDbContext<User>, ITrackerDbContext
 {
     public TrackerDbContext(DbContextOptions options) : base(options)
     {
-
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -28,6 +28,11 @@ public class TrackerDbContext : IdentityDbContext<User>
             .WithMany(ws => ws.Subparts)
             .HasForeignKey(a => a.StageId)
             .OnDelete(DeleteBehavior.NoAction);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await base.SaveChangesAsync();
     }
 
     public DbSet<Assignment> Assignments => Set<Assignment>();
