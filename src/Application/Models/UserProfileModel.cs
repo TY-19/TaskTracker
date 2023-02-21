@@ -1,6 +1,4 @@
-﻿using TaskTracker.Domain.Entities;
-
-namespace TaskTracker.Application.Models;
+﻿namespace TaskTracker.Application.Models;
 public class UserProfileModel
 {
     public string Id { get; set; } = null!;

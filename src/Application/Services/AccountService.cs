@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.Domain.Entities;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.EntityFrameworkCore;
 
 namespace TaskTracker.Application.Services;
 

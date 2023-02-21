@@ -11,7 +11,7 @@ public class SeedData
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly TrackerDbContext _context;
     private readonly IConfiguration _configuration;
-    public SeedData(TrackerDbContext context, UserManager<User> userManager, 
+    public SeedData(TrackerDbContext context, UserManager<User> userManager,
         RoleManager<IdentityRole> roleManager, IConfiguration configuration)
     {
         _userManager = userManager;
