@@ -17,6 +17,7 @@ public class AccountController : ControllerBase
 
     [Route("login")]
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Login(LoginRequestModel loginRequest)
     {
         LoginResponseModel loginResult = await _accountService.LoginAsync(loginRequest);
@@ -25,7 +26,8 @@ public class AccountController : ControllerBase
 
     [Route("registration")]
     [HttpPost]
-    public async Task<IActionResult> Registration(RegistrationRequestModel registrationRequest)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<RegistrationResponseModel>> Registration(RegistrationRequestModel registrationRequest)
     {
         RegistrationResponseModel registrationResponse =
             await _accountService.RegistrationAsync(registrationRequest);
@@ -35,6 +37,9 @@ public class AccountController : ControllerBase
     [Authorize]
     [Route("profile")]
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserProfileModel>> ViewProfile()
     {
         var userName = User?.Identity?.Name;
@@ -51,6 +56,10 @@ public class AccountController : ControllerBase
     [Authorize]
     [Route("profile")]
     [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateProfile(UserProfileUpdateModel updatedUser)
     {
         var userName = User?.Identity?.Name;
@@ -58,6 +67,29 @@ public class AccountController : ControllerBase
             return NotFound();
 
         if (await _accountService.UpdateUserProfile(userName, updatedUser))
+        {
+            return NoContent();
+        }
+        else
+        {
+            return BadRequest();
+        }
+    }
+
+    [Authorize]
+    [Route("profile/changepassword")]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+    {
+        var userName = User?.Identity?.Name;
+        if (userName == null)
+            return NotFound();
+        
+        if (await _accountService.ChangePasswordAsync(userName, model))
         {
             return NoContent();
         }

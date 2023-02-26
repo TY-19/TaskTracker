@@ -39,6 +39,9 @@ public static class ConfigureServices
         services.AddScoped<SeedData>();
         services.AddScoped<JwtHandlerService>();
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IBoardService, BoardService>();
 
         services.AddSingleton(new MapperConfiguration(cfg =>
             cfg.AddProfile<AutomapperProfile>()).CreateMapper());

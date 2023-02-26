@@ -96,6 +96,7 @@ public class AccountService : IAccountService
         if (user.Employee == null)
         {
             var employee = new Employee();
+            await _context.Employees.AddAsync(employee);
             user.Employee = employee;
         }
 
@@ -109,6 +110,18 @@ public class AccountService : IAccountService
         }
         await _userManager.UpdateAsync(user);
         return true;
+    }
+
+    public async Task<bool> ChangePasswordAsync(string userName,
+        ChangePasswordModel model)
+    {
+        User user = await _userManager.FindByNameAsync(userName);
+        if (user == null) 
+        { 
+            return false;
+        }
+        var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+        return result.Succeeded;
     }
 
     private async Task<User?> FindUserAsync(string nameOrEmail)

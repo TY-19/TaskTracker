@@ -13,4 +13,7 @@ public interface IAccountService
 
     public Task<bool> UpdateUserProfile(string userName,
         UserProfileUpdateModel updatedUser);
+
+    public Task<bool> ChangePasswordAsync(string userName,
+        ChangePasswordModel model);
 }

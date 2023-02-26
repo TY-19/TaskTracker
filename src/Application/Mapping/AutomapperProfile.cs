@@ -21,8 +21,22 @@ public class AutomapperProfile : Profile
             .ForMember(upm => upm.AssignmentsIds, x =>
                 x.MapFrom((src, dest) => src.Employee?.Assignments.Select(b => b.Id)));
 
+        CreateMap<Subpart, SubpartGetModel>();
         CreateMap<Assignment, AssignmentPostPutModel>();
-
+        CreateMap<Assignment, AssignmentGetModel>()
+            .ForMember(bgm => bgm.Subparts, x => x.MapFrom(b => b.Subparts));
+        
         CreateMap<AssignmentPostPutModel, Assignment>();
+
+        CreateMap<Employee, EmployeeGetBoardModel>();
+
+        CreateMap<WorkflowStagePostPutModel, WorkflowStage>();
+        CreateMap<WorkflowStage, WorkflowStageGetModel>();
+        CreateMap<Board, BoardGetModel>()
+            .ForMember(bgm => bgm.Stages, x => x.MapFrom(b => b.Stages))
+            .ForMember(bgm => bgm.Employees, x => x.MapFrom(b => b.Employees))
+            .ForMember(bgm => bgm.Assignments, x => x.MapFrom(b => b.Assignments));
+
+
     }
 }

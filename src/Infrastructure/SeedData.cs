@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TaskTracker.Domain.Entities;
+using TaskTracker.Domain.Common;
 
 namespace TaskTracker.Infrastructure;
 
@@ -46,9 +47,9 @@ public class SeedData
         {
             string[] defaultRoles = new string[]
             {
-                _configuration["DefaultRoles:Admin"] ?? "Administrator",
-                _configuration["DefaultRoles:Manager"] ?? "Manager",
-                _configuration["DefaultRoles:Employee"] ?? "Employee"
+                DefaultRolesNames.DEFAULT_ADMIN_ROLE,
+                DefaultRolesNames.DEFAULT_MANAGER_ROLE,
+                DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE
             };
             foreach (var defaultRole in defaultRoles)
             {
@@ -67,7 +68,7 @@ public class SeedData
                 ?? "email@exmple.com";
             string defaultAdminPassword = _configuration["DefaultCredentials:Admin:Password"]
                 ?? "Pa$$w0rd";
-            string defaultAdminRole = _configuration["DefaultRoles:Admin"] ?? "Administrator";
+            string defaultAdminRole = DefaultRolesNames.DEFAULT_ADMIN_ROLE;
 
             var admin = new User
             {
