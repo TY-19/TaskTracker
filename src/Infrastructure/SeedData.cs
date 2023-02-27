@@ -11,32 +11,36 @@ namespace TaskTracker.Infrastructure;
 /// </summary>
 public class SeedData
 {
+    private readonly TrackerDbContext _context;
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly TrackerDbContext _context;
     private readonly IConfiguration _configuration;
     public SeedData(TrackerDbContext context, UserManager<User> userManager,
         RoleManager<IdentityRole> roleManager, IConfiguration configuration)
     {
-        _userManager = userManager;
         _context = context;
-        _configuration = configuration;
+        _userManager = userManager;
         _roleManager = roleManager;
+        _configuration = configuration;
     }
-    public async Task SeedDefaultRolesAndUsers()
+
+    /// <summary>
+    /// Seeds the database with the default user's roles
+    /// and default admin user
+    /// </summary>
+    /// <returns>Task to be awaited</returns>
+    public async Task SeedDefaultRolesAndUsersAsync()
     {
-        if (_context == null)
+        if (_context.Database.IsRelational())
         {
-            // TODO: Add a log record
-            return;
+            await ApplyMigrationAsync();
         }
-        await ApplyMigration();
-        await SeedDefaultRoles();
-        await SeedDefaultAdministrator();
+        await SeedDefaultRolesAsync();
+        await SeedDefaultAdministratorAsync();
         await _context.SaveChangesAsync();
     }
 
-    private async Task ApplyMigration()
+    private async Task ApplyMigrationAsync()
     {
         if (_context.Database.GetPendingMigrationsAsync().Result.Any())
         {
@@ -44,7 +48,7 @@ public class SeedData
         }
     }
 
-    private async Task SeedDefaultRoles()
+    private async Task SeedDefaultRolesAsync()
     {
         if (!_context.Roles.Any())
         {
@@ -61,14 +65,14 @@ public class SeedData
         }
     }
 
-    private async Task SeedDefaultAdministrator()
+    private async Task SeedDefaultAdministratorAsync()
     {
-        if (!_context.Users.Any())
+        if (!_context.Users.Any() || (_configuration["SetNewAdmin"] ?? "false") == "true")
         {
             string defaultAdminName = _configuration["DefaultCredentials:Admin:Name"]
                 ?? "admin";
             string defaultAdminEmail = _configuration["DefaultCredentials:Admin:Email"]
-                ?? "email@exmple.com";
+                ?? "email@example.com";
             string defaultAdminPassword = _configuration["DefaultCredentials:Admin:Password"]
                 ?? "Pa$$w0rd";
             string defaultAdminRole = DefaultRolesNames.DEFAULT_ADMIN_ROLE;
@@ -79,7 +83,7 @@ public class SeedData
                 Email = defaultAdminEmail,
                 EmailConfirmed = true
             };
-
+            
             await _userManager.CreateAsync(admin, defaultAdminPassword);
             await _userManager.AddToRoleAsync(admin, defaultAdminRole);
         }

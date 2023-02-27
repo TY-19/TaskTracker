@@ -10,7 +10,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var seeder = scope.ServiceProvider.GetRequiredService<SeedData>();
-    await seeder.SeedDefaultRolesAndUsers();
+    await seeder.SeedDefaultRolesAndUsersAsync();
 }
 
 if (app.Environment.IsDevelopment())
