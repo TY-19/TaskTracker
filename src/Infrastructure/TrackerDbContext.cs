@@ -6,6 +6,9 @@ using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Infrastructure;
 
+/// <summary>
+/// Contains configuration and all required DbSets to work with database
+/// </summary>
 public class TrackerDbContext : IdentityDbContext<User>, ITrackerDbContext
 {
     public TrackerDbContext(DbContextOptions options) : base(options)
@@ -17,15 +20,10 @@ public class TrackerDbContext : IdentityDbContext<User>, ITrackerDbContext
         base.OnModelCreating(builder);
         builder.Entity<Subpart>()
             .Property(s => s.PercentValue)
-            .HasColumnType("decimal(5, 2)");
+            .HasColumnType("decimal(8, 2)");
         builder.Entity<Assignment>()
             .HasOne(a => a.Stage)
             .WithMany(ws => ws.Assignments)
-            .HasForeignKey(a => a.StageId)
-            .OnDelete(DeleteBehavior.NoAction);
-        builder.Entity<Subpart>()
-            .HasOne(a => a.Stage)
-            .WithMany(ws => ws.Subparts)
             .HasForeignKey(a => a.StageId)
             .OnDelete(DeleteBehavior.NoAction);
     }

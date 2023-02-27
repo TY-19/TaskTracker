@@ -6,6 +6,9 @@ using TaskTracker.Domain.Common;
 
 namespace TaskTracker.Infrastructure;
 
+/// <summary>
+/// Is used to seed a database with the default data
+/// </summary>
 public class SeedData
 {
     private readonly UserManager<User> _userManager;

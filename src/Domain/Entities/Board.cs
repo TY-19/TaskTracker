@@ -2,6 +2,9 @@
 
 namespace TaskTracker.Domain.Entities;
 
+/// <summary>
+/// Represents an board that contains set of tasks
+/// </summary>
 public class Board
 {
     public int Id { get; set; }

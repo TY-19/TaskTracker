@@ -2,6 +2,9 @@
 
 namespace TaskTracker.Domain.Entities;
 
+/// <summary>
+/// Represents an employee who works on tasks
+/// </summary>
 public class Employee
 {
     public int Id { get; set; }

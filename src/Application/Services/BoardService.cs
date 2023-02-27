@@ -95,7 +95,7 @@ public class BoardService : IBoardService
     {
         var assignments = await _context.Assignments
                 .Where(a => a.BoardId == boardId)
-                .Include(a => a.Subparts).ThenInclude(sp => sp.Stage)
+                .Include(a => a.Subparts)
                 .Include(a => a.ResponsibleEmployee)
                 .Include(a => a.Stage)
                 .AsNoTracking()
@@ -144,7 +144,7 @@ public class BoardService : IBoardService
     private async Task<Assignment?> GetAssignmentInnerAsync(int taskId)
     {
         return await _context.Assignments
-            .Include(a => a.Subparts).ThenInclude(sp => sp.Stage)
+            .Include(a => a.Subparts)
             .Include(a => a.Board)
             .Include(a => a.ResponsibleEmployee)
             .Include(a => a.Stage)
