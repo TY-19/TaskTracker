@@ -7,5 +7,4 @@ public class SubpartGetModel
     public string? Description { get; set; }
     public decimal? PercentValue { get; set; }
     public int AssignmentId { get; set; }
-    public int StageId { get; set; }
 }

@@ -1,6 +1,4 @@
-﻿using Domain.Entities;
-
-namespace TaskTracker.Domain.Entities;
+﻿namespace TaskTracker.Domain.Entities;
 
 /// <summary>
 /// Represents an employee who works on tasks

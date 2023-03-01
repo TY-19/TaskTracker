@@ -1,6 +1,4 @@
-﻿using TaskTracker.Domain.Entities;
-
-namespace Domain.Entities;
+﻿namespace TaskTracker.Domain.Entities;
 
 /// <summary>
 /// Represents an task on the board

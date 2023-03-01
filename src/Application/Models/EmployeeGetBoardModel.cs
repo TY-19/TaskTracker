@@ -1,7 +1,4 @@
-﻿using Domain.Entities;
-using TaskTracker.Domain.Entities;
-
-namespace TaskTracker.Application.Models;
+﻿namespace TaskTracker.Application.Models;
 
 public class EmployeeGetBoardModel
 {

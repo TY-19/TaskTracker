@@ -1,6 +1,4 @@
-﻿using Domain.Entities;
-
-namespace TaskTracker.Domain.Entities;
+﻿namespace TaskTracker.Domain.Entities;
 
 /// <summary>
 /// Represents a stage of the workflow through which every task on the board goes.

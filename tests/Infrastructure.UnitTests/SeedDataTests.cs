@@ -77,7 +77,7 @@ public class SeedDataTests
     public async Task SeedDefaultRolesAndUsersAsync_DoesNotAddUser_IfDatabaseAlreadyContainsUsers()
     {
         TrackerDbContext context = UnitTestHelper.GetTestDbContext();
-        context.Users.Add(new User() { UserName = "ExistedUser"});
+        context.Users.Add(new User() { UserName = "ExistedUser" });
         var configuration = new Mock<IConfiguration>();
         var seeder = GetSeedDataInstance(context, configuration.Object);
 

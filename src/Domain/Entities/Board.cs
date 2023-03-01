@@ -1,6 +1,4 @@
-﻿using Domain.Entities;
-
-namespace TaskTracker.Domain.Entities;
+﻿namespace TaskTracker.Domain.Entities;
 
 /// <summary>
 /// Represents an board that contains set of tasks

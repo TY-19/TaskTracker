@@ -1,5 +1,4 @@
-﻿using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Interfaces;

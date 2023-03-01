@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using TaskTracker.Domain.Entities;
 using TaskTracker.Domain.Common;
+using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Infrastructure;
 
@@ -83,7 +83,7 @@ public class SeedData
                 Email = defaultAdminEmail,
                 EmailConfirmed = true
             };
-            
+
             await _userManager.CreateAsync(admin, defaultAdminPassword);
             await _userManager.AddToRoleAsync(admin, defaultAdminRole);
         }

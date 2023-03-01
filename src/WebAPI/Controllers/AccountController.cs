@@ -88,7 +88,7 @@ public class AccountController : ControllerBase
         var userName = User?.Identity?.Name;
         if (userName == null)
             return NotFound();
-        
+
         if (await _accountService.ChangePasswordAsync(userName, model))
         {
             return NoContent();

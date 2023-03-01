@@ -42,6 +42,9 @@ public static class ConfigureServices
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IBoardService, BoardService>();
+        services.AddScoped<IAssignmentService, AssignmentService>();
+        services.AddScoped<IStageService, StageService>();
+        services.AddScoped<ISubpartService, SubpartService>();
 
         services.AddSingleton(new MapperConfiguration(cfg =>
             cfg.AddProfile<AutomapperProfile>()).CreateMapper());

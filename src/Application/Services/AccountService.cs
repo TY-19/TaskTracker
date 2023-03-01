@@ -116,8 +116,8 @@ public class AccountService : IAccountService
         ChangePasswordModel model)
     {
         User user = await _userManager.FindByNameAsync(userName);
-        if (user == null) 
-        { 
+        if (user == null)
+        {
             return false;
         }
         var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);

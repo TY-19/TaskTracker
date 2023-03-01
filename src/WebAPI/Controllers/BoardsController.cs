@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.Domain.Common;
-using AutoMapper;
 
 namespace TaskTracker.WebAPI.Controllers;
 
@@ -14,10 +13,20 @@ public class BoardsController : ControllerBase
 {
     private readonly IBoardService _boardService;
     private readonly IUserService _userService;
-    public BoardsController(IBoardService boardService, IUserService userService)
+    private readonly IStageService _stageService;
+    private readonly IAssignmentService _assignmentService;
+    private readonly IEmployeeService _employeeService;
+    private readonly ISubpartService _subpartService;
+    public BoardsController(IBoardService boardService, IUserService userService,
+        IStageService stageService, IAssignmentService assignmentService,
+        IEmployeeService employeeService, ISubpartService subpartService)
     {
         _boardService = boardService;
         _userService = userService;
+        _stageService = stageService;
+        _assignmentService = assignmentService;
+        _employeeService = employeeService;
+        _subpartService = subpartService;
     }
 
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
@@ -64,7 +73,7 @@ public class BoardsController : ControllerBase
         var board = await _boardService.GetBoardByIdAsync(id);
         if (board == null)
             return NotFound();
-        
+
         return Ok(board);
     }
 
@@ -98,7 +107,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<AssignmentGetModel>>> GetAllAssignmentsOfTheBoard(int boardId)
     {
-        var assignments = await _boardService.GetAllAssignmentsOfTheBoard(boardId);
+        var assignments = await _assignmentService.GetAllAssignmentsOfTheBoard(boardId);
         return Ok(assignments);
     }
 
@@ -115,7 +124,7 @@ public class BoardsController : ControllerBase
         AssignmentGetModel? assignment;
         try
         {
-            assignment = await _boardService.CreateAssignmentAsync(boardId, model);
+            assignment = await _assignmentService.CreateAssignmentAsync(boardId, model);
         }
         catch (ArgumentException ex)
         {
@@ -134,7 +143,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AssignmentGetModel>> GetAssignmentById(int boardId, int taskId)
     {
-        var assignment = await _boardService.GetAssignmentAsync(boardId, taskId);
+        var assignment = await _assignmentService.GetAssignmentAsync(boardId, taskId);
 
         if (assignment is null)
             return NotFound();
@@ -154,7 +163,7 @@ public class BoardsController : ControllerBase
     {
         try
         {
-            await _boardService.UpdateAssignmentAsync(boardId, taskId, model);
+            await _assignmentService.UpdateAssignmentAsync(boardId, taskId, model);
         }
         catch (Exception ex)
         {
@@ -171,7 +180,80 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteAssignmentById(int boardId, int taskId)
     {
-        await _boardService.DeleteAssignmentAsync(boardId, taskId);
+        await _assignmentService.DeleteAssignmentAsync(boardId, taskId);
+        return NoContent();
+    }
+
+    [Route("{boardId}/tasks/{taskId}/subparts")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<SubpartGetModel>>> GetAllSubpartsOfTheAssignment(
+        int boardId, int taskId)
+    {
+        return Ok(await _subpartService.GetAllSubpartOfTheAssignmentAsync(taskId));
+    }
+
+    [Route("{boardId}/tasks/{taskId}/subparts/{subpartId}")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<SubpartGetModel>>> GetSubpartById(
+        int boardId, int taskId, int subpartId)
+    {
+        var subpart = await _subpartService.GetSubpartByIdAsync(subpartId);
+        if (subpart == null)
+            return NotFound();
+
+        return Ok(subpart);
+    }
+
+    [Route("{boardId}/tasks/{taskId}/subparts")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> AddSubpartToTheAssignment(int boardId, int taskId,
+        SubpartPostPutModel model)
+    {
+        SubpartGetModel? subpart;
+        try
+        {
+            subpart = await _subpartService.AddSubpartToTheAssignmentAsync(model);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        if (subpart == null)
+            return BadRequest("Not created");
+
+        return CreatedAtAction(nameof(GetSubpartById), subpart);
+    }
+
+    [Route("{boardId}/tasks/{taskId}/subparts/{subpartId}")]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateSubpart(int boardId, int taskId,
+        int subpartId, SubpartPostPutModel model)
+    {
+        try
+        {
+            await _subpartService.UpdateSubpartAsync(subpartId, model);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        return NoContent();
+    }
+
+    [Route("{boardId}/tasks/{taskId}/subparts/{subpartId}")]
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteSubpart(int boardId, int taskId, int subpartId)
+    {
+        await _subpartService.DeleteSubpartAsync(subpartId);
         return NoContent();
     }
 
@@ -180,7 +262,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllStagesOfTheBoard(int boardId)
     {
-        var stages = await _boardService.GetAllStagesOfTheBoardAsync(boardId);
+        var stages = await _stageService.GetAllStagesOfTheBoardAsync(boardId);
         return Ok(stages);
     }
 
@@ -193,7 +275,7 @@ public class BoardsController : ControllerBase
     public async Task<ActionResult<WorkflowStageGetModel>> CreateANewStageOnTheBoard(
         int boardId, WorkflowStagePostPutModel model)
     {
-        var result = await _boardService.AddStageToTheBoardAsync(boardId, model);
+        var result = await _stageService.AddStageToTheBoardAsync(boardId, model);
         return CreatedAtAction(nameof(GetStageById), result);
     }
 
@@ -203,7 +285,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetStageById(int boardId, int stageId)
     {
-        var result = await _boardService.GetStageByIdAsync(boardId, stageId);
+        var result = await _stageService.GetStageByIdAsync(boardId, stageId);
         if (result == null)
             return NotFound();
 
@@ -217,12 +299,12 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> UpdateStageById(int boardId, int stageId, 
+    public async Task<IActionResult> UpdateStageById(int boardId, int stageId,
         WorkflowStagePostPutModel model)
     {
         try
         {
-            await _boardService.UpdateStageAsync(boardId, stageId, model);
+            await _stageService.UpdateStageAsync(boardId, stageId, model);
         }
         catch (Exception ex)
         {
@@ -239,7 +321,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteStageById(int boardId, int stageId)
     {
-        await _boardService.DeleteStageAsync(boardId, stageId);
+        await _stageService.DeleteStageAsync(boardId, stageId);
         return NoContent();
     }
 
@@ -248,19 +330,19 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEmployeesOfTheBoard(int boardId)
     {
-        return Ok(await _boardService.GetAllEmployeeAsync(boardId));
+        return Ok(await _employeeService.GetAllEmployeeFromTheBoardAsync(boardId));
     }
 
     [Route("{boardId}/employees/{employeeId}")]
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)] 
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetEmployeeById(int boardId, int employeeId)
     {
-        var employee = await _boardService.GetEmployeeById(employeeId);
+        var employee = await _employeeService.GetEmployeeById(employeeId);
         if (employee == null)
             return NotFound();
-        
+
         return Ok(employee);
     }
 
@@ -279,7 +361,7 @@ public class BoardsController : ControllerBase
             return BadRequest();
         try
         {
-            await _boardService.AddEmployeeToTheBoardAsync(boardId, user);
+            await _employeeService.AddEmployeeToTheBoardAsync(boardId, user);
         }
         catch
         {
@@ -296,7 +378,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> RemoveEmployeeFromTheBoard(int boardId, int employeeId)
     {
-        await _boardService.RemoveEmployeeFromTheBoard(boardId, employeeId);
+        await _employeeService.RemoveEmployeeFromTheBoard(boardId, employeeId);
         return NoContent();
     }
 }

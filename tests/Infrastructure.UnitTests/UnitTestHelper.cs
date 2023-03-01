@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Infrastructure.UnitTests;
@@ -13,7 +12,7 @@ public static class UnitTestHelper
         var options = new DbContextOptionsBuilder<TrackerDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        
+
         return new TrackerDbContext(options);
     }
 

@@ -92,7 +92,7 @@ public class UsersController : ControllerBase
         var user = await _userService.GetUserByNameOrIdAsync(userNameOrId);
         if (user == null)
             return BadRequest();
-        
+
         await _userService.ChangeUserPassword(userNameOrId, model.NewPassword);
 
         return NoContent();

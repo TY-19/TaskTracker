@@ -1,13 +1,13 @@
-﻿namespace TaskTracker.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
-/// <summary>
-/// Represents a part of the task
-/// </summary>
-public class Subpart
+namespace TaskTracker.Application.Models;
+
+public class SubpartPostPutModel
 {
-    public int Id { get; set; }
+    [Required]
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public decimal? PercentValue { get; set; }
+    [Required]
     public int AssignmentId { get; set; }
 }
