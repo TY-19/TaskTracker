@@ -27,6 +27,11 @@ public class StageService : IStageService
 
     public async Task<WorkflowStageGetModel> AddStageToTheBoardAsync(int boardId, WorkflowStagePostPutModel model)
     {
+        var board = await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
+        if (board == null)
+        {
+            throw new ArgumentException("The board with such an id does not exist", nameof(boardId));
+        }
         var stage = new WorkflowStage()
         {
             Name = model.Name,
@@ -35,6 +40,7 @@ public class StageService : IStageService
                 .Stages?.Select(s => s.Position).DefaultIfEmpty().Max() ?? 0) + 1,
         };
         _context.Stages.Add(stage);
+        board.Stages.Add(stage);
         await _context.SaveChangesAsync();
         var mapped = _mapper.Map<WorkflowStageGetModel>(stage);
         return mapped;

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.Domain.Entities;
@@ -17,9 +18,10 @@ public class UserService : IUserService
         _userManager = userManager;
         _context = context;
     }
-    public IEnumerable<UserProfileModel> GetAllUsers()
+    public async Task<IEnumerable<UserProfileModel>> GetAllUsersAsync()
     {
-        return _mapper.Map<IEnumerable<UserProfileModel>>(_userManager.Users);
+        return _mapper.Map<IEnumerable<UserProfileModel>>(
+            await _userManager.Users.ToListAsync());
     }
 
     public async Task<UserProfileModel?> GetUserByNameOrIdAsync(string userNameOrId)
@@ -44,24 +46,25 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task UpdateUserName(string oldName, string newName)
+    public async Task UpdateUserNameAsync(string oldName, string newName)
     {
         var user = await _userManager.FindByNameAsync(oldName);
         user.UserName = newName;
         await _userManager.UpdateAsync(user);
     }
 
-    public async Task ChangeUserPassword(string usernameOrId, string newPassword)
+    public async Task ChangeUserPasswordAsync(string usernameOrId, string newPassword)
     {
         var user = await GetUserByNameOrIdInnerAsync(usernameOrId);
         if (user == null)
-            return;
+            throw new ArgumentException(
+                "User with such an Id or Name does not exist", nameof(usernameOrId));
 
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, newPassword);
     }
 
-    public async Task DeleteUser(string usernameOrId)
+    public async Task DeleteUserAsync(string usernameOrId)
     {
         var user = await GetUserByNameOrIdInnerAsync(usernameOrId);
         if (user == null)

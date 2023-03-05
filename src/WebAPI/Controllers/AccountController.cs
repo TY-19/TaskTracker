@@ -46,7 +46,7 @@ public class AccountController : ControllerBase
         if (userName == null)
             return NotFound();
 
-        var userProfile = await _accountService.GetUserProfile(userName);
+        var userProfile = await _accountService.GetUserProfileAsync(userName);
         if (userProfile == null)
             return NotFound();
 
@@ -66,7 +66,7 @@ public class AccountController : ControllerBase
         if (userName == null)
             return NotFound();
 
-        if (await _accountService.UpdateUserProfile(userName, updatedUser))
+        if (await _accountService.UpdateUserProfileAsync(userName, updatedUser))
         {
             return NoContent();
         }

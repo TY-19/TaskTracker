@@ -12,7 +12,7 @@ public class AutomapperProfileTests
     {
         IMapper mapper = GetMapper();
         User user = user1;
-        
+
         var result = mapper.Map<UserProfileModel>(user);
 
         Assert.Multiple(
@@ -53,9 +53,9 @@ public class AutomapperProfileTests
             PercentValue = 50,
             AssignmentId = 1
         };
-        
+
         var result = mapper.Map<Subpart>(subpartmodel);
-        
+
         Assert.Multiple(
             () => Assert.Equal(subpartmodel.Name, result.Name),
             () => Assert.Equal(subpartmodel.Description, result.Description),
@@ -81,7 +81,7 @@ public class AutomapperProfileTests
             () => Assert.Equal(assignment.StageId, result.StageId),
             () => Assert.Equal(assignment.ResponsibleEmployeeId, result.ResponsibleEmployeeId),
             () => Assert.Equal(2, result.Subparts.Count),
-            () => Assert.Equal(assignment.Subparts.FirstOrDefault()?.Name, 
+            () => Assert.Equal(assignment.Subparts.FirstOrDefault()?.Name,
                 result.Subparts.FirstOrDefault()?.Name)
         );
     }
@@ -184,7 +184,7 @@ public class AutomapperProfileTests
             Position = 1,
         };
         WorkflowStagePostPutModel model = new()
-        { 
+        {
             Name = "Mapped"
         };
 
@@ -216,7 +216,7 @@ public class AutomapperProfileTests
             () => Assert.Equal(board.Id, result.Id),
             () => Assert.Equal(board.Name, result.Name),
             () => Assert.Equal(2, result.Stages.Count),
-            () => Assert.Equal(board.Stages.FirstOrDefault()?.Name, 
+            () => Assert.Equal(board.Stages.FirstOrDefault()?.Name,
                 result.Stages.FirstOrDefault()?.Name),
             () => Assert.Equal(board.Assignments.FirstOrDefault()?.Topic,
                 result.Assignments.FirstOrDefault()?.Topic),

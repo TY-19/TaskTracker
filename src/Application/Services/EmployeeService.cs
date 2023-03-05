@@ -15,7 +15,7 @@ public class EmployeeService : IEmployeeService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<EmployeeGetBoardModel>> GetAll()
+    public async Task<IEnumerable<EmployeeGetBoardModel>> GetAllAsync()
     {
         var employees = await _context.Employees
                 .AsNoTracking()
@@ -35,7 +35,7 @@ public class EmployeeService : IEmployeeService
         return mapped;
     }
 
-    public async Task<EmployeeGetBoardModel> GetEmployeeById(int id)
+    public async Task<EmployeeGetBoardModel?> GetEmployeeByIdAsync(int id)
     {
         var employee = await _context.Employees
             .FirstOrDefaultAsync(e => e.Id == id);
@@ -47,21 +47,9 @@ public class EmployeeService : IEmployeeService
     {
         var employee = await _context.Employees.FirstOrDefaultAsync(e =>
             e.User != null && e.User.Id == user.Id);
-        if (employee == null)
-        {
-            employee = new Employee
-            {
-                User = new User { Id = user.Id }
-            };
-            if (user.EmployeeId != null)
-                employee.Id = (int)user.EmployeeId;
-            if (user.FirstName != null)
-                employee.FirstName = user.FirstName;
-            if (user.LastName != null)
-                employee.LastName = user.LastName;
-            employee.Boards = new List<Board>();
-        }
+        employee ??= await SetEmoloyeeInfoAsync(user);
         var board = await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
+        
         if (board == null)
             throw new ArgumentException("Board with a such id does not exist");
 
@@ -69,7 +57,23 @@ public class EmployeeService : IEmployeeService
         await _context.SaveChangesAsync();
     }
 
-    public async Task RemoveEmployeeFromTheBoard(int boardId, int employeeId)
+    private async Task<Employee> SetEmoloyeeInfoAsync(UserProfileModel user)
+    {
+        var employee = new Employee
+        {
+            User = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id),
+        };
+        if (user.EmployeeId != null)
+            employee.Id = user.EmployeeId.Value;
+        if (user.FirstName != null)
+            employee.FirstName = user.FirstName;
+        if (user.LastName != null)
+            employee.LastName = user.LastName;
+        employee.Boards = new List<Board>();
+        return employee;
+    }
+
+    public async Task RemoveEmployeeFromTheBoardAsync(int boardId, int employeeId)
     {
         var employee = _context.Employees.FirstOrDefault(e => e.Id == employeeId);
         var board = await _context.Boards

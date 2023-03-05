@@ -27,9 +27,10 @@ public class SubpartService : ISubpartService
         return _mapper.Map<SubpartGetModel>(subpart);
     }
 
-    public async Task DeleteSubpartAsync(int subpartId)
+    public async Task DeleteSubpartAsync(int assignmentId, int subpartId)
     {
-        var subpart = await _context.Subparts.FirstOrDefaultAsync(s => s.Id == subpartId);
+        var subpart = await _context.Subparts.FirstOrDefaultAsync(
+            s => s.Id == subpartId && s.AssignmentId == assignmentId);
         if (subpart == null)
             return;
 
@@ -46,18 +47,20 @@ public class SubpartService : ISubpartService
         return mapped;
     }
 
-    public async Task<SubpartGetModel?> GetSubpartByIdAsync(int subpartId)
+    public async Task<SubpartGetModel?> GetSubpartByIdAsync(int assignmentId, int subpartId)
     {
-        var subpart = await _context.Subparts.FirstOrDefaultAsync(s => s.Id == subpartId);
+        var subpart = await _context.Subparts.FirstOrDefaultAsync(
+            s => s.Id == subpartId && s.AssignmentId == assignmentId);
         var mapped = _mapper.Map<SubpartGetModel>(subpart);
         return mapped;
     }
 
-    public async Task UpdateSubpartAsync(int subpartId, SubpartPostPutModel model)
+    public async Task UpdateSubpartAsync(int assignmentId, int subpartId, SubpartPostPutModel model)
     {
-        var subpart = await _context.Subparts.FirstOrDefaultAsync(s => s.Id == subpartId);
+        var subpart = await _context.Subparts.FirstOrDefaultAsync(
+            s => s.Id == subpartId && s.AssignmentId == assignmentId);
         if (subpart == null)
-            return;
+            throw new ArgumentException("There are no such a subpart in the assignment");
 
         _mapper.Map(model, subpart);
         await _context.SaveChangesAsync();

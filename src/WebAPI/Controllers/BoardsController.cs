@@ -36,7 +36,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public ActionResult<IEnumerable<BoardGetModel>> GetAllBoards()
     {
-        var boards = _boardService.GetAllBoards();
+        var boards = _boardService.GetAllBoardsAsync();
         return Ok(boards);
     }
 
@@ -107,7 +107,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<AssignmentGetModel>>> GetAllAssignmentsOfTheBoard(int boardId)
     {
-        var assignments = await _assignmentService.GetAllAssignmentsOfTheBoard(boardId);
+        var assignments = await _assignmentService.GetAllAssignmentsOfTheBoardAsync(boardId);
         return Ok(assignments);
     }
 
@@ -200,7 +200,7 @@ public class BoardsController : ControllerBase
     public async Task<ActionResult<IEnumerable<SubpartGetModel>>> GetSubpartById(
         int boardId, int taskId, int subpartId)
     {
-        var subpart = await _subpartService.GetSubpartByIdAsync(subpartId);
+        var subpart = await _subpartService.GetSubpartByIdAsync(taskId, subpartId);
         if (subpart == null)
             return NotFound();
 
@@ -239,7 +239,7 @@ public class BoardsController : ControllerBase
     {
         try
         {
-            await _subpartService.UpdateSubpartAsync(subpartId, model);
+            await _subpartService.UpdateSubpartAsync(taskId, subpartId, model);
         }
         catch (Exception ex)
         {
@@ -253,7 +253,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteSubpart(int boardId, int taskId, int subpartId)
     {
-        await _subpartService.DeleteSubpartAsync(subpartId);
+        await _subpartService.DeleteSubpartAsync(taskId, subpartId);
         return NoContent();
     }
 
@@ -339,7 +339,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetEmployeeById(int boardId, int employeeId)
     {
-        var employee = await _employeeService.GetEmployeeById(employeeId);
+        var employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
         if (employee == null)
             return NotFound();
 
@@ -378,7 +378,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> RemoveEmployeeFromTheBoard(int boardId, int employeeId)
     {
-        await _employeeService.RemoveEmployeeFromTheBoard(boardId, employeeId);
+        await _employeeService.RemoveEmployeeFromTheBoardAsync(boardId, employeeId);
         return NoContent();
     }
 }

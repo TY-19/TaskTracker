@@ -16,24 +16,23 @@ public class BoardService : IBoardService
         _mapper = mapper;
     }
 
-    public IEnumerable<BoardGetModel> GetAllBoards()
+    public async Task<IEnumerable<BoardGetModel>> GetAllBoardsAsync()
     {
-        var boards = _context.Boards
+        var boards = await _context.Boards
             .Include(b => b.Stages)
             .Include(b => b.Assignments).ThenInclude(a => a.Subparts)
             .Include(b => b.Assignments).ThenInclude(a => a.Stage)
             .Include(b => b.Employees)
-            .AsNoTracking();
-        var mapped = _mapper.Map<List<BoardGetModel>>(boards);
-        return mapped;
+            .AsNoTracking()
+            .ToListAsync();
+        return _mapper.Map<List<BoardGetModel>>(boards);
     }
 
     public async Task<BoardGetModel?> GetBoardByIdAsync(int id)
     {
         var board = await GetBoardByIdInnerAsync(id);
 
-        var mapped = _mapper.Map<BoardGetModel>(board);
-        return mapped;
+        return _mapper.Map<BoardGetModel>(board);
     }
     private async Task<Board?> GetBoardByIdInnerAsync(int id)
     {
@@ -53,17 +52,19 @@ public class BoardService : IBoardService
             .Include(b => b.Assignments).ThenInclude(a => a.Stage)
             .Include(b => b.Employees)
             .FirstOrDefaultAsync(e => e.Name == name);
-        var mapped = _mapper.Map<BoardGetModel>(board);
-        return mapped;
+        return _mapper.Map<BoardGetModel>(board);
     }
 
     public async Task<BoardGetModel?> AddBoardAsync(string name)
     {
-        if (name == null || await GetBoardByNameAsync(name) != null)
-        {
+        if (string.IsNullOrEmpty(name) || int.TryParse(name, out _) )
+            throw new ArgumentException(
+                "BoardName can't be empty or contains only digits", nameof(name));
+        
+        if (await GetBoardByNameAsync(name) != null)
             throw new ArgumentException(
                 $"Board with the name {name} has already exist", nameof(name));
-        }
+
         await _context.Boards.AddAsync(new Board() { Name = name });
         await _context.SaveChangesAsync();
         return await GetBoardByNameAsync(name);
@@ -72,7 +73,7 @@ public class BoardService : IBoardService
     public async Task UpdateBoardNameAsync(int id, string newName)
     {
         var board = await GetBoardByIdInnerAsync(id);
-        if (newName == null || board == null)
+        if (string.IsNullOrEmpty(newName) || int.TryParse(newName, out _) || board == null)
             return;
 
         board.Name = newName;

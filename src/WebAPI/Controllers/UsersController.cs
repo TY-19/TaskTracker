@@ -27,7 +27,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public ActionResult<IEnumerable<UserProfileModel>> GetAllUsers()
     {
-        var users = _userService.GetAllUsers();
+        var users = _userService.GetAllUsersAsync();
         return Ok(users);
     }
 
@@ -73,10 +73,10 @@ public class UsersController : ControllerBase
         if (userName == null || updatedUser == null)
             return BadRequest();
 
-        await _accountService.UpdateUserProfile(userName, updatedUser);
+        await _accountService.UpdateUserProfileAsync(userName, updatedUser);
 
         if (updatedUser.UserName != null && updatedUser.UserName != userName)
-            await _userService.UpdateUserName(userName, updatedUser.UserName);
+            await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
 
         return NoContent();
     }
@@ -93,7 +93,7 @@ public class UsersController : ControllerBase
         if (user == null)
             return BadRequest();
 
-        await _userService.ChangeUserPassword(userNameOrId, model.NewPassword);
+        await _userService.ChangeUserPasswordAsync(userNameOrId, model.NewPassword);
 
         return NoContent();
     }
@@ -106,7 +106,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteUser(string userNameOrId)
     {
-        await _userService.DeleteUser(userNameOrId);
+        await _userService.DeleteUserAsync(userNameOrId);
         return NoContent();
     }
 }

@@ -10,5 +10,6 @@ public interface ITrackerDbContext
     public DbSet<Employee> Employees { get; }
     public DbSet<WorkflowStage> Stages { get; }
     public DbSet<Board> Boards { get; }
+    public DbSet<User> Users { get; }
     public Task SaveChangesAsync();
 }

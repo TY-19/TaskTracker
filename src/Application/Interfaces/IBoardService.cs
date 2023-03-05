@@ -4,7 +4,7 @@ namespace TaskTracker.Application.Interfaces;
 
 public interface IBoardService
 {
-    public IEnumerable<BoardGetModel> GetAllBoards();
+    public Task<IEnumerable<BoardGetModel>> GetAllBoardsAsync();
     public Task<BoardGetModel?> GetBoardByIdAsync(int id);
     public Task<BoardGetModel?> GetBoardByNameAsync(string name);
     public Task<BoardGetModel?> AddBoardAsync(string name);

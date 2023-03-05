@@ -16,7 +16,7 @@ public class AssignmentService : IAssignmentService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<AssignmentGetModel>> GetAllAssignmentsOfTheBoard(int boardId)
+    public async Task<IEnumerable<AssignmentGetModel>> GetAllAssignmentsOfTheBoardAsync(int boardId)
     {
         var assignments = await _context.Assignments
                 .Where(a => a.BoardId == boardId)

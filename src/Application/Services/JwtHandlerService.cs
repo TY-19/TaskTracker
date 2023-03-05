@@ -24,14 +24,14 @@ public class JwtHandlerService
     {
         EnsureUserIsNotNull(user);
 
-        var jwtOptions = new JwtSecurityToken(
+        var jwtToken = new JwtSecurityToken(
             issuer: _configuration["JwtSettings:Issuer"],
             audience: _configuration["JwtSettings:Audience"],
             claims: await GetClaimsAsync(user),
             expires: DateTime.Now.AddMinutes(Convert.ToDouble(
                 _configuration["JwtSettings:ExpirationTimeInMinutes"])),
             signingCredentials: GetSigningCredentials());
-        return jwtOptions;
+        return jwtToken;
     }
 
     private SigningCredentials GetSigningCredentials()

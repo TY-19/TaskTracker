@@ -27,7 +27,7 @@ public class AccountService : IAccountService
 
     public async Task<LoginResponseModel> LoginAsync(LoginRequestModel loginRequest)
     {
-        var user = await FindUserAsync(loginRequest.Name);
+        var user = await FindUserAsync(loginRequest.NameOrEmail);
         if (user is null || !await CheckPasswordAsync(user, loginRequest.Password))
         {
             return GetLoginFailedResult();
@@ -74,9 +74,15 @@ public class AccountService : IAccountService
         };
     }
 
-    public async Task<UserProfileModel> GetUserProfile(string userName)
+    public async Task<UserProfileModel?> GetUserProfileAsync(string userName)
     {
         var user = await _userManager.FindByNameAsync(userName);
+        if (user.Employee == null)
+        {
+            var employee = new Employee();
+            await _context.Employees.AddAsync(employee);
+            user.Employee = employee;
+        }
         if (user.EmployeeId != null && user.Employee == null)
         {
             user.Employee = await _context.Employees
@@ -85,10 +91,24 @@ public class AccountService : IAccountService
         return _mapper.Map<UserProfileModel>(user);
     }
 
-    public async Task<bool> UpdateUserProfile(string userName,
+    public async Task<bool> UpdateUserProfileAsync(string userName,
         UserProfileUpdateModel updatedUser)
     {
         var user = await _userManager.FindByNameAsync(userName);
+        await UpdateUserInfo(user, updatedUser);
+        try
+        {
+            await _userManager.UpdateAsync(user);
+        }
+        catch
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private async Task UpdateUserInfo(User user, UserProfileUpdateModel updatedUser)
+    {
         if (updatedUser?.Email != null)
         {
             user.Email = updatedUser.Email;
@@ -99,7 +119,6 @@ public class AccountService : IAccountService
             await _context.Employees.AddAsync(employee);
             user.Employee = employee;
         }
-
         if (updatedUser?.FirstName != null)
         {
             user.Employee.FirstName = updatedUser.FirstName;
@@ -108,8 +127,6 @@ public class AccountService : IAccountService
         {
             user.Employee.LastName = updatedUser.LastName;
         }
-        await _userManager.UpdateAsync(user);
-        return true;
     }
 
     public async Task<bool> ChangePasswordAsync(string userName,
