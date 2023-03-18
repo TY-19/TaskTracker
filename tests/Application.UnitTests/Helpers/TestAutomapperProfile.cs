@@ -2,12 +2,12 @@
 using TaskTracker.Application.Models;
 using TaskTracker.Domain.Entities;
 
-namespace TaskTracker.Application.Mapping;
+namespace TaskTracker.Application.UnitTests.Helpers;
 
-public class AutomapperProfile : Profile
+internal class TestAutomapperProfile : Profile
 {
-    public AutomapperProfile()
-    {
+	public TestAutomapperProfile()
+	{
         CreateMap<User, UserProfileModel>()
             .ForMember(upm => upm.Id, x => x.MapFrom(u => u.Id))
             .ForMember(upm => upm.UserName, x => x.MapFrom(u => u.UserName))
@@ -26,7 +26,8 @@ public class AutomapperProfile : Profile
         CreateMap<Assignment, AssignmentGetModel>()
             .ForMember(bgm => bgm.Subparts, x => x.MapFrom(b => b.Subparts));
         CreateMap<AssignmentPostPutModel, Assignment>()
-            .ForMember(am => am.StageId, x => x.MapFrom((src, dest) => src.StageId ?? dest.StageId))
+            .ForMember(am => am.StageId, x => x.MapFrom(
+                (src, dest) => src.StageId ?? dest.StageId))
             .ForAllMembers(opt => opt.Condition((_, _, sourceMember) => sourceMember != null));
 
         CreateMap<Employee, EmployeeGetBoardModel>();
@@ -40,6 +41,5 @@ public class AutomapperProfile : Profile
             .ForMember(bgm => bgm.Employees, x => x.MapFrom(b => b.Employees))
             .ForMember(bgm => bgm.Assignments, x => x.MapFrom(b => b.Assignments));
         CreateMap<BoardPostPutModel, Board>();
-
     }
 }

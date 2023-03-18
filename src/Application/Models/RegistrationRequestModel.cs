@@ -5,6 +5,7 @@ namespace TaskTracker.Application.Models;
 public class RegistrationRequestModel
 {
     [Required(ErrorMessage = "Name is required")]
+    [MinLength(3, ErrorMessage = "Username length has to be at least 3 characters")]
     public string UserName { get; set; } = null!;
 
     [Required]

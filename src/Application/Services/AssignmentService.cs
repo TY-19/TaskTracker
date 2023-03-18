@@ -25,8 +25,7 @@ public class AssignmentService : IAssignmentService
                 .Include(a => a.Stage)
                 .AsNoTracking()
                 .ToListAsync();
-        var mapped = _mapper.Map<List<AssignmentGetModel>>(assignments);
-        return mapped;
+        return _mapper.Map<List<AssignmentGetModel>>(assignments);
     }
 
     public async Task<AssignmentGetModel?> CreateAssignmentAsync(int boardId, AssignmentPostPutModel assignmentModel)
@@ -50,8 +49,7 @@ public class AssignmentService : IAssignmentService
         assignment.BoardId = boardId;
         await _context.Assignments.AddAsync(assignment);
         await _context.SaveChangesAsync();
-        var mapped = _mapper.Map<AssignmentGetModel>(assignment);
-        return mapped;
+        return _mapper.Map<AssignmentGetModel>(assignment);
     }
 
     public async Task<AssignmentGetModel?> GetAssignmentAsync(int boardId, int taskId)
@@ -61,9 +59,7 @@ public class AssignmentService : IAssignmentService
         if (assignment == null || assignment.BoardId != boardId)
             return null;
 
-        var mapped = _mapper.Map<AssignmentGetModel>(assignment);
-
-        return mapped;
+        return _mapper.Map<AssignmentGetModel>(assignment);
     }
 
     private async Task<Assignment?> GetAssignmentInnerAsync(int taskId)

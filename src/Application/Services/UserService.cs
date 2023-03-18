@@ -31,7 +31,7 @@ public class UserService : IUserService
         if (user == null)
             return null;
 
-        user.Employee = _context.Employees.FirstOrDefault(e => e.Id == user.EmployeeId);
+        user.Employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == user.EmployeeId);
 
         return _mapper.Map<UserProfileModel>(user);
     }
@@ -49,6 +49,10 @@ public class UserService : IUserService
     public async Task UpdateUserNameAsync(string oldName, string newName)
     {
         var user = await _userManager.FindByNameAsync(oldName);
+        if (user == null)
+            throw new ArgumentException(
+                "User with such a Name does not exist", nameof(oldName));
+
         user.UserName = newName;
         await _userManager.UpdateAsync(user);
     }

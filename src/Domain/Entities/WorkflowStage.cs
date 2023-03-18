@@ -9,6 +9,6 @@ public class WorkflowStage
     public string Name { get; set; } = String.Empty;
     public int Position { get; set; }
     public int BoardId { get; set; }
-    public Board Board { get; set; } = new Board();
+    public Board Board { get; set; } = null!;
     public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 }

@@ -12,17 +12,15 @@ namespace TaskTracker.WebAPI.Controllers;
 public class BoardsController : ControllerBase
 {
     private readonly IBoardService _boardService;
-    private readonly IUserService _userService;
     private readonly IStageService _stageService;
     private readonly IAssignmentService _assignmentService;
     private readonly IEmployeeService _employeeService;
     private readonly ISubpartService _subpartService;
-    public BoardsController(IBoardService boardService, IUserService userService,
+    public BoardsController(IBoardService boardService,
         IStageService stageService, IAssignmentService assignmentService,
         IEmployeeService employeeService, ISubpartService subpartService)
     {
         _boardService = boardService;
-        _userService = userService;
         _stageService = stageService;
         _assignmentService = assignmentService;
         _employeeService = employeeService;
@@ -356,12 +354,9 @@ public class BoardsController : ControllerBase
     public async Task<IActionResult> AddEmployeeToTheBoard(
         int boardId, string userNameOrId)
     {
-        var user = await _userService.GetUserByNameOrIdAsync(userNameOrId);
-        if (user == null)
-            return BadRequest();
         try
         {
-            await _employeeService.AddEmployeeToTheBoardAsync(boardId, user);
+            await _employeeService.AddEmployeeToTheBoardAsync(boardId, userNameOrId);
         }
         catch
         {

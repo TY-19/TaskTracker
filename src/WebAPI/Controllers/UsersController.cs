@@ -25,9 +25,9 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public ActionResult<IEnumerable<UserProfileModel>> GetAllUsers()
+    public async Task<ActionResult<IEnumerable<UserProfileModel>>> GetAllUsers()
     {
-        var users = _userService.GetAllUsersAsync();
+        var users = await _userService.GetAllUsersAsync();
         return Ok(users);
     }
 
@@ -38,7 +38,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetUserProfile(string userNameOrId)
+    public async Task<ActionResult<UserProfileModel>> GetUserProfile(string userNameOrId)
     {
         var user = await _userService.GetUserByNameOrIdAsync(userNameOrId);
         if (user == null)

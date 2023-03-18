@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
+using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Services;
@@ -28,10 +29,10 @@ public class AccountService : IAccountService
     public async Task<LoginResponseModel> LoginAsync(LoginRequestModel loginRequest)
     {
         var user = await FindUserAsync(loginRequest.NameOrEmail);
+
         if (user is null || !await CheckPasswordAsync(user, loginRequest.Password))
-        {
             return GetLoginFailedResult();
-        }
+        
         var token = await _jwtHandlerService.GetTokenAsync(user);
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
         return GetLoginSucceedResult(jwt);
@@ -40,6 +41,10 @@ public class AccountService : IAccountService
     public async Task<RegistrationResponseModel> RegistrationAsync(
         RegistrationRequestModel registrationRequest)
     {
+        var validationResult = ValidateRegistrationRequestModel(registrationRequest);
+        if (!validationResult.Success)
+            return validationResult;
+
         if (await _userManager.FindByNameAsync(registrationRequest.UserName) != null)
         {
             return new RegistrationResponseModel()
@@ -57,7 +62,7 @@ public class AccountService : IAccountService
         try
         {
             await _userManager.CreateAsync(user, registrationRequest.Password);
-            await _userManager.AddToRoleAsync(user, "Employee");
+            await _userManager.AddToRoleAsync(user, DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE);
         }
         catch
         {
@@ -77,24 +82,38 @@ public class AccountService : IAccountService
     public async Task<UserProfileModel?> GetUserProfileAsync(string userName)
     {
         var user = await _userManager.FindByNameAsync(userName);
-        if (user.Employee == null)
-        {
-            var employee = new Employee();
-            await _context.Employees.AddAsync(employee);
-            user.Employee = employee;
-        }
+
+        if (user == null) 
+            return null;
+
+        await LinkEmployeeToTheUser(user);
+
+        return _mapper.Map<UserProfileModel>(user);
+    }
+
+    private async Task LinkEmployeeToTheUser(User user)
+    {
         if (user.EmployeeId != null && user.Employee == null)
         {
             user.Employee = await _context.Employees
                 .FirstOrDefaultAsync(e => e.Id == user.EmployeeId.Value);
         }
-        return _mapper.Map<UserProfileModel>(user);
+        else if ((await _userManager.GetRolesAsync(user)).Contains(DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE) &&
+            user.Employee == null)
+        {
+            var employee = new Employee();
+            await _context.Employees.AddAsync(employee);
+            user.Employee = employee;
+        }
     }
 
     public async Task<bool> UpdateUserProfileAsync(string userName,
         UserProfileUpdateModel updatedUser)
     {
         var user = await _userManager.FindByNameAsync(userName);
+        if (user == null) 
+            return false;
+
         await UpdateUserInfo(user, updatedUser);
         try
         {
@@ -137,8 +156,15 @@ public class AccountService : IAccountService
         {
             return false;
         }
-        var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-        return result.Succeeded;
+        try
+        {
+            var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            return result.Succeeded;
+        }
+        catch 
+        { 
+            return false; 
+        }
     }
 
     private async Task<User?> FindUserAsync(string nameOrEmail)
@@ -157,7 +183,14 @@ public class AccountService : IAccountService
 
     private async Task<bool> CheckPasswordAsync(User user, string password)
     {
-        return await _userManager.CheckPasswordAsync(user, password);
+        try
+        {
+            return await _userManager.CheckPasswordAsync(user, password);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static LoginResponseModel GetLoginFailedResult()
@@ -181,5 +214,37 @@ public class AccountService : IAccountService
             Message = "Login successful",
             Token = token
         };
+    }
+
+    private static RegistrationResponseModel ValidateRegistrationRequestModel(RegistrationRequestModel model)
+    {
+        RegistrationResponseModel response = new() { Success = true, Message = string.Empty };
+
+        if (model.UserName == null)
+        {
+            response.Success = false;
+            response.Message += "UserName is required\n";
+        }
+        else if (model.UserName.Length < 3)
+        {
+            response.Success = false;
+            response.Message = "Username must be at least 3 characters long\n";
+        }
+        if (model.Email == null)
+        {
+            response.Success = false;
+            response.Message += "Email is required\n";
+        }
+        if (model.Password == null)
+        {
+            response.Success = false;
+            response.Message += "Password is required\n";
+        }
+        else if (model.Password.Length < 8)
+        {
+            response.Success = false;
+            response.Message = "Password must be at least 8 characters long\n";
+        }
+        return response;
     }
 }

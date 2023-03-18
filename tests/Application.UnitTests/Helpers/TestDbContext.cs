@@ -27,7 +27,7 @@ internal class TestDbContext : IdentityDbContext, ITrackerDbContext
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<WorkflowStage> Stages => Set<WorkflowStage>();
     public DbSet<Board> Boards => Set<Board>();
-    public DbSet<User> Users => Set<User>();
+    public new DbSet<User> Users => Set<User>();
 
     public async Task SaveChangesAsync()
     {

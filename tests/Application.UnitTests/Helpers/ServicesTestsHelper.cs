@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskTracker.Domain.Entities;
 using AutoMapper;
-using TaskTracker.Application.Mapping;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace TaskTracker.Application.UnitTests.Helpers;
 
@@ -21,9 +22,12 @@ internal static class ServicesTestsHelper
     public static UserManager<User> GetUserManager(TestDbContext context)
     {
         var userStore = new UserStore<User>(context);
-        var passordHasher = new PasswordHasher<User>();
+        var passwordHasher = new PasswordHasher<User>();
+        var options = new OptionsWrapper<IdentityOptions>(new IdentityOptions());
+        var logger = new Logger<UserManager<User>>(new LoggerFactory());
+
         return new UserManager<User>(userStore,
-            null, passordHasher, null, null, null, null, null, null);
+            options, passwordHasher, null, null, null, null, null, logger);
     }
 
     public static RoleManager<IdentityRole> GetRoleManager(TestDbContext context)
@@ -35,6 +39,6 @@ internal static class ServicesTestsHelper
     public static IMapper GetMapper()
     {
         return new MapperConfiguration(cfg =>
-            cfg.AddProfile<AutomapperProfile>()).CreateMapper();
+            cfg.AddProfile<TestAutomapperProfile>()).CreateMapper();
     }
 }

@@ -43,39 +43,27 @@ public class EmployeeService : IEmployeeService
         return mapped;
     }
 
-    public async Task AddEmployeeToTheBoardAsync(int boardId, UserProfileModel user)
+    public async Task AddEmployeeToTheBoardAsync(int boardId, string userNameOrId)
     {
-        var employee = await _context.Employees.FirstOrDefaultAsync(e =>
-            e.User != null && e.User.Id == user.Id);
-        employee ??= await SetEmoloyeeInfoAsync(user);
+        var user = await _context.Users.FirstOrDefaultAsync(
+            u => u.Id == userNameOrId || u.UserName == userNameOrId);
+        if (user == null)
+            throw new ArgumentException("User with a such id or name does not exist", nameof(userNameOrId));
+
+        user.Employee ??= new Employee();
+
         var board = await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
         
         if (board == null)
-            throw new ArgumentException("Board with a such id does not exist");
+            throw new ArgumentException("Board with a such id does not exist", nameof(boardId));
 
-        employee.Boards.Add(board);
+        board.Employees.Add(user.Employee);
         await _context.SaveChangesAsync();
-    }
-
-    private async Task<Employee> SetEmoloyeeInfoAsync(UserProfileModel user)
-    {
-        var employee = new Employee
-        {
-            User = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id),
-        };
-        if (user.EmployeeId != null)
-            employee.Id = user.EmployeeId.Value;
-        if (user.FirstName != null)
-            employee.FirstName = user.FirstName;
-        if (user.LastName != null)
-            employee.LastName = user.LastName;
-        employee.Boards = new List<Board>();
-        return employee;
     }
 
     public async Task RemoveEmployeeFromTheBoardAsync(int boardId, int employeeId)
     {
-        var employee = _context.Employees.FirstOrDefault(e => e.Id == employeeId);
+        var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
         var board = await _context.Boards
             .Include(b => b.Employees)
             .FirstOrDefaultAsync(b => b.Id == boardId);

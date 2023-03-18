@@ -13,7 +13,7 @@ public class JwtHandlerServiceTests
     public async Task GetTokenAsync_ReturnsToken()
     {
         var configuration = new Mock<IConfiguration>();
-        configuration.Setup(c => c["JwtSettings:SecurityKey"]).Returns("testkey");
+        configuration.Setup(c => c["JwtSettings:SecurityKey"]).Returns("TheTestkeyToConfigureEncryption");
         var context = ServicesTestsHelper.GetTestDbContext();
         var user = new User() { UserName = "TestName", Email = "testemail@example.com" };
         var service = new JwtHandlerService(configuration.Object, 
@@ -27,6 +27,18 @@ public class JwtHandlerServiceTests
     [Fact]
     public async Task GetTokenAsync_ReturnsTokenWithTheCorrectDetails()
     {
+        var configuration = new Mock<IConfiguration>();
+        configuration.Setup(c => c["JwtSettings:SecurityKey"]).Returns("testkey");
+        var context = ServicesTestsHelper.GetTestDbContext();
+        string userName = "TestName";
+        string userEmail = "testemail@example.com";
+        var user = new User() { UserName = userName, Email = userEmail };
+        var service = new JwtHandlerService(configuration.Object,
+            ServicesTestsHelper.GetUserManager(context));
 
+        var token = await service.GetTokenAsync(user);
+
+        Assert.True(token.Payload.ContainsValue(userName));
+        Assert.True(token.Payload.ContainsValue(userEmail));
     }
 }

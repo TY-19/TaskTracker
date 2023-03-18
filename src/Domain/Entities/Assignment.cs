@@ -14,8 +14,8 @@ public class Assignment
     public int StageId { get; set; }
     public int? ResponsibleEmployeeId { get; set; }
 
-    public Board Board { get; set; } = new Board();
+    public Board Board { get; set; } = null!;
     public Employee? ResponsibleEmployee { get; set; }
-    public WorkflowStage Stage { get; set; } = new WorkflowStage();
+    public WorkflowStage Stage { get; set; } = null!;
     public ICollection<Subpart> Subparts { get; set; } = new List<Subpart>();
 }

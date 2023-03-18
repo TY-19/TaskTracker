@@ -105,14 +105,14 @@ public class SeedDataTests
         Assert.True(context.Users.Any(u => u.UserName == "TestsAdminName"));
     }
 
-    private SeedData GetSeedDataInstance(TrackerDbContext context, IConfiguration configuration)
+    private static SeedData GetSeedDataInstance(TrackerDbContext context, IConfiguration configuration)
     {
         UserManager<User> userManager = UnitTestHelper.GetUserManager(context);
         RoleManager<IdentityRole> roleManager = UnitTestHelper.GetRoleManager(context);
         return new SeedData(context, userManager, roleManager, configuration);
     }
 
-    private Mock<IConfiguration> GetTestIConfigurationMock()
+    private static Mock<IConfiguration> GetTestIConfigurationMock()
     {
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(c => c["DefaultCredentials:Admin:Name"])
