@@ -18,9 +18,8 @@ public class SubpartService : ISubpartService
     public async Task<SubpartGetModel?> AddSubpartToTheAssignmentAsync(SubpartPostPutModel model)
     {
         if ((await _context.Assignments.FirstOrDefaultAsync(b => b.Id == model.AssignmentId)) == null)
-        {
             throw new ArgumentException($"An incorrect assignment to add subpart");
-        }
+        
         var subpart = _mapper.Map<Subpart>(model);
         await _context.Subparts.AddAsync(subpart);
         await _context.SaveChangesAsync();
@@ -43,16 +42,14 @@ public class SubpartService : ISubpartService
         var subparts = await _context.Subparts
             .Where(s => s.AssignmentId == assignmentId)
             .ToListAsync();
-        var mapped = _mapper.Map<List<SubpartGetModel>>(subparts);
-        return mapped;
+        return _mapper.Map<List<SubpartGetModel>>(subparts);
     }
 
     public async Task<SubpartGetModel?> GetSubpartByIdAsync(int assignmentId, int subpartId)
     {
         var subpart = await _context.Subparts.FirstOrDefaultAsync(
             s => s.Id == subpartId && s.AssignmentId == assignmentId);
-        var mapped = _mapper.Map<SubpartGetModel>(subpart);
-        return mapped;
+        return _mapper.Map<SubpartGetModel>(subpart);
     }
 
     public async Task UpdateSubpartAsync(int assignmentId, int subpartId, SubpartPostPutModel model)

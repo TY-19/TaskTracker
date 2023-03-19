@@ -1,95 +1,237 @@
-﻿namespace TaskTracker.Application.UnitTests.Services;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskTracker.Application.Services;
+using TaskTracker.Application.UnitTests.Helpers;
+
+namespace TaskTracker.Application.UnitTests.Services;
 
 public class BoardServiceTests
 {
     [Fact]
     public async Task GetAllBoardsAsync_ReturnsAllBoards()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        var result = await service.GetAllBoardsAsync();
+
+        Assert.Equal(2, result.Count());
     }
     [Fact]
     public async Task GetAllBoardsAsync_ReturnsAnEmptyList_IfNoBoardsExist()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+
+        var result = await service.GetAllBoardsAsync();
+
+        Assert.Empty(result);
     }
     [Fact]
     public async Task GetAllBoardsAsync_ReturnsBoardsThatIncludeInnerTypes()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        var result = await service.GetAllBoardsAsync();
+        var board = result.FirstOrDefault(b => b.Id == 1);
+
+        Assert.NotNull(board);
+        Assert.Multiple(
+            () => Assert.NotNull(board.Assignments),
+            () => Assert.Equal(2, board.Assignments.Count),
+            () => Assert.NotNull(board.Employees),
+            () => Assert.Equal(2, board.Employees.Count),
+            () => Assert.NotNull(board.Stages),
+            () => Assert.Equal(2, board.Stages.Count)
+        );
     }
     [Fact]
     public async Task GetBoardByIdAsync_ReturnsTheCorrectBoard()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        var board = await service.GetBoardByIdAsync(1);
+
+        Assert.NotNull(board);
+        Assert.Equal("Board1", board.Name);
     }
     [Fact]
     public async Task GetBoardByIdAsync_ReturnsNull_IfAssignmentDoesNotExist()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+
+        var board = await service.GetBoardByIdAsync(100);
+
+        Assert.Null(board);
     }
     [Fact]
     public async Task GetBoardByIdAsync_ReturnsABoardWithItsInnerTypes()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        var board = await service.GetBoardByIdAsync(1);
+
+        Assert.NotNull(board);
+        Assert.Multiple(
+            () => Assert.NotNull(board.Assignments),
+            () => Assert.Equal(2, board.Assignments.Count),
+            () => Assert.NotNull(board.Employees),
+            () => Assert.Equal(2, board.Employees.Count),
+            () => Assert.NotNull(board.Stages),
+            () => Assert.Equal(2, board.Stages.Count)
+        );
     }
     [Fact]
     public async Task GetBoardByNameAsync_ReturnsTheCorrectBoard()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        var board = await service.GetBoardByNameAsync("Board1");
+
+        Assert.NotNull(board);
+        Assert.Equal(1, board.Id);
     }
     [Fact]
-    public async Task GetBoardByNameAsync_ReturnsNull_IfAssignmentDoesNotExist()
+    public async Task GetBoardByNameAsync_ReturnsNull_IfBoardDoesNotExist()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+
+        var board = await service.GetBoardByNameAsync("NonExistedBoard");
+
+        Assert.Null(board);
     }
     [Fact]
     public async Task GetBoardByNameAsync_ReturnsABoardWithItsInnerTypes()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        var board = await service.GetBoardByNameAsync("Board1");
+
+        Assert.NotNull(board);
+        Assert.Multiple(
+            () => Assert.NotNull(board.Assignments),
+            () => Assert.Equal(2, board.Assignments.Count),
+            () => Assert.NotNull(board.Employees),
+            () => Assert.Equal(2, board.Employees.Count),
+            () => Assert.NotNull(board.Stages),
+            () => Assert.Equal(2, board.Stages.Count)
+        );
     }
     [Fact]
     public async Task AddBoardAsync_AddsANewBoardToTheDatabase()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+
+        await service.AddBoardAsync("Board3");
+
+        Assert.Equal(1, context.Boards.Count());
     }
     [Fact]
     public async Task AddBoardAsync_ReturnsTheAddedBoard()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+
+        var board = await service.AddBoardAsync("Board3");
+
+        Assert.NotNull(board);
+        Assert.Equal("Board3", board.Name);
     }
     [Fact]
     public async Task AddBoardAsync_ThrowAnException_IfBoardWithSuchANameAlreadyExist()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.AddBoardAsync("Board1"));
     }
     [Fact]
     public async Task AddBoardAsync_ThrowAnException_IfProvidedNameIsEmpty()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.AddBoardAsync(""));
     }
     [Fact]
     public async Task AddBoardAsync_ThrowAnException_IfProvidedNameContainsOnlyDigits()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.AddBoardAsync("12345"));
     }
     [Fact]
     public async Task UpdateBoardNameAsync_UpdatesTheNameOfTheBoard()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        await service.UpdateBoardNameAsync(1, "Updated");
+        var board = await context.Boards.FirstOrDefaultAsync(b => b.Id == 1);
+
+        Assert.NotNull(board);
+        Assert.Equal("Updated", board.Name);
     }
     [Fact]
     public async Task UpdateBoardNameAsync_DoesNotUpdateBoardIfNewNameIsAnEmptyString()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        await service.UpdateBoardNameAsync(1, "");
+        var board = await context.Boards.FirstOrDefaultAsync(b => b.Id == 1);
+
+        Assert.NotNull(board);
+        Assert.Equal("Board1", board.Name);
     }
     [Fact]
     public async Task DeleteBoardAsync_DeletesBoard()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        await service.DeleteBoardAsync(1);
+
+        Assert.Equal(1, context.Boards.Count());
     }
     [Fact]
     public async Task DeleteBoardAsync_DoesNotThrowException_IfBoardDoesNotExist()
     {
-        throw new NotImplementedException();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetBoardService(context);
+        await DefaultData.SeedAsync(context);
+
+        var exception = await Record.ExceptionAsync(async () =>
+            await service.DeleteBoardAsync(100));
+
+        Assert.Null(exception);
+    }
+
+    private static BoardService GetBoardService(TestDbContext context)
+    {
+        return new BoardService(context, ServicesTestsHelper.GetMapper());
     }
 }
