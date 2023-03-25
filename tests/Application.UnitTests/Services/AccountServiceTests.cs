@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using TaskTracker.Application.Models;
 using TaskTracker.Application.Services;
 using TaskTracker.Application.UnitTests.Helpers;
+using TaskTracker.Application.Validators;
 using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Entities;
 
@@ -131,7 +134,7 @@ public class AccountServiceTests
             () => Assert.Equal("The first", result.FirstName),
             () => Assert.Equal("Employee", result.LastName)
         );
-        
+
     }
     [Fact]
     public async Task GetUserProfileAsync_ReturnsProfileWithoutEmployee_IfUserIsNotAnEmpoloyee()
@@ -167,8 +170,11 @@ public class AccountServiceTests
     {
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = await GetAccountServiceAsync(context, seedDefaultUser: true);
-        UserProfileUpdateModel updated = new() { FirstName = "Updated First Name", 
-            LastName = "Updated Last Name" };
+        UserProfileUpdateModel updated = new()
+        {
+            FirstName = "Updated First Name",
+            LastName = "Updated Last Name"
+        };
 
         var result = await service.UpdateUserProfileAsync("Test", updated);
         var user = await context.Users.FirstOrDefaultAsync(u => u.UserName == "Test");
@@ -247,6 +253,7 @@ public class AccountServiceTests
         bool seedDefaultUser = false,
         bool seedDefaultEmployee = false, bool seedDefaultAdmin = false)
     {
+        var validator = new RegistrationRequestModelValidator();
         var userManager = ServicesTestsHelper.GetUserManager(context);
         await AddDefaultRolesAsync(context);
 
@@ -258,7 +265,7 @@ public class AccountServiceTests
             await AddAdminAsync(userManager);
 
         return new AccountService(userManager, GetJwtHandlerService(userManager),
-            ServicesTestsHelper.GetMapper(), context);
+            ServicesTestsHelper.GetMapper(), context, validator);
     }
 
     private static JwtHandlerService GetJwtHandlerService(UserManager<User> userManager)

@@ -6,8 +6,8 @@ namespace TaskTracker.Application.UnitTests.Helpers;
 
 internal class TestAutomapperProfile : Profile
 {
-	public TestAutomapperProfile()
-	{
+    public TestAutomapperProfile()
+    {
         CreateMap<User, UserProfileModel>()
             .ForMember(upm => upm.Id, x => x.MapFrom(u => u.Id))
             .ForMember(upm => upm.UserName, x => x.MapFrom(u => u.UserName))

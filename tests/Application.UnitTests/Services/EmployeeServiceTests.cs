@@ -95,7 +95,7 @@ public class EmployeeServiceTests
         await DefaultData.SeedAsync(context);
         context.Users.Add(new User() { Id = "87654321-4321-4321-4321-210987654321" });
         await context.SaveChangesAsync();
-        
+
         await service.AddEmployeeToTheBoardAsync(2, "87654321-4321-4321-4321-210987654321");
         var board = await context.Boards.FirstOrDefaultAsync(b => b.Id == 2);
         var employee = board?.Employees.FirstOrDefault();
@@ -108,7 +108,7 @@ public class EmployeeServiceTests
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = GetEmployeeService(context);
         await DefaultData.SeedAsync(context);
-        
+
         await Assert.ThrowsAsync<ArgumentException>(async () =>
             await service.AddEmployeeToTheBoardAsync(100, "12345678-1234-1234-1234-123456789012"));
     }

@@ -21,7 +21,7 @@ internal static class DefaultData
         var board1 = await context.Boards.FirstOrDefaultAsync(b => b.Id == 1);
         board1?.Employees.Add(employyes[0]);
         board1?.Employees.Add(employyes[1]);
-        
+
         await context.SaveChangesAsync();
     }
     private static Board Board1 => new()
@@ -29,9 +29,9 @@ internal static class DefaultData
         Id = 1,
         Name = "Board1"
     };
-    private static Board Board2 => new() 
-    { 
-        Id = 2, 
+    private static Board Board2 => new()
+    {
+        Id = 2,
         Name = "Board2"
     };
     private static WorkflowStage Stage1 => new()

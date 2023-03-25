@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,15 +16,18 @@ public class AccountService : IAccountService
     private readonly JwtHandlerService _jwtHandlerService;
     private readonly IMapper _mapper;
     private readonly ITrackerDbContext _context;
+    private readonly IValidator<RegistrationRequestModel> _validator;
     public AccountService(UserManager<User> userManager,
         JwtHandlerService jwtHandlerService,
         IMapper mapper,
-        ITrackerDbContext context)
+        ITrackerDbContext context,
+        IValidator<RegistrationRequestModel> validator)
     {
         _userManager = userManager;
         _jwtHandlerService = jwtHandlerService;
         _mapper = mapper;
         _context = context;
+        _validator = validator;
     }
 
     public async Task<LoginResponseModel> LoginAsync(LoginRequestModel loginRequest)
@@ -32,7 +36,7 @@ public class AccountService : IAccountService
 
         if (user is null || !await CheckPasswordAsync(user, loginRequest.Password))
             return GetLoginFailedResult();
-        
+
         var token = await _jwtHandlerService.GetTokenAsync(user);
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
         return GetLoginSucceedResult(jwt);
@@ -41,9 +45,15 @@ public class AccountService : IAccountService
     public async Task<RegistrationResponseModel> RegistrationAsync(
         RegistrationRequestModel registrationRequest)
     {
-        var validationResult = ValidateRegistrationRequestModel(registrationRequest);
-        if (!validationResult.Success)
-            return validationResult;
+        var validationResult = _validator.Validate(registrationRequest);
+        if (!validationResult.IsValid)
+        {
+            return new RegistrationResponseModel()
+            {
+                Success = false,
+                Message = validationResult.ToString()
+            };
+        }
 
         if (await _userManager.FindByNameAsync(registrationRequest.UserName) != null)
         {
@@ -83,7 +93,7 @@ public class AccountService : IAccountService
     {
         var user = await _userManager.FindByNameAsync(userName);
 
-        if (user == null) 
+        if (user == null)
             return null;
 
         await LinkEmployeeToTheUser(user);
@@ -111,7 +121,7 @@ public class AccountService : IAccountService
         UserProfileUpdateModel updatedUser)
     {
         var user = await _userManager.FindByNameAsync(userName);
-        if (user == null) 
+        if (user == null)
             return false;
 
         await UpdateUserInfo(user, updatedUser);
@@ -161,9 +171,9 @@ public class AccountService : IAccountService
             var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             return result.Succeeded;
         }
-        catch 
-        { 
-            return false; 
+        catch
+        {
+            return false;
         }
     }
 
@@ -214,37 +224,5 @@ public class AccountService : IAccountService
             Message = "Login successful",
             Token = token
         };
-    }
-
-    private static RegistrationResponseModel ValidateRegistrationRequestModel(RegistrationRequestModel model)
-    {
-        RegistrationResponseModel response = new() { Success = true, Message = string.Empty };
-
-        if (model.UserName == null)
-        {
-            response.Success = false;
-            response.Message += "UserName is required\n";
-        }
-        else if (model.UserName.Length < 3)
-        {
-            response.Success = false;
-            response.Message = "Username must be at least 3 characters long\n";
-        }
-        if (model.Email == null)
-        {
-            response.Success = false;
-            response.Message += "Email is required\n";
-        }
-        if (model.Password == null)
-        {
-            response.Success = false;
-            response.Message += "Password is required\n";
-        }
-        else if (model.Password.Length < 8)
-        {
-            response.Success = false;
-            response.Message = "Password must be at least 8 characters long\n";
-        }
-        return response;
     }
 }

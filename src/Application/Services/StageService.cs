@@ -27,10 +27,10 @@ public class StageService : IStageService
     public async Task<WorkflowStageGetModel> AddStageToTheBoardAsync(int boardId, WorkflowStagePostPutModel model)
     {
         var board = await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
-        
+
         if (board == null)
             throw new ArgumentException("The board with such an id does not exist", nameof(boardId));
-        
+
         var stage = await CreateStage(model, boardId);
         board.Stages.Add(stage);
         await _context.SaveChangesAsync();
@@ -76,7 +76,7 @@ public class StageService : IStageService
         if (stage == null)
             return;
         if (stage.Assignments.Any())
-            await MoveAssignmentsToTheOtherStage(stage);            
+            await MoveAssignmentsToTheOtherStage(stage);
 
         _context.Stages.Remove(stage);
         await _context.SaveChangesAsync();

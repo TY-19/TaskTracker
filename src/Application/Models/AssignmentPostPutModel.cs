@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace TaskTracker.Application.Models;
+﻿namespace TaskTracker.Application.Models;
 
 public class AssignmentPostPutModel
 {

@@ -75,7 +75,7 @@ public class SubpartServiceTests
         await DefaultData.SeedAsync(context);
 
         await service.DeleteSubpartAsync(1, 3);
-        
+
         Assert.Equal(4, context.Subparts.Count());
     }
     [Fact]
@@ -141,8 +141,8 @@ public class SubpartServiceTests
         var service = GetSubpartService(context);
         await DefaultData.SeedAsync(context);
 
-        await service.UpdateSubpartAsync(1, 1, 
-            new SubpartPostPutModel() { Name = "Updated", Description = "New description"});
+        await service.UpdateSubpartAsync(1, 1,
+            new SubpartPostPutModel() { Name = "Updated", Description = "New description" });
         var subpart = await context.Subparts.FirstOrDefaultAsync(s => s.Id == 1);
 
         Assert.NotNull(subpart);

@@ -16,11 +16,11 @@ public class JwtHandlerServiceTests
         configuration.Setup(c => c["JwtSettings:SecurityKey"]).Returns("TheTestkeyToConfigureEncryption");
         var context = ServicesTestsHelper.GetTestDbContext();
         var user = new User() { UserName = "TestName", Email = "testemail@example.com" };
-        var service = new JwtHandlerService(configuration.Object, 
+        var service = new JwtHandlerService(configuration.Object,
             ServicesTestsHelper.GetUserManager(context));
 
         var token = await service.GetTokenAsync(user);
-        
+
         Assert.NotNull(token);
         Assert.IsType<JwtSecurityToken>(token);
     }

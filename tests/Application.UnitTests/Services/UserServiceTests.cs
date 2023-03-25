@@ -84,7 +84,7 @@ public class UserServiceTests
     {
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = GetUserService(context);
-        
+
         await Assert.ThrowsAnyAsync<ArgumentException>(async () =>
             await service.UpdateUserNameAsync("NonExistedUser", "TryToUpdate"));
     }
@@ -108,7 +108,7 @@ public class UserServiceTests
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = GetUserService(context);
 
-        var exception = await Record.ExceptionAsync(async () => 
+        var exception = await Record.ExceptionAsync(async () =>
             await service.DeleteUserAsync("testUser"));
 
         Assert.Null(exception);

@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Mapping;
+using TaskTracker.Application.Models;
 using TaskTracker.Application.Services;
+using TaskTracker.Application.Validators;
 using TaskTracker.Domain.Entities;
 using TaskTracker.Infrastructure;
 
@@ -48,5 +51,7 @@ public static class ConfigureServices
 
         services.AddSingleton(new MapperConfiguration(cfg =>
             cfg.AddProfile<AutomapperProfile>()).CreateMapper());
+
+        services.AddScoped<IValidator<RegistrationRequestModel>, RegistrationRequestModelValidator>();
     }
 }

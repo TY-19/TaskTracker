@@ -53,7 +53,7 @@ public class EmployeeService : IEmployeeService
         user.Employee ??= new Employee();
 
         var board = await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
-        
+
         if (board == null)
             throw new ArgumentException("Board with a such id does not exist", nameof(boardId));
 

@@ -27,7 +27,7 @@ public class EmployeesController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetEmployeeById(int boardId, int employeeId)
+    public async Task<IActionResult> GetEmployeeById(int employeeId)
     {
         var employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
         if (employee == null)

@@ -19,7 +19,7 @@ public class SubpartService : ISubpartService
     {
         if ((await _context.Assignments.FirstOrDefaultAsync(b => b.Id == model.AssignmentId)) == null)
             throw new ArgumentException($"An incorrect assignment to add subpart");
-        
+
         var subpart = _mapper.Map<Subpart>(model);
         await _context.Subparts.AddAsync(subpart);
         await _context.SaveChangesAsync();

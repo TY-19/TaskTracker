@@ -39,7 +39,7 @@ public class StageServiceTests
         var service = GetStageService(context);
         await DefaultData.SeedAsync(context);
 
-        await service.AddStageToTheBoardAsync(1, 
+        await service.AddStageToTheBoardAsync(1,
             new WorkflowStagePostPutModel() { Name = "NewStage" });
         var board = await context.Boards.FirstOrDefaultAsync(b => b.Id == 1);
 
@@ -53,7 +53,7 @@ public class StageServiceTests
         var service = GetStageService(context);
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
-            await service.AddStageToTheBoardAsync(100, 
+            await service.AddStageToTheBoardAsync(100,
                 new WorkflowStagePostPutModel() { Name = "NewStage" }));
     }
     [Fact]
@@ -114,7 +114,7 @@ public class StageServiceTests
         var service = GetStageService(context);
         await DefaultData.SeedAsync(context);
 
-        await service.UpdateStageAsync(1, 1, 
+        await service.UpdateStageAsync(1, 1,
             new WorkflowStagePostPutModel() { Name = "Updated" });
         var stage = await context.Stages.FirstOrDefaultAsync(s => s.Id == 1);
 

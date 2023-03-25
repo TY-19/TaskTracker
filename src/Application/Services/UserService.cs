@@ -38,12 +38,8 @@ public class UserService : IUserService
 
     private async Task<User?> GetUserByNameOrIdInnerAsync(string userNameOrId)
     {
-        var user = await _userManager.FindByIdAsync(userNameOrId);
-
-        if (user == null)
-            user = await _userManager.FindByNameAsync(userNameOrId);
-
-        return user;
+        return await _userManager.FindByIdAsync(userNameOrId) ??
+            await _userManager.FindByNameAsync(userNameOrId);
     }
 
     public async Task UpdateUserNameAsync(string oldName, string newName)

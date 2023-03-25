@@ -57,10 +57,10 @@ public class BoardService : IBoardService
 
     public async Task<BoardGetModel?> AddBoardAsync(string name)
     {
-        if (string.IsNullOrEmpty(name) || int.TryParse(name, out _) )
+        if (string.IsNullOrEmpty(name) || int.TryParse(name, out _))
             throw new ArgumentException(
                 "BoardName can't be empty or contains only digits", nameof(name));
-        
+
         if (await GetBoardByNameAsync(name) != null)
             throw new ArgumentException(
                 $"Board with the name {name} has already exist", nameof(name));

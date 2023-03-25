@@ -155,7 +155,7 @@ public class AssignmentServiceTests
         using var context = ServicesTestsHelper.GetTestDbContext();
         await DefaultData.SeedAsync(context);
         AssignmentService service = GetAssignmentService(context);
-        
+
         await service.DeleteAssignmentAsync(2, 1);
         var result = await context.Assignments.FirstOrDefaultAsync(a => a.Id == 1);
 
