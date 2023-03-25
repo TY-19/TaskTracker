@@ -7,87 +7,87 @@ using TaskTracker.Domain.Common;
 namespace TaskTracker.WebAPI.Controllers;
 
 [Authorize]
-[Route("api/[controller]")]
+[Route("api/boards/{boardId}/[controller]")]
 [ApiController]
-public class BoardsController : ControllerBase
+public class StagesController : ControllerBase
 {
-    private readonly IBoardService _boardService;
-
-    public BoardsController(IBoardService boardService)
+    private readonly IStageService _stageService;
+    public StagesController(IStageService stageService)
     {
-        _boardService = boardService;
+        _stageService = stageService;
     }
 
-    [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<IEnumerable<BoardGetModel>>> GetAllBoards()
+    public async Task<IActionResult> GetAllStagesOfTheBoard(int boardId)
     {
-        var boards = await _boardService.GetAllBoardsAsync();
-        return Ok(boards);
+        var stages = await _stageService.GetAllStagesOfTheBoardAsync(boardId);
+        return Ok(stages);
     }
 
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> CreateNewBoard(BoardPostPutModel model)
+    public async Task<ActionResult<WorkflowStageGetModel>> CreateANewStageOnTheBoard(
+        int boardId, WorkflowStagePostPutModel model)
     {
-        BoardGetModel? board;
+        WorkflowStageGetModel result;
         try
         {
-            board = await _boardService.AddBoardAsync(model.Name);
+            result = await _stageService.AddStageToTheBoardAsync(boardId, model);
         }
-        catch (ArgumentException ex)
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
-        if (board == null)
-            return BadRequest("Not created");
-
-        return CreatedAtAction(nameof(CreateNewBoard), board);
+        return CreatedAtAction(nameof(GetStageById), result);
     }
 
-    [Route("{id}")]
+    [Route("{stageId}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<BoardGetModel>> GetBoard(int id)
+    public async Task<IActionResult> GetStageById(int boardId, int stageId)
     {
-        var board = await _boardService.GetBoardByIdAsync(id);
-        if (board == null)
+        var result = await _stageService.GetStageByIdAsync(boardId, stageId);
+        if (result == null)
             return NotFound();
 
-        return Ok(board);
+        return Ok(result);
     }
 
-    [Route("{id}")]
+    [Route("{stageId}")]
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> UpdateBoardName(int id,
-        BoardPostPutModel model)
+    public async Task<IActionResult> UpdateStageById(int boardId, int stageId,
+        WorkflowStagePostPutModel model)
     {
-        await _boardService.UpdateBoardNameAsync(id, model.Name);
+        try
+        {
+            await _stageService.UpdateStageAsync(boardId, stageId, model);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
         return NoContent();
     }
 
-    [Route("{id}")]
+    [Route("{stageId}")]
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> DeleteBoard(int id)
+    public async Task<IActionResult> DeleteStageById(int boardId, int stageId)
     {
-        await _boardService.DeleteBoardAsync(id);
+        await _stageService.DeleteStageAsync(boardId, stageId);
         return NoContent();
     }
 }
