@@ -131,6 +131,9 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> AddSubpartToTheAssignment(int boardId, int taskId,
         SubpartPostPutModel model)
     {
+        if (model.AssignmentId != taskId)
+            return BadRequest("Not created");
+
         SubpartGetModel? subpart;
         try
         {

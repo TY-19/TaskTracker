@@ -74,7 +74,8 @@ public class BoardService : IBoardService
     {
         var board = await GetBoardByIdInnerAsync(id);
         if (string.IsNullOrEmpty(newName) || int.TryParse(newName, out _) || board == null)
-            return;
+            throw new ArgumentException(
+                $"The board name cannot be updated", nameof(newName));
 
         board.Name = newName;
         _context.Boards.Update(board);

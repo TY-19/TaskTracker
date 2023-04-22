@@ -18,7 +18,7 @@ public class AccountController : ControllerBase
     [Route("login")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Login(LoginRequestModel loginRequest)
+    public async Task<ActionResult<LoginResponseModel>> Login(LoginRequestModel loginRequest)
     {
         LoginResponseModel loginResult = await _accountService.LoginAsync(loginRequest);
         return Ok(loginResult);

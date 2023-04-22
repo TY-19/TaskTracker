@@ -71,9 +71,10 @@ public class UsersController : ControllerBase
     {
         var userName = _userService.GetUserByNameOrIdAsync(userNameOrId).Result?.UserName;
         if (userName == null || updatedUser == null)
-            return BadRequest();
+            return BadRequest("User cannot be updated");
 
-        await _accountService.UpdateUserProfileAsync(userName, updatedUser);
+        if (!await _accountService.UpdateUserProfileAsync(userName, updatedUser))
+            return BadRequest("User was not updated");
 
         if (updatedUser.UserName != null && updatedUser.UserName != userName)
             await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
@@ -85,16 +86,24 @@ public class UsersController : ControllerBase
     [Route("{userNameOrId}/changepassword")]
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ChangeUserPassword(string userNameOrId, SetPasswordModel model)
     {
         var user = await _userService.GetUserByNameOrIdAsync(userNameOrId);
         if (user == null)
-            return BadRequest();
+            return BadRequest("User with such a name or id does not exist");
 
-        await _userService.ChangeUserPasswordAsync(userNameOrId, model.NewPassword);
-
+        try
+        {
+            await _userService.ChangeUserPasswordAsync(userNameOrId, model.NewPassword);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        
         return NoContent();
     }
 

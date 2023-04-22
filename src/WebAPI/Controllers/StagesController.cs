@@ -19,7 +19,7 @@ public class StagesController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllStagesOfTheBoard(int boardId)
+    public async Task<ActionResult<IEnumerable<WorkflowStageGetModel>>> GetAllStagesOfTheBoard(int boardId)
     {
         var stages = await _stageService.GetAllStagesOfTheBoardAsync(boardId);
         return Ok(stages);
@@ -49,7 +49,7 @@ public class StagesController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetStageById(int boardId, int stageId)
+    public async Task<ActionResult<WorkflowStageGetModel>> GetStageById(int boardId, int stageId)
     {
         var result = await _stageService.GetStageByIdAsync(boardId, stageId);
         if (result == null)

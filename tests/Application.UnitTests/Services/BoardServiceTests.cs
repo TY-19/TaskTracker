@@ -200,7 +200,8 @@ public class BoardServiceTests
         var service = GetBoardService(context);
         await DefaultData.SeedAsync(context);
 
-        await service.UpdateBoardNameAsync(1, "");
+        await Assert.ThrowsAsync<ArgumentException>(async () => 
+            await service.UpdateBoardNameAsync(1, ""));
         var board = await context.Boards.FirstOrDefaultAsync(b => b.Id == 1);
 
         Assert.NotNull(board);

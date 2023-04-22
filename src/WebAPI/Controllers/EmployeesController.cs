@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.Models;
 using TaskTracker.Domain.Common;
 
 namespace TaskTracker.WebAPI.Controllers;
@@ -18,7 +19,7 @@ public class EmployeesController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllEmployeesOfTheBoard(int boardId)
+    public async Task<ActionResult<IEnumerable<EmployeeGetBoardModel>>> GetAllEmployeesOfTheBoard(int boardId)
     {
         return Ok(await _employeeService.GetAllEmployeeFromTheBoardAsync(boardId));
     }
@@ -27,7 +28,7 @@ public class EmployeesController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetEmployeeById(int employeeId)
+    public async Task<ActionResult<EmployeeGetBoardModel>> GetEmployeeById(int employeeId)
     {
         var employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
         if (employee == null)
@@ -50,9 +51,9 @@ public class EmployeesController : ControllerBase
         {
             await _employeeService.AddEmployeeToTheBoardAsync(boardId, userNameOrId);
         }
-        catch
+        catch (Exception ex)
         {
-            return BadRequest();
+            return BadRequest(ex.Message);
         }
         return NoContent();
     }

@@ -75,7 +75,14 @@ public class BoardsController : ControllerBase
     public async Task<IActionResult> UpdateBoardName(int id,
         BoardPostPutModel model)
     {
-        await _boardService.UpdateBoardNameAsync(id, model.Name);
+        try
+        {
+            await _boardService.UpdateBoardNameAsync(id, model.Name);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
         return NoContent();
     }
 
