@@ -22,6 +22,7 @@ public class AssignmentsController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<AssignmentGetModel>>> GetAllAssignmentsOfTheBoard(int boardId)
     {
         var assignments = await _assignmentService.GetAllAssignmentsOfTheBoardAsync(boardId);
@@ -46,8 +47,6 @@ public class AssignmentsController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        if (assignment == null)
-            return BadRequest("Not created");
 
         return CreatedAtAction(nameof(CreateANewAssignment), assignment);
     }
@@ -143,8 +142,6 @@ public class AssignmentsController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        if (subpart == null)
-            return BadRequest("Not created");
 
         return CreatedAtAction(nameof(GetSubpartById), subpart);
     }
@@ -153,6 +150,7 @@ public class AssignmentsController : ControllerBase
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateSubpart(int boardId, int taskId,
         int subpartId, SubpartPostPutModel model)
     {
@@ -170,6 +168,7 @@ public class AssignmentsController : ControllerBase
     [Route("{taskId}/subparts/{subpartId}")]
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteSubpart(int boardId, int taskId, int subpartId)
     {
         await _subpartService.DeleteSubpartAsync(taskId, subpartId);

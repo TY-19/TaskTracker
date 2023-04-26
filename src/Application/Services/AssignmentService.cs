@@ -28,22 +28,15 @@ public class AssignmentService : IAssignmentService
         return _mapper.Map<List<AssignmentGetModel>>(assignments);
     }
 
-    public async Task<AssignmentGetModel?> CreateAssignmentAsync(int boardId, AssignmentPostPutModel assignmentModel)
+    public async Task<AssignmentGetModel> CreateAssignmentAsync(int boardId, AssignmentPostPutModel assignmentModel)
     {
-        if (assignmentModel == null)
-        {
-            throw new ArgumentException($"Incorrect assignment", nameof(assignmentModel));
-        }
-
         if ((await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId)) == null)
-        {
             throw new ArgumentException($"Incorrect board to create assignment", nameof(boardId));
-        }
 
         return await CreateAssignmentInternalAsync(boardId, assignmentModel);
     }
 
-    private async Task<AssignmentGetModel?> CreateAssignmentInternalAsync(int boardId, AssignmentPostPutModel assignmentModel)
+    private async Task<AssignmentGetModel> CreateAssignmentInternalAsync(int boardId, AssignmentPostPutModel assignmentModel)
     {
         var assignment = _mapper.Map<Assignment>(assignmentModel);
         assignment.BoardId = boardId;

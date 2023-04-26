@@ -193,6 +193,16 @@ public class AssignmentsControllerTests
         Assert.IsType<BadRequestObjectResult>(result);
     }
     [Fact]
+    public async Task AddSubpartToTheAssignment_ReturnsBadRequestObjectResult_IfTaskIdIsIncorrect()
+    {
+        _subpartServiceMock.Setup(s => s.AddSubpartToTheAssignmentAsync(It.IsAny<SubpartPostPutModel>()))
+           .ThrowsAsync(new ArgumentException("TestException"));
+
+        var result = await _controller.AddSubpartToTheAssignment(1, 1, new SubpartPostPutModel() { AssignmentId = 999 });
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
     public async Task UpdateSubpart_ReturnsNoContentResult()
     {
         _subpartServiceMock.Setup(s => s.UpdateSubpartAsync(It.IsAny<int>(), It.IsAny<int>(),
