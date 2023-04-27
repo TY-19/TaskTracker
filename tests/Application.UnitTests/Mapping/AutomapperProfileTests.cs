@@ -41,9 +41,27 @@ public class AutomapperProfileTests
             () => Assert.Equal(subpart.AssignmentId, result.AssignmentId)
         );
     }
-
     [Fact]
-    public void Mapper_MapsSubpartPostPutModelToSubpart()
+    public void Mapper_MapsSubpartPostModelToSubpart()
+    {
+        IMapper mapper = GetMapper();
+        SubpartPostModel subpartmodel = new()
+        {
+            Name = "Test",
+            Description = "Description",
+            PercentValue = 50
+        };
+
+        var result = mapper.Map<Subpart>(subpartmodel);
+
+        Assert.Multiple(
+            () => Assert.Equal(subpartmodel.Name, result.Name),
+            () => Assert.Equal(subpartmodel.Description, result.Description),
+            () => Assert.Equal(subpartmodel.PercentValue, result.PercentValue)
+        );
+    }
+    [Fact]
+    public void Mapper_MapsSubpartPutModelToSubpart()
     {
         IMapper mapper = GetMapper();
         SubpartPutModel subpartmodel = new()
@@ -59,6 +77,31 @@ public class AutomapperProfileTests
             () => Assert.Equal(subpartmodel.Name, result.Name),
             () => Assert.Equal(subpartmodel.Description, result.Description),
             () => Assert.Equal(subpartmodel.PercentValue, result.PercentValue)
+        );
+    }
+    [Fact]
+    public void Mapper_MapsSubpartPutModelToSubpart_ChangesOnlyModifiedProperty()
+    {
+        IMapper mapper = GetMapper();
+        Subpart subpart = new()
+        { 
+            Name = "OldName",
+            Description = "CorrectDescription",
+            PercentValue = 25
+        };
+
+        SubpartPutModel subpartModel = new()
+        {
+            Name = "Test",
+            PercentValue = 50
+        };
+
+        var result = mapper.Map(subpartModel, subpart);
+
+        Assert.Multiple(
+            () => Assert.Equal(subpartModel.Name, result.Name),
+            () => Assert.Equal(subpart.Description, result.Description),
+            () => Assert.Equal(subpartModel.PercentValue, result.PercentValue)
         );
     }
 
@@ -133,6 +176,29 @@ public class AutomapperProfileTests
     }
 
     [Fact]
+    public void Mapper_MapsAssignmentPutModelToAssignment_ChangesOnlyModifiedProperty()
+    {
+        IMapper mapper = GetMapper();
+        Assignment assignment = new()
+        {
+            Topic = "Test Topic",
+            Description = "Correct Description"
+        };
+
+        AssignmentPutModel assignmentModel = new()
+        {
+            Topic = "UpdatedTopic"
+        };
+
+        var result = mapper.Map(assignmentModel, assignment);
+
+        Assert.Multiple(
+            () => Assert.Equal(assignmentModel.Topic, result.Topic),
+            () => Assert.Equal(assignment.Description, result.Description)
+        );
+    }
+
+    [Fact]
     public void Mapper_MapsEmployeeToEmployeeGetBoardModel()
     {
         IMapper mapper = GetMapper();
@@ -180,6 +246,28 @@ public class AutomapperProfileTests
         Assert.Multiple(
             () => Assert.Equal(model.FirstName, result.FirstName),
             () => Assert.Equal(model.LastName, result.LastName)
+        );
+    }
+    [Fact]
+    public void Mapper_MapsEmployeePutModelToEmployee_ChangesOnlyModifiedProperty()
+    {
+        IMapper mapper = GetMapper();
+        Employee employee = new()
+        {
+            FirstName = "First",
+            LastName = "Last"
+        };
+
+        EmployeePutModel employeeModel = new()
+        {
+            FirstName = "Updated First"
+        };
+
+        var result = mapper.Map(employeeModel, employee);
+
+        Assert.Multiple(
+            () => Assert.Equal(employeeModel.FirstName, result.FirstName),
+            () => Assert.Equal(employee.LastName, result.LastName)
         );
     }
 
@@ -249,6 +337,28 @@ public class AutomapperProfileTests
             () => Assert.Equal(1, stage.Position)
         );
     }
+    [Fact]
+    public void Mapper_MapsWorkflowStagePutModelToWorkflowStage_ChangesOnlyModifiedProperty()
+    {
+        IMapper mapper = GetMapper();
+        WorkflowStage workflowStage = new()
+        {
+            Name = "Old name",
+            Position = 1,
+        };
+
+        WorkflowStagePutModel workflowStageModel = new()
+        {
+            Name = "New name"
+        };
+
+        var result = mapper.Map(workflowStageModel, workflowStage);
+
+        Assert.Multiple(
+            () => Assert.Equal(workflowStageModel.Name, result.Name),
+            () => Assert.Equal(workflowStage.Position, result.Position)
+        );
+    }
 
     [Fact]
     public void Mapper_MapsBoardToBoardGetModel()
@@ -315,6 +425,28 @@ public class AutomapperProfileTests
         Assert.Multiple(
             () => Assert.Equal(5, board.Id),
             () => Assert.Equal(model.Name, board.Name)
+        );
+    }
+    [Fact]
+    public void Mapper_MapsBoardPutModelToBoard_ChangesOnlyModifiedProperty()
+    {
+        IMapper mapper = GetMapper();
+        Board board = new()
+        {
+            Id = 1,
+            Name = "Old name"
+        };
+
+        BoardPutModel boardModel = new()
+        {
+            Name = "New name"
+        };
+
+        var result = mapper.Map(boardModel, board);
+
+        Assert.Multiple(
+            () => Assert.Equal(boardModel.Name, result.Name),
+            () => Assert.Equal(board.Id, result.Id)
         );
     }
 
