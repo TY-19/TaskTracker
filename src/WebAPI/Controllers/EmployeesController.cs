@@ -19,6 +19,7 @@ public class EmployeesController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<EmployeeGetBoardModel>>> GetAllEmployeesOfTheBoard(int boardId)
     {
         return Ok(await _employeeService.GetAllEmployeeFromTheBoardAsync(boardId));
@@ -27,6 +28,7 @@ public class EmployeesController : ControllerBase
     [Route("{employeeId}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<EmployeeGetBoardModel>> GetEmployeeById(int employeeId)
     {

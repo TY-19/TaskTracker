@@ -91,12 +91,36 @@ public class UsersControllerTests
         Assert.IsType<NoContentResult>(result);
     }
     [Fact]
+    public async Task UpdateUserProfile_ReturnsNoContentResult_WhenCorrectlyUpdatesUsername()
+    {
+        _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new UserProfileModel() { UserName = "oldName"});
+        _userServiceMock.Setup(u => u.UpdateUserNameAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .Callback(() => { });
+        _accountServiceMock.Setup(a => a.UpdateUserProfileAsync(It.IsAny<string>(), It.IsAny<UserProfileUpdateModel>()))
+            .ReturnsAsync(true);
+
+        var result = await _controller.UpdateUserProfile("oldName", new UserProfileUpdateModel() { UserName = "newName"});
+
+        Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
     public async Task UpdateUserProfile_ReturnsBadRequestResult_IfTheUserProfileWasNotUpdated()
     {
         _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
             .ReturnsAsync(new UserProfileModel());
         _accountServiceMock.Setup(a => a.UpdateUserProfileAsync(It.IsAny<string>(), It.IsAny<UserProfileUpdateModel>()))
             .ReturnsAsync(false);
+
+        var result = await _controller.UpdateUserProfile("newName", new UserProfileUpdateModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task UpdateUserProfile_ReturnsBadRequestResult_IfUserDoesNotExist()
+    {
+        _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
+            .ReturnsAsync((UserProfileModel?)null);
 
         var result = await _controller.UpdateUserProfile("newName", new UserProfileUpdateModel());
 
@@ -127,10 +151,8 @@ public class UsersControllerTests
     [Fact]
     public async Task ChangeUserPassword_ReturnsBadRequestObjectResult_IfUserDoesNotExist()
     {
-        _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
-            .ReturnsAsync((UserProfileModel?)null);
         _userServiceMock.Setup(a => a.ChangeUserPasswordAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => { });
+            .ThrowsAsync(new ArgumentException("TestException"));
 
         var result = await _controller.ChangeUserPassword("1", new SetPasswordModel());
 

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
@@ -47,27 +46,16 @@ public class AccountService : IAccountService
     {
         var validationResult = _validator.Validate(registrationRequest);
         if (!validationResult.IsValid)
-        {
-            return new RegistrationResponseModel()
-            {
-                Success = false,
-                Message = validationResult.ToString()
-            };
-        }
+            return GetRegistrationResult(false, validationResult.ToString());
 
         if (await _userManager.FindByNameAsync(registrationRequest.UserName) != null)
-        {
-            return new RegistrationResponseModel()
-            {
-                Success = false,
-                Message = "User with this name already exists"
-            };
-        }
+            return GetRegistrationResult(false, "User with this name already exists");
 
         var user = new User()
         {
             UserName = registrationRequest.UserName,
             Email = registrationRequest.Email,
+            Employee = new Employee()
         };
         try
         {
@@ -76,16 +64,17 @@ public class AccountService : IAccountService
         }
         catch
         {
-            return new RegistrationResponseModel()
-            {
-                Success = false,
-                Message = "Name or password is not valid"
-            };
+            return GetRegistrationResult(false, "Name or password is not valid");
         }
-        return new RegistrationResponseModel()
-        {
-            Success = true,
-            Message = "Registration was successfull"
+        return GetRegistrationResult(true, "Registration was successfull");
+    }
+
+    private static RegistrationResponseModel GetRegistrationResult(bool success, string message)
+    {
+        return new RegistrationResponseModel() 
+        { 
+            Success = success, 
+            Message = message 
         };
     }
 
@@ -93,28 +82,9 @@ public class AccountService : IAccountService
     {
         var user = await _userManager.FindByNameAsync(userName);
 
-        if (user == null)
-            return null;
-
-        await LinkEmployeeToTheUser(user);
-
-        return _mapper.Map<UserProfileModel>(user);
-    }
-
-    private async Task LinkEmployeeToTheUser(User user)
-    {
-        if (user.EmployeeId != null && user.Employee == null)
-        {
-            user.Employee = await _context.Employees
-                .FirstOrDefaultAsync(e => e.Id == user.EmployeeId.Value);
-        }
-        else if ((await _userManager.GetRolesAsync(user)).Contains(DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE) &&
-            user.Employee == null)
-        {
-            var employee = new Employee();
-            await _context.Employees.AddAsync(employee);
-            user.Employee = employee;
-        }
+        return user == null 
+            ? null 
+            : _mapper.Map<UserProfileModel>(user);
     }
 
     public async Task<bool> UpdateUserProfileAsync(string userName,
@@ -125,14 +95,8 @@ public class AccountService : IAccountService
             return false;
 
         await UpdateUserInfo(user, updatedUser);
-        try
-        {
-            await _userManager.UpdateAsync(user);
-        }
-        catch
-        {
-            return false;
-        }
+        await _userManager.UpdateAsync(user);
+
         return true;
     }
 
@@ -193,14 +157,7 @@ public class AccountService : IAccountService
 
     private async Task<bool> CheckPasswordAsync(User user, string password)
     {
-        try
-        {
-            return await _userManager.CheckPasswordAsync(user, password);
-        }
-        catch
-        {
-            return false;
-        }
+        return await _userManager.CheckPasswordAsync(user, password);
     }
 
     private static LoginResponseModel GetLoginFailedResult()
@@ -213,11 +170,8 @@ public class AccountService : IAccountService
         };
     }
 
-    private static LoginResponseModel GetLoginSucceedResult(string? token)
+    private static LoginResponseModel GetLoginSucceedResult(string token)
     {
-        if (string.IsNullOrEmpty(token))
-            return GetLoginFailedResult();
-
         return new LoginResponseModel
         {
             Success = true,

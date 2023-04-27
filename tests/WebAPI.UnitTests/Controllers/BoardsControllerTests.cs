@@ -88,6 +88,16 @@ public class BoardsControllerTests
         Assert.IsType<BadRequestObjectResult>(result);
     }
     [Fact]
+    public async Task CreateNewBoard_ReturnsBadRequestObjectResult_IfTheBoardWasNoSavedToTheDatabase()
+    {
+        _serviceMock.Setup(s => s.AddBoardAsync(It.IsAny<string>()))
+            .ReturnsAsync((BoardGetModel?)null);
+
+        var result = await _controller.CreateNewBoard(new BoardPostPutModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
     public async Task UpdateBoardName_ReturnsNoContentResult()
     {
         _serviceMock.Setup(s => s.UpdateBoardNameAsync(It.IsAny<int>(), It.IsAny<string>()))

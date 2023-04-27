@@ -69,7 +69,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> UpdateUserProfile(string userNameOrId,
         UserProfileUpdateModel updatedUser)
     {
-        var userName = _userService.GetUserByNameOrIdAsync(userNameOrId).Result?.UserName;
+        var userName = (await _userService.GetUserByNameOrIdAsync(userNameOrId))?.UserName;
         if (userName == null || updatedUser == null)
             return BadRequest("User cannot be updated");
 
@@ -91,10 +91,6 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ChangeUserPassword(string userNameOrId, SetPasswordModel model)
     {
-        var user = await _userService.GetUserByNameOrIdAsync(userNameOrId);
-        if (user == null)
-            return BadRequest("User with such a name or id does not exist");
-
         try
         {
             await _userService.ChangeUserPasswordAsync(userNameOrId, model.NewPassword);

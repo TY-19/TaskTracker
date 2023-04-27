@@ -116,4 +116,14 @@ public class StagesControllerTests
 
         Assert.IsType<NoContentResult>(result);
     }
+    [Fact]
+    public async Task DeleteStageById_ReturnsBadRequestObjectResult_IfStageHasNotBeenDeleted()
+    {
+        _serviceMock.Setup(a => a.DeleteStageAsync(It.IsAny<int>(), It.IsAny<int>()))
+            .ThrowsAsync(new InvalidOperationException("TestException"));
+
+        var result = await _controller.DeleteStageById(1, 1);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
 }

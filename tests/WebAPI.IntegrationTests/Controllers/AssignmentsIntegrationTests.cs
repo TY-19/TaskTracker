@@ -166,6 +166,11 @@ public class AssignmentsIntegrationTests
     {
         throw new NotImplementedException();
     }
+    [Fact]
+    public async Task AssignmentController_GetAssignmentById_ReturnsNotFoundStatusCode_IfAssignmentDoesNotBelongToThisBoard()
+    {
+        throw new NotImplementedException();
+    }
 
     [Fact]
     public async Task AssignmentController_GetAssignmentById_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()

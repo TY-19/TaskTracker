@@ -43,6 +43,11 @@ public class SubpartsTests
         throw new NotImplementedException();
     }
     [Fact]
+    public async Task AssignmentController_AddSubpartToTheAssignment_ReturnsBadRequestStatusCode_IfModelIsNotValid()
+    {
+        throw new NotImplementedException();
+    }
+    [Fact]
     public async Task AssignmentController_AddSubpartToTheAssignment_ReturnsBadRequestStatusCode_IfModelContainDifferentAssignmentId()
     {
         throw new NotImplementedException();

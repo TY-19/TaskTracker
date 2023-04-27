@@ -19,6 +19,7 @@ public class StagesController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<WorkflowStageGetModel>>> GetAllStagesOfTheBoard(int boardId)
     {
         var stages = await _stageService.GetAllStagesOfTheBoardAsync(boardId);
@@ -28,6 +29,7 @@ public class StagesController : ControllerBase
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<WorkflowStageGetModel>> CreateANewStageOnTheBoard(
@@ -48,6 +50,7 @@ public class StagesController : ControllerBase
     [Route("{stageId}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<WorkflowStageGetModel>> GetStageById(int boardId, int stageId)
     {
@@ -83,11 +86,19 @@ public class StagesController : ControllerBase
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteStageById(int boardId, int stageId)
     {
-        await _stageService.DeleteStageAsync(boardId, stageId);
-        return NoContent();
+        try
+        {
+            await _stageService.DeleteStageAsync(boardId, stageId);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"{ex.Message}");
+        }
     }
 }

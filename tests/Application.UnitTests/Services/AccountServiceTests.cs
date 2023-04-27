@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using TaskTracker.Application.Models;
 using TaskTracker.Application.Services;
 using TaskTracker.Application.UnitTests.Helpers;
-using TaskTracker.Application.Validators;
 using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Entities;
 
@@ -48,7 +49,23 @@ public class AccountServiceTests
     }
 
     [Fact]
-    public async Task RegistrationAsync_ReturnsResponsWithTrue_IfProvidedValidData()
+    public async Task RegistrationAsync_ReturnsResponsWithFalse_IfUserWithSuchANameAlreadyExists()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = await GetAccountServiceAsync(context, seedDefaultUser: true);
+
+        var result = await service.RegistrationAsync(new RegistrationRequestModel()
+        {
+            UserName = "Test",
+            Email = "email@example.com",
+            Password = "password"
+        });
+
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public async Task RegistrationAsync_ReturnsResponsWithTrue_IfProvidedWithValidData()
     {
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = await GetAccountServiceAsync(context);
@@ -62,36 +79,33 @@ public class AccountServiceTests
 
         Assert.True(result.Success);
     }
-    [Theory]
-    [InlineData("NewUser", "")]
-    [InlineData("", "password")]
-    [InlineData(null, "password")]
-    [InlineData("NewUser", null)]
-    public async Task RegistrationAsync_ReturnsResponsWithFalse_IfProvidedInvalidData(string? username, string? password)
+    [Fact]
+    public async Task RegistrationAsync_ReturnsResponsWithFalse_IfProvidedWithInvalidData()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = await GetAccountServiceAsync(context, validationResult: false);
+
+        var result = await service.RegistrationAsync(new RegistrationRequestModel()
+        {
+            UserName = "NewUser",
+            Email = "newuser@example.com",
+            Password = null!
+        });
+
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public async Task RegistrationAsync_ReturnsResponsWithFalse_IfPasswordIsNull()
     {
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = await GetAccountServiceAsync(context);
 
         var result = await service.RegistrationAsync(new RegistrationRequestModel()
         {
-            UserName = username!,
-            Email = "newuser@example.com",
-            Password = password!
-        });
-
-        Assert.False(result.Success);
-    }
-    [Fact]
-    public async Task RegistrationAsync_ReturnsResponsWithFalse_IfUserWithSuchANameAlreadyExists()
-    {
-        var context = ServicesTestsHelper.GetTestDbContext();
-        var service = await GetAccountServiceAsync(context, seedDefaultUser: true);
-
-        var result = await service.RegistrationAsync(new RegistrationRequestModel()
-        {
             UserName = "Test",
             Email = "email@example.com",
-            Password = "password"
+            Password = null!
         });
 
         Assert.False(result.Success);
@@ -249,9 +263,16 @@ public class AccountServiceTests
     private static async Task<AccountService> GetAccountServiceAsync(
         TestDbContext context,
         bool seedDefaultUser = false,
-        bool seedDefaultEmployee = false, bool seedDefaultAdmin = false)
+        bool seedDefaultEmployee = false, 
+        bool seedDefaultAdmin = false,
+        bool validationResult = true)
     {
-        var validator = new RegistrationRequestModelValidator();
+        var validatorMock = new Mock<IValidator<RegistrationRequestModel>>();
+        var validationErrors = validationResult
+            ? new List<ValidationFailure>()
+            : new List<ValidationFailure>() { new ValidationFailure() };
+        validatorMock.Setup(v => v.Validate(It.IsAny<RegistrationRequestModel>()))
+            .Returns(new ValidationResult() { Errors = validationErrors });
         var userManager = ServicesTestsHelper.GetUserManager(context);
         await AddDefaultRolesAsync(context);
 
@@ -263,7 +284,7 @@ public class AccountServiceTests
             await AddAdminAsync(userManager);
 
         return new AccountService(userManager, GetJwtHandlerService(userManager),
-            ServicesTestsHelper.GetMapper(), context, validator);
+            ServicesTestsHelper.GetMapper(), context, validatorMock.Object);
     }
 
     private static JwtHandlerService GetJwtHandlerService(UserManager<User> userManager)
@@ -293,6 +314,7 @@ public class AccountServiceTests
             Email = "testemail@example.com"
         };
         await userManager.CreateAsync(user, "password");
+        await userManager.AddToRoleAsync(user, DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE);
     }
     private static async Task AddEmployeeUserAsync(UserManager<User> userManager)
     {

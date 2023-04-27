@@ -41,4 +41,17 @@ public class JwtHandlerServiceTests
         Assert.True(token.Payload.ContainsValue(userName));
         Assert.True(token.Payload.ContainsValue(userEmail));
     }
+    [Fact]
+    public async Task GetTokenAsync_ThrowsArgumentNullException_IfModelIsInvalid()
+    {
+        var configuration = new Mock<IConfiguration>();
+        configuration.Setup(c => c["JwtSettings:SecurityKey"]).Returns("testkey");
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var user = (User?)null;
+        var service = new JwtHandlerService(configuration.Object,
+            ServicesTestsHelper.GetUserManager(context));
+
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => 
+            await service.GetTokenAsync(user!));
+    }
 }
