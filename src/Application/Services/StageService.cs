@@ -24,7 +24,7 @@ public class StageService : IStageService
         return _mapper.Map<List<WorkflowStageGetModel>>(stages);
     }
 
-    public async Task<WorkflowStageGetModel> AddStageToTheBoardAsync(int boardId, WorkflowStagePostPutModel model)
+    public async Task<WorkflowStageGetModel> AddStageToTheBoardAsync(int boardId, WorkflowStagePostModel model)
     {
         var board = await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
 
@@ -37,7 +37,7 @@ public class StageService : IStageService
         return _mapper.Map<WorkflowStageGetModel>(stage);
     }
 
-    private async Task<WorkflowStage> CreateStage(WorkflowStagePostPutModel model, int boardId)
+    private async Task<WorkflowStage> CreateStage(WorkflowStagePostModel model, int boardId)
     {
         return new WorkflowStage()
         {
@@ -55,7 +55,7 @@ public class StageService : IStageService
         return _mapper.Map<WorkflowStageGetModel>(stage);
     }
 
-    public async Task UpdateStageAsync(int boardId, int stageId, WorkflowStagePostPutModel model)
+    public async Task UpdateStageAsync(int boardId, int stageId, WorkflowStagePutModel model)
     {
         var stage = await _context.Stages
             .FirstOrDefaultAsync(s => s.BoardId == boardId && s.Id == stageId);

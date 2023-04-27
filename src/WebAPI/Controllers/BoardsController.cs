@@ -35,7 +35,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> CreateNewBoard(BoardPostPutModel model)
+    public async Task<IActionResult> CreateNewBoard(BoardPostModel model)
     {
         BoardGetModel? board;
         try
@@ -73,7 +73,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateBoardName(int id,
-        BoardPostPutModel model)
+        BoardPutModel model)
     {
         try
         {

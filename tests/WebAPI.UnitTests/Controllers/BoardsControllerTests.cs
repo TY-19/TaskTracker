@@ -73,7 +73,7 @@ public class BoardsControllerTests
         _serviceMock.Setup(s => s.AddBoardAsync(It.IsAny<string>()))
             .ReturnsAsync(new BoardGetModel());
 
-        var result = await _controller.CreateNewBoard(new BoardPostPutModel());
+        var result = await _controller.CreateNewBoard(new BoardPostModel());
 
         Assert.IsType<CreatedAtActionResult>(result);
     }
@@ -83,7 +83,7 @@ public class BoardsControllerTests
         _serviceMock.Setup(s => s.AddBoardAsync(It.IsAny<string>()))
             .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.CreateNewBoard(new BoardPostPutModel());
+        var result = await _controller.CreateNewBoard(new BoardPostModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -93,7 +93,7 @@ public class BoardsControllerTests
         _serviceMock.Setup(s => s.AddBoardAsync(It.IsAny<string>()))
             .ReturnsAsync((BoardGetModel?)null);
 
-        var result = await _controller.CreateNewBoard(new BoardPostPutModel());
+        var result = await _controller.CreateNewBoard(new BoardPostModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -103,7 +103,7 @@ public class BoardsControllerTests
         _serviceMock.Setup(s => s.UpdateBoardNameAsync(It.IsAny<int>(), It.IsAny<string>()))
             .Callback(() => { });
 
-        var result = await _controller.UpdateBoardName(1, new BoardPostPutModel());
+        var result = await _controller.UpdateBoardName(1, new BoardPutModel());
 
         Assert.IsType<NoContentResult>(result);
     }
@@ -113,7 +113,7 @@ public class BoardsControllerTests
         _serviceMock.Setup(s => s.UpdateBoardNameAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.UpdateBoardName(1, new BoardPostPutModel());
+        var result = await _controller.UpdateBoardName(1, new BoardPutModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
     }

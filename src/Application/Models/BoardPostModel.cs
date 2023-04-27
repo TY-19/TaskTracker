@@ -2,7 +2,7 @@
 
 namespace TaskTracker.Application.Models;
 
-public class BoardPostPutModel
+public class BoardPostModel
 {
     [Required]
     public string Name { get; set; } = string.Empty;

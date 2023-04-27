@@ -46,12 +46,11 @@ public class AutomapperProfileTests
     public void Mapper_MapsSubpartPostPutModelToSubpart()
     {
         IMapper mapper = GetMapper();
-        SubpartPostPutModel subpartmodel = new()
+        SubpartPutModel subpartmodel = new()
         {
             Name = "Test",
             Description = "Description",
-            PercentValue = 50,
-            AssignmentId = 1
+            PercentValue = 50
         };
 
         var result = mapper.Map<Subpart>(subpartmodel);
@@ -59,8 +58,7 @@ public class AutomapperProfileTests
         Assert.Multiple(
             () => Assert.Equal(subpartmodel.Name, result.Name),
             () => Assert.Equal(subpartmodel.Description, result.Description),
-            () => Assert.Equal(subpartmodel.PercentValue, result.PercentValue),
-            () => Assert.Equal(subpartmodel.AssignmentId, result.AssignmentId)
+            () => Assert.Equal(subpartmodel.PercentValue, result.PercentValue)
         );
     }
 
@@ -87,10 +85,34 @@ public class AutomapperProfileTests
     }
 
     [Fact]
-    public void Mapper_MapsAssignmentPostPutModelToAssignment()
+    public void Mapper_MapsAssignmentPostModelToAssignment()
     {
         IMapper mapper = GetMapper();
-        AssignmentPostPutModel model = new()
+        AssignmentPostModel model = new()
+        {
+            Topic = "Topic 1",
+            Description = "Description",
+            Deadline = new DateTime(2023, 4, 1),
+            StageId = 1,
+            ResponsibleEmployeeId = 1
+        };
+
+        var result = mapper.Map<Assignment>(model);
+
+        Assert.Multiple(
+            () => Assert.Equal(model.Topic, result.Topic),
+            () => Assert.Equal(model.Description, result.Description),
+            () => Assert.Equal(model.Deadline, result.Deadline),
+            () => Assert.Equal(model.StageId, result.StageId),
+            () => Assert.Equal(model.ResponsibleEmployeeId, result.ResponsibleEmployeeId)
+        );
+    }
+
+    [Fact]
+    public void Mapper_MapsAssignmentPutModelToAssignment()
+    {
+        IMapper mapper = GetMapper();
+        AssignmentPutModel model = new()
         {
             Topic = "Topic 1",
             Description = "Description",
@@ -126,10 +148,28 @@ public class AutomapperProfileTests
     }
 
     [Fact]
-    public void Mapper_MapsEmployeePostPutModelToEmployee()
+    public void Mapper_MapsEmployeePostModelToEmployee()
     {
         IMapper mapper = GetMapper();
-        EmployeePostPutModel model = new()
+        EmployeePostModel model = new()
+        {
+            FirstName = "First",
+            LastName = "Last"
+        };
+
+        var result = mapper.Map<Employee>(model);
+
+        Assert.Multiple(
+            () => Assert.Equal(model.FirstName, result.FirstName),
+            () => Assert.Equal(model.LastName, result.LastName)
+        );
+    }
+
+    [Fact]
+    public void Mapper_MapsEmployeePutModelToEmployee()
+    {
+        IMapper mapper = GetMapper();
+        EmployeePutModel model = new()
         {
             FirstName = "First",
             LastName = "Last"
@@ -160,10 +200,23 @@ public class AutomapperProfileTests
     }
 
     [Fact]
-    public void Mapper_MapsWorkflowStagePostPutModelToWorkflowStage()
+    public void Mapper_MapsWorkflowStagePostModelToWorkflowStage()
     {
         IMapper mapper = GetMapper();
-        WorkflowStagePostPutModel model = new()
+        WorkflowStagePostModel model = new()
+        {
+            Name = "Stage1"
+        };
+
+        var result = mapper.Map<WorkflowStage>(model);
+
+        Assert.Equal(model.Name, result.Name);
+    }
+    [Fact]
+    public void Mapper_MapsWorkflowStagePutModelToWorkflowStage()
+    {
+        IMapper mapper = GetMapper();
+        WorkflowStagePutModel model = new()
         {
             Name = "Stage1"
         };
@@ -174,7 +227,7 @@ public class AutomapperProfileTests
     }
 
     [Fact]
-    public void Mapper_MapsWorkflowStagePostPutToExistedWorkflowStage()
+    public void Mapper_MapsWorkflowStagePutToExistedWorkflowStage()
     {
         IMapper mapper = GetMapper();
         WorkflowStage stage = new()
@@ -183,7 +236,7 @@ public class AutomapperProfileTests
             Name = "Original",
             Position = 1,
         };
-        WorkflowStagePostPutModel model = new()
+        WorkflowStagePutModel model = new()
         {
             Name = "Mapped"
         };
@@ -226,10 +279,20 @@ public class AutomapperProfileTests
     }
 
     [Fact]
-    public void Mapper_MapsBoardPostPutModelToBoard()
+    public void Mapper_MapsBoardPostModelToBoard()
     {
         IMapper mapper = GetMapper();
-        BoardPostPutModel model = new() { Name = "NewName" };
+        BoardPostModel model = new() { Name = "NewName" };
+
+        var result = mapper.Map<Board>(model);
+
+        Assert.Equal(model.Name, result.Name);
+    }
+    [Fact]
+    public void Mapper_MapsBoardPutModelToBoard()
+    {
+        IMapper mapper = GetMapper();
+        BoardPutModel model = new() { Name = "NewName" };
 
         var result = mapper.Map<Board>(model);
 
@@ -237,7 +300,7 @@ public class AutomapperProfileTests
     }
 
     [Fact]
-    public void Mapper_MapsBoardPostPutModelToExistedBoard()
+    public void Mapper_MapsBoardPutModelToExistedBoard()
     {
         IMapper mapper = GetMapper();
         Board board = new()
@@ -245,7 +308,7 @@ public class AutomapperProfileTests
             Id = 5,
             Name = "Board1",
         };
-        BoardPostPutModel model = new() { Name = "NewName" };
+        BoardPutModel model = new() { Name = "NewName" };
 
         mapper.Map(model, board);
 

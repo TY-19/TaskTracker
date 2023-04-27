@@ -40,7 +40,7 @@ public class StageServiceTests
         await DefaultData.SeedAsync(context);
 
         await service.AddStageToTheBoardAsync(1,
-            new WorkflowStagePostPutModel() { Name = "NewStage" });
+            new WorkflowStagePostModel() { Name = "NewStage" });
         var board = await context.Boards.FirstOrDefaultAsync(b => b.Id == 1);
 
         Assert.Equal(4, context.Stages.Count());
@@ -54,7 +54,7 @@ public class StageServiceTests
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
             await service.AddStageToTheBoardAsync(100,
-                new WorkflowStagePostPutModel() { Name = "NewStage" }));
+                new WorkflowStagePostModel() { Name = "NewStage" }));
     }
     [Fact]
     public async Task AddStageToTheBoardAsync_ReturnsCorrectStage()
@@ -64,7 +64,7 @@ public class StageServiceTests
         await DefaultData.SeedAsync(context);
 
         var stage = await service.AddStageToTheBoardAsync(1,
-            new WorkflowStagePostPutModel() { Name = "NewStage" });
+            new WorkflowStagePostModel() { Name = "NewStage" });
 
         Assert.Multiple(
             () => Assert.Equal(4, stage.Id),
@@ -115,7 +115,7 @@ public class StageServiceTests
         await DefaultData.SeedAsync(context);
 
         await service.UpdateStageAsync(1, 1,
-            new WorkflowStagePostPutModel() { Name = "Updated" });
+            new WorkflowStagePutModel() { Name = "Updated" });
         var stage = await context.Stages.FirstOrDefaultAsync(s => s.Id == 1);
 
         Assert.NotNull(stage);
@@ -130,7 +130,7 @@ public class StageServiceTests
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
             await service.UpdateStageAsync(2, 1,
-                new WorkflowStagePostPutModel() { Name = "Updated" }));
+                new WorkflowStagePutModel() { Name = "Updated" }));
     }
     [Fact]
     public async Task DeleteStageAsync_DeletesTheAssignment_IfProvidedDataIsValid()

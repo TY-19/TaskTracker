@@ -15,7 +15,7 @@ public class SubpartServiceTests
         await DefaultData.SeedAsync(context);
 
         await service.AddSubpartToTheAssignmentAsync(
-            new SubpartPostPutModel() { Name = "NewPart", AssignmentId = 3 });
+            new SubpartPostModel() { Name = "NewPart", AssignmentId = 3 });
         var assignment = await context.Assignments.FirstOrDefaultAsync(a => a.Id == 3);
 
         Assert.Equal(1, assignment?.Subparts.Count);
@@ -28,7 +28,7 @@ public class SubpartServiceTests
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
             await service.AddSubpartToTheAssignmentAsync(
-                new SubpartPostPutModel() { Name = "NewPart", AssignmentId = 100 }));
+                new SubpartPostModel() { Name = "NewPart", AssignmentId = 100 }));
     }
     [Fact]
     public async Task AddSubpartToTheAssignmentAsync_ReturnsCorrectSubpart()
@@ -38,7 +38,7 @@ public class SubpartServiceTests
         await DefaultData.SeedAsync(context);
 
         var subpart = await service.AddSubpartToTheAssignmentAsync(
-            new SubpartPostPutModel() { Name = "NewPart", AssignmentId = 3 });
+            new SubpartPostModel() { Name = "NewPart", AssignmentId = 3 });
 
         Assert.NotNull(subpart);
         Assert.Equal("NewPart", subpart.Name);
@@ -142,7 +142,7 @@ public class SubpartServiceTests
         await DefaultData.SeedAsync(context);
 
         await service.UpdateSubpartAsync(1, 1,
-            new SubpartPostPutModel() { Name = "Updated", Description = "New description" });
+            new SubpartPutModel() { Name = "Updated", Description = "New description" });
         var subpart = await context.Subparts.FirstOrDefaultAsync(s => s.Id == 1);
 
         Assert.NotNull(subpart);
@@ -158,7 +158,7 @@ public class SubpartServiceTests
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
             await service.UpdateSubpartAsync(1, 3,
-                new SubpartPostPutModel() { Name = "Updated", Description = "New description" }));
+                new SubpartPutModel() { Name = "Updated", Description = "New description" }));
     }
 
     private static SubpartService GetSubpartService(TestDbContext context)

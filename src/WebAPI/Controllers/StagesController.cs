@@ -33,7 +33,7 @@ public class StagesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<WorkflowStageGetModel>> CreateANewStageOnTheBoard(
-        int boardId, WorkflowStagePostPutModel model)
+        int boardId, WorkflowStagePostModel model)
     {
         WorkflowStageGetModel result;
         try
@@ -69,7 +69,7 @@ public class StagesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateStageById(int boardId, int stageId,
-        WorkflowStagePostPutModel model)
+        WorkflowStagePutModel model)
     {
         try
         {

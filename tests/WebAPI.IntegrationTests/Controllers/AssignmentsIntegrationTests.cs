@@ -28,7 +28,7 @@ public class AssignmentsIntegrationTests
         const string TOPIC = "Test";
         const int BoardId = 1;
         await CreateBoard(BoardId);
-        var assignment = new AssignmentPostPutModel() { Topic = TOPIC, StageId = 1 };
+        var assignment = new AssignmentPostModel() { Topic = TOPIC, StageId = 1 };
         string RequestURI = $"api/boards/{BoardId}/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
@@ -48,7 +48,7 @@ public class AssignmentsIntegrationTests
         await IntegrationTestsHelper.SetUsersTokens(_factory);
         const int BoardId = 1;
         await CreateBoard(BoardId);
-        var assignment = (AssignmentPostPutModel?)null;
+        var assignment = (AssignmentPostModel?)null;
         string RequestURI = $"api/boards/{BoardId}/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
@@ -67,7 +67,7 @@ public class AssignmentsIntegrationTests
         await IntegrationTestsHelper.SetUsersTokens(_factory);
         const string TOPIC = "Test";
         const int BoardId = 1;
-        var assignment = new AssignmentPostPutModel() { Topic = TOPIC, StageId = 1 };
+        var assignment = new AssignmentPostModel() { Topic = TOPIC, StageId = 1 };
         string RequestURI = $"api/boards/{BoardId}/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
@@ -87,7 +87,7 @@ public class AssignmentsIntegrationTests
         const string TOPIC = "Test";
         const int BoardId = 1;
         await CreateBoard(BoardId);
-        var assignment = new AssignmentPostPutModel() { Topic = TOPIC, StageId = 1 };
+        var assignment = new AssignmentPostModel() { Topic = TOPIC, StageId = 1 };
         string RequestURI = $"api/boards/{BoardId}/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
@@ -105,7 +105,7 @@ public class AssignmentsIntegrationTests
         const string TOPIC = "Test";
         const int BoardId = 1;
         await CreateBoard(BoardId);
-        var assignment = new AssignmentPostPutModel() { Topic = TOPIC, StageId = 1 };
+        var assignment = new AssignmentPostModel() { Topic = TOPIC, StageId = 1 };
         string RequestURI = $"api/boards/{BoardId}/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");

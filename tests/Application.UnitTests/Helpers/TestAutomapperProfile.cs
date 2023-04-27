@@ -21,25 +21,31 @@ internal class TestAutomapperProfile : Profile
                 x.MapFrom((src, dest) => src.Employee?.Assignments.Select(b => b.Id)));
 
         CreateMap<Subpart, SubpartGetModel>();
-        CreateMap<SubpartPostPutModel, Subpart>();
+        CreateMap<SubpartPostModel, Subpart>();
+        CreateMap<SubpartPutModel, Subpart>();
 
         CreateMap<Assignment, AssignmentGetModel>()
             .ForMember(bgm => bgm.Subparts, x => x.MapFrom(b => b.Subparts));
-        CreateMap<AssignmentPostPutModel, Assignment>()
-            .ForMember(am => am.StageId, x => x.MapFrom(
-                (src, dest) => src.StageId ?? dest.StageId))
+        CreateMap<AssignmentPostModel, Assignment>()
+            .ForMember(am => am.StageId, x => x.MapFrom((src, dest) => src.StageId))
+            .ForAllMembers(opt => opt.Condition((_, _, sourceMember) => sourceMember != null));
+        CreateMap<AssignmentPutModel, Assignment>()
+            .ForMember(am => am.StageId, x => x.MapFrom((src, dest) => src.StageId ?? dest.StageId))
             .ForAllMembers(opt => opt.Condition((_, _, sourceMember) => sourceMember != null));
 
         CreateMap<Employee, EmployeeGetBoardModel>();
-        CreateMap<EmployeePostPutModel, Employee>();
+        CreateMap<EmployeePostModel, Employee>();
+        CreateMap<EmployeePutModel, Employee>();
 
-        CreateMap<WorkflowStagePostPutModel, WorkflowStage>();
         CreateMap<WorkflowStage, WorkflowStageGetModel>();
+        CreateMap<WorkflowStagePostModel, WorkflowStage>();
+        CreateMap<WorkflowStagePutModel, WorkflowStage>();
 
         CreateMap<Board, BoardGetModel>()
             .ForMember(bgm => bgm.Stages, x => x.MapFrom(b => b.Stages))
             .ForMember(bgm => bgm.Employees, x => x.MapFrom(b => b.Employees))
             .ForMember(bgm => bgm.Assignments, x => x.MapFrom(b => b.Assignments));
-        CreateMap<BoardPostPutModel, Board>();
+        CreateMap<BoardPostModel, Board>();
+        CreateMap<BoardPutModel, Board>();
     }
 }

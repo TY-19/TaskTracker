@@ -28,7 +28,7 @@ public class AssignmentService : IAssignmentService
         return _mapper.Map<List<AssignmentGetModel>>(assignments);
     }
 
-    public async Task<AssignmentGetModel> CreateAssignmentAsync(int boardId, AssignmentPostPutModel assignmentModel)
+    public async Task<AssignmentGetModel> CreateAssignmentAsync(int boardId, AssignmentPostModel assignmentModel)
     {
         if ((await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId)) == null)
             throw new ArgumentException($"Incorrect board to create assignment", nameof(boardId));
@@ -36,7 +36,7 @@ public class AssignmentService : IAssignmentService
         return await CreateAssignmentInternalAsync(boardId, assignmentModel);
     }
 
-    private async Task<AssignmentGetModel> CreateAssignmentInternalAsync(int boardId, AssignmentPostPutModel assignmentModel)
+    private async Task<AssignmentGetModel> CreateAssignmentInternalAsync(int boardId, AssignmentPostModel assignmentModel)
     {
         var assignment = _mapper.Map<Assignment>(assignmentModel);
         assignment.BoardId = boardId;
@@ -65,7 +65,7 @@ public class AssignmentService : IAssignmentService
             .FirstOrDefaultAsync(a => a.Id == taskId);
     }
 
-    public async Task UpdateAssignmentAsync(int boardId, int taskId, AssignmentPostPutModel model)
+    public async Task UpdateAssignmentAsync(int boardId, int taskId, AssignmentPutModel model)
     {
         var assignment = await GetAssignmentInnerAsync(taskId);
 

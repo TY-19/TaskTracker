@@ -71,20 +71,20 @@ public class AssignmentsControllerTests
     [Fact]
     public async Task CreateANewAssignment_ReturnsCreatedAtActionResult()
     {
-        _assignmentServiceMock.Setup(a => a.CreateAssignmentAsync(It.IsAny<int>(), It.IsAny<AssignmentPostPutModel>()))
+        _assignmentServiceMock.Setup(a => a.CreateAssignmentAsync(It.IsAny<int>(), It.IsAny<AssignmentPostModel>()))
            .ReturnsAsync(new AssignmentGetModel());
 
-        var result = await _controller.CreateANewAssignment(1, new AssignmentPostPutModel());
+        var result = await _controller.CreateANewAssignment(1, new AssignmentPostModel());
 
         Assert.IsType<CreatedAtActionResult>(result);
     }
     [Fact]
     public async Task CreateANewAssignment_ReturnsBadRequestObjectResult_IfTheAssignmentWasNotCreated()
     {
-        _assignmentServiceMock.Setup(a => a.CreateAssignmentAsync(It.IsAny<int>(), It.IsAny<AssignmentPostPutModel>()))
+        _assignmentServiceMock.Setup(a => a.CreateAssignmentAsync(It.IsAny<int>(), It.IsAny<AssignmentPostModel>()))
            .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.CreateANewAssignment(1, new AssignmentPostPutModel());
+        var result = await _controller.CreateANewAssignment(1, new AssignmentPostModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -92,10 +92,10 @@ public class AssignmentsControllerTests
     public async Task UpdateAssignmentById_ReturnsNoContentResult()
     {
         _assignmentServiceMock.Setup(a => a.UpdateAssignmentAsync(It.IsAny<int>(),
-            It.IsAny<int>(), It.IsAny<AssignmentPostPutModel>()))
+            It.IsAny<int>(), It.IsAny<AssignmentPutModel>()))
                .Callback(() => { });
 
-        var result = await _controller.UpdateAssignmentById(1, 1, new AssignmentPostPutModel());
+        var result = await _controller.UpdateAssignmentById(1, 1, new AssignmentPutModel());
 
         Assert.IsType<NoContentResult>(result);
     }
@@ -103,10 +103,10 @@ public class AssignmentsControllerTests
     public async Task UpdateAssignmentById_ReturnsBadRequestObjectResult_IfTheAssignmentWasNotUpdated()
     {
         _assignmentServiceMock.Setup(a => a.UpdateAssignmentAsync(It.IsAny<int>(),
-            It.IsAny<int>(), It.IsAny<AssignmentPostPutModel>()))
+            It.IsAny<int>(), It.IsAny<AssignmentPutModel>()))
                .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.UpdateAssignmentById(1, 1, new AssignmentPostPutModel());
+        var result = await _controller.UpdateAssignmentById(1, 1, new AssignmentPutModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -175,30 +175,30 @@ public class AssignmentsControllerTests
     [Fact]
     public async Task AddSubpartToTheAssignment_ReturnsCreatedAtActionResult()
     {
-        _subpartServiceMock.Setup(s => s.AddSubpartToTheAssignmentAsync(It.IsAny<SubpartPostPutModel>()))
+        _subpartServiceMock.Setup(s => s.AddSubpartToTheAssignmentAsync(It.IsAny<SubpartPostModel>()))
            .ReturnsAsync(new SubpartGetModel());
 
-        var result = await _controller.AddSubpartToTheAssignment(1, 1, new SubpartPostPutModel() { AssignmentId = 1 });
+        var result = await _controller.AddSubpartToTheAssignment(1, 1, new SubpartPostModel() { AssignmentId = 1 });
 
         Assert.IsType<CreatedAtActionResult>(result);
     }
     [Fact]
     public async Task AddSubpartToTheAssignment_ReturnsBadRequestObjectResult_IfTheSubpartWasNotAdded()
     {
-        _subpartServiceMock.Setup(s => s.AddSubpartToTheAssignmentAsync(It.IsAny<SubpartPostPutModel>()))
+        _subpartServiceMock.Setup(s => s.AddSubpartToTheAssignmentAsync(It.IsAny<SubpartPostModel>()))
            .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.AddSubpartToTheAssignment(1, 1, new SubpartPostPutModel() { AssignmentId = 1 });
+        var result = await _controller.AddSubpartToTheAssignment(1, 1, new SubpartPostModel() { AssignmentId = 1 });
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
     [Fact]
     public async Task AddSubpartToTheAssignment_ReturnsBadRequestObjectResult_IfTaskIdIsIncorrect()
     {
-        _subpartServiceMock.Setup(s => s.AddSubpartToTheAssignmentAsync(It.IsAny<SubpartPostPutModel>()))
+        _subpartServiceMock.Setup(s => s.AddSubpartToTheAssignmentAsync(It.IsAny<SubpartPostModel>()))
            .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.AddSubpartToTheAssignment(1, 1, new SubpartPostPutModel() { AssignmentId = 999 });
+        var result = await _controller.AddSubpartToTheAssignment(1, 1, new SubpartPostModel() { AssignmentId = 999 });
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -206,10 +206,10 @@ public class AssignmentsControllerTests
     public async Task UpdateSubpart_ReturnsNoContentResult()
     {
         _subpartServiceMock.Setup(s => s.UpdateSubpartAsync(It.IsAny<int>(), It.IsAny<int>(),
-            It.IsAny<SubpartPostPutModel>()))
+            It.IsAny<SubpartPutModel>()))
                 .Callback(() => { });
 
-        var result = await _controller.UpdateSubpart(1, 1, 1, new SubpartPostPutModel() { AssignmentId = 1 });
+        var result = await _controller.UpdateSubpart(1, 1, 1, new SubpartPutModel() { Name = "New name" });
 
         Assert.IsType<NoContentResult>(result);
     }
@@ -217,10 +217,10 @@ public class AssignmentsControllerTests
     public async Task UpdateSubpart_ReturnsBadRequestObjectResult_IfTheSubpartWasNotUpdated()
     {
         _subpartServiceMock.Setup(s => s.UpdateSubpartAsync(It.IsAny<int>(), It.IsAny<int>(),
-            It.IsAny<SubpartPostPutModel>()))
+            It.IsAny<SubpartPutModel>()))
                 .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.UpdateSubpart(1, 1, 1, new SubpartPostPutModel() { AssignmentId = 1 });
+        var result = await _controller.UpdateSubpart(1, 1, 1, new SubpartPutModel() { Name = "New name" });
 
         Assert.IsType<BadRequestObjectResult>(result);
     }

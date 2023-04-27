@@ -2,12 +2,9 @@
 
 namespace TaskTracker.Application.Models;
 
-public class SubpartPostPutModel
+public class SubpartPutModel
 {
-    [Required]
-    public string Name { get; set; } = string.Empty;
+    public string? Name { get; set; }
     public string? Description { get; set; }
     public decimal? PercentValue { get; set; }
-    [Required]
-    public int AssignmentId { get; set; }
 }

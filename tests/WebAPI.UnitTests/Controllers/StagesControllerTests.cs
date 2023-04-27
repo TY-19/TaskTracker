@@ -69,40 +69,40 @@ public class StagesControllerTests
     [Fact]
     public async Task CreateANewStageOnTheBoard_ReturnsCreatedAtActionResult()
     {
-        _serviceMock.Setup(a => a.AddStageToTheBoardAsync(It.IsAny<int>(), It.IsAny<WorkflowStagePostPutModel>()))
+        _serviceMock.Setup(a => a.AddStageToTheBoardAsync(It.IsAny<int>(), It.IsAny<WorkflowStagePostModel>()))
             .ReturnsAsync(new WorkflowStageGetModel());
 
-        var result = (await _controller.CreateANewStageOnTheBoard(1, new WorkflowStagePostPutModel())).Result;
+        var result = (await _controller.CreateANewStageOnTheBoard(1, new WorkflowStagePostModel())).Result;
 
         Assert.IsType<CreatedAtActionResult>(result);
     }
     [Fact]
     public async Task CreateANewStageOnTheBoard_ReturnsBadRequestObjectResult_IfTheStageWasNotCreated()
     {
-        _serviceMock.Setup(a => a.AddStageToTheBoardAsync(It.IsAny<int>(), It.IsAny<WorkflowStagePostPutModel>()))
+        _serviceMock.Setup(a => a.AddStageToTheBoardAsync(It.IsAny<int>(), It.IsAny<WorkflowStagePostModel>()))
             .ThrowsAsync(new ArgumentException("TestExcaption"));
 
-        var result = (await _controller.CreateANewStageOnTheBoard(1, new WorkflowStagePostPutModel())).Result;
+        var result = (await _controller.CreateANewStageOnTheBoard(1, new WorkflowStagePostModel())).Result;
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
     [Fact]
     public async Task UpdateStageById_ReturnsNoContentResult()
     {
-        _serviceMock.Setup(a => a.UpdateStageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<WorkflowStagePostPutModel>()))
+        _serviceMock.Setup(a => a.UpdateStageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<WorkflowStagePutModel>()))
             .Callback(() => { });
 
-        var result = await _controller.UpdateStageById(1, 1, new WorkflowStagePostPutModel());
+        var result = await _controller.UpdateStageById(1, 1, new WorkflowStagePutModel());
 
         Assert.IsType<NoContentResult>(result);
     }
     [Fact]
     public async Task UpdateStageById_ReturnsBadRequestObjectResult_IfTheStageWasNotUpdated()
     {
-        _serviceMock.Setup(a => a.UpdateStageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<WorkflowStagePostPutModel>()))
+        _serviceMock.Setup(a => a.UpdateStageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<WorkflowStagePutModel>()))
             .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.UpdateStageById(1, 1, new WorkflowStagePostPutModel());
+        var result = await _controller.UpdateStageById(1, 1, new WorkflowStagePutModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
     }

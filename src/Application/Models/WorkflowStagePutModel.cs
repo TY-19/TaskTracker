@@ -1,6 +1,6 @@
 ﻿namespace TaskTracker.Application.Models;
 
-public class WorkflowStagePostPutModel
+public class WorkflowStagePutModel
 {
     public string Name { get; set; } = String.Empty;
 }

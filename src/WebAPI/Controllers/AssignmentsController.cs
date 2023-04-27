@@ -36,7 +36,7 @@ public class AssignmentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateANewAssignment(int boardId,
-        AssignmentPostPutModel model)
+        AssignmentPostModel model)
     {
         AssignmentGetModel? assignment;
         try
@@ -74,7 +74,7 @@ public class AssignmentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateAssignmentById(int boardId, int taskId,
-        AssignmentPostPutModel model)
+        AssignmentPutModel model)
     {
         try
         {
@@ -128,7 +128,7 @@ public class AssignmentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AddSubpartToTheAssignment(int boardId, int taskId,
-        SubpartPostPutModel model)
+        SubpartPostModel model)
     {
         if (model.AssignmentId != taskId)
             return BadRequest("Not created");
@@ -152,7 +152,7 @@ public class AssignmentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateSubpart(int boardId, int taskId,
-        int subpartId, SubpartPostPutModel model)
+        int subpartId, SubpartPutModel model)
     {
         try
         {

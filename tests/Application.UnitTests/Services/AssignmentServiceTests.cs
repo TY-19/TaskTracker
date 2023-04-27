@@ -38,7 +38,7 @@ public class AssignmentServiceTests
         using var context = ServicesTestsHelper.GetTestDbContext();
         var board = new Board { Name = "Board1" };
         var stage = new WorkflowStage { Name = "Stage1", Position = 1, BoardId = board.Id, };
-        var assignment = new AssignmentPostPutModel() { Topic = "Task 1", StageId = stage.Id };
+        var assignment = new AssignmentPostModel() { Topic = "Task 1", StageId = stage.Id };
         await context.Boards.AddAsync(board);
         await context.Stages.AddAsync(stage);
         await context.SaveChangesAsync();
@@ -92,7 +92,7 @@ public class AssignmentServiceTests
         await DefaultData.SeedAsync(context);
         AssignmentService service = GetAssignmentService(context);
         string topic = "Updated";
-        var model = new AssignmentPostPutModel() { Topic = topic };
+        var model = new AssignmentPutModel() { Topic = topic };
 
         await service.UpdateAssignmentAsync(1, 1, model);
         var result = await context.Assignments.FirstOrDefaultAsync(a => a.Id == 1 && a.BoardId == 1);
@@ -106,7 +106,7 @@ public class AssignmentServiceTests
         await DefaultData.SeedAsync(context);
         AssignmentService service = GetAssignmentService(context);
         string topic = "Updated";
-        var model = new AssignmentPostPutModel() { Topic = topic };
+        var model = new AssignmentPutModel() { Topic = topic };
 
         await Assert.ThrowsAsync<ArgumentException>(
             async () => await service.UpdateAssignmentAsync(1, 100, model));
@@ -118,7 +118,7 @@ public class AssignmentServiceTests
         await DefaultData.SeedAsync(context);
         AssignmentService service = GetAssignmentService(context);
         string topic = "Updated";
-        var model = new AssignmentPostPutModel() { Topic = topic };
+        var model = new AssignmentPutModel() { Topic = topic };
 
         await Assert.ThrowsAsync<ArgumentException>(
             async () => await service.UpdateAssignmentAsync(1, 3, model));

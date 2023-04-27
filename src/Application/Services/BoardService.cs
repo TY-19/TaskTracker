@@ -70,7 +70,7 @@ public class BoardService : IBoardService
         return await GetBoardByNameAsync(name);
     }
 
-    public async Task UpdateBoardNameAsync(int id, string newName)
+    public async Task UpdateBoardNameAsync(int id, string? newName)
     {
         var board = await GetBoardByIdInnerAsync(id);
         if (string.IsNullOrEmpty(newName) || int.TryParse(newName, out _) || board == null)
