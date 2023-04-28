@@ -72,6 +72,7 @@ public class StageService : IStageService
     public async Task DeleteStageAsync(int boardId, int stageId)
     {
         var stage = await _context.Stages
+            .Include(s => s.Assignments)
             .FirstOrDefaultAsync(s => s.BoardId == boardId && s.Id == stageId);
         if (stage == null)
             return;

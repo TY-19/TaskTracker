@@ -29,17 +29,17 @@ public class SubpartsIntegrationTests
     private async Task PrepareTestFixture()
     {
         await _authHelper.ConfigureAuthenticatorAsync();
-        await _seedHelper.CreateBoard();
-        await _seedHelper.CreateStage();
-        await _seedHelper.CreateAssignment();
+        await _seedHelper.CreateBoardAsync();
+        await _seedHelper.CreateStageAsync();
+        await _seedHelper.CreateAssignmentAsync();
     }
 
     [Fact]
     public async Task AssignmentController_GetAllSubpartsOfTheAssignment_ReturnsCorrectNumbersOfSubparts()
     {
         await PrepareTestFixture();
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 1, AssignmentId = 1, Name = "First Part"});
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 2, AssignmentId = 1, Name = "Second Part" });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = "First Part"});
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 2, AssignmentId = 1, Name = "Second Part" });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/tasks/1/subparts";
@@ -57,8 +57,8 @@ public class SubpartsIntegrationTests
     public async Task AssignmentController_GetAllSubpartsOfTheAssignment_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 1, AssignmentId = 1, Name = "First Part" });
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 2, AssignmentId = 1, Name = "Second Part" });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = "First Part" });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 2, AssignmentId = 1, Name = "Second Part" });
         const string RequestURI = $"api/boards/1/tasks/1/subparts";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
@@ -71,14 +71,13 @@ public class SubpartsIntegrationTests
     {
         await PrepareTestFixture();
         const string SubpartName = "First Part";
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
-
         var result = JsonSerializer.Deserialize<SubpartGetModel>(httpResponse.Content.ReadAsStream(),
             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
@@ -102,7 +101,7 @@ public class SubpartsIntegrationTests
     {
         await PrepareTestFixture();
         const string SubpartName = "First Part";
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
         const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
@@ -126,7 +125,7 @@ public class SubpartsIntegrationTests
         httpResponse.EnsureSuccessStatusCode();
 
         Assert.True(await IsNumberOfSubpartsOfAssignmentAsExpectedAsync(1, 1));
-        Assert.True(await DoesAssignmentContainSubpartWithSuchANameAsync(1, SubpartName));
+        Assert.True(await DoesAssignmentContainsSubpartWithSuchANameAsync(1, SubpartName));
     }
 
     [Fact]
@@ -145,7 +144,7 @@ public class SubpartsIntegrationTests
 
         Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
         Assert.True(await IsNumberOfSubpartsOfAssignmentAsExpectedAsync(2, 0));
-        Assert.False(await DoesAssignmentContainSubpartWithSuchANameAsync(2, SubpartName));
+        Assert.False(await DoesAssignmentContainsSubpartWithSuchANameAsync(2, SubpartName));
     }
     [Fact]
     public async Task AssignmentController_AddSubpartToTheAssignment_ReturnsBadRequestStatusCode_IfModelIsNotValid()
@@ -168,7 +167,7 @@ public class SubpartsIntegrationTests
         await PrepareTestFixture();
         const int IncorrectAssignmentId = 1;
         const int CorrectAssignmentId = 2;
-        await _seedHelper.CreateAssignment(new Assignment() { Id = CorrectAssignmentId, BoardId = 1, Topic = "Assignment 2" });
+        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = CorrectAssignmentId, BoardId = 1, Topic = "Assignment 2" });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string SubpartName = "First Part";
@@ -183,8 +182,8 @@ public class SubpartsIntegrationTests
         Assert.Multiple(
             async () => Assert.True(await IsNumberOfSubpartsOfAssignmentAsExpectedAsync(1, 0)),
             async () => Assert.True(await IsNumberOfSubpartsOfAssignmentAsExpectedAsync(2, 0)),
-            async () => Assert.False(await DoesAssignmentContainSubpartWithSuchANameAsync(1, SubpartName)),
-            async () => Assert.False(await DoesAssignmentContainSubpartWithSuchANameAsync(2, SubpartName))
+            async () => Assert.False(await DoesAssignmentContainsSubpartWithSuchANameAsync(1, SubpartName)),
+            async () => Assert.False(await DoesAssignmentContainsSubpartWithSuchANameAsync(2, SubpartName))
         );
     }
 
@@ -209,18 +208,19 @@ public class SubpartsIntegrationTests
         await PrepareTestFixture();
         const string OldSubpartName = "Old Subpart Name";
         const string NewSubpartName = "New Subpart Name";
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 1, AssignmentId = 1, Name = OldSubpartName });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = OldSubpartName });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
         var model = new SubpartPutModel() { Name = NewSubpartName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
+
         var httpResponse = await _httpClient.PutAsync(RequestURI, content);
         httpResponse.EnsureSuccessStatusCode();
 
-        Assert.False(await DoesAssignmentContainSubpartWithSuchANameAsync(1, OldSubpartName));
-        Assert.True(await DoesAssignmentContainSubpartWithSuchANameAsync(1, NewSubpartName));
+        Assert.False(await DoesAssignmentContainsSubpartWithSuchANameAsync(1, OldSubpartName));
+        Assert.True(await DoesAssignmentContainsSubpartWithSuchANameAsync(1, NewSubpartName));
     }
     [Fact]
     public async Task AssignmentController_UpdateSubpart_ReturnsBadRequestStatusCode_IfSubpartDoesNotExist()
@@ -243,7 +243,7 @@ public class SubpartsIntegrationTests
         await PrepareTestFixture();
         const string OldSubpartName = "Old Subpart Name";
         const string NewSubpartName = "New Subpart Name";
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 1, AssignmentId = 1, Name = OldSubpartName });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = OldSubpartName });
         const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
         var model = new SubpartPutModel() { Name = NewSubpartName };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -257,7 +257,7 @@ public class SubpartsIntegrationTests
     {
         await PrepareTestFixture();
         const string SubpartName = "First Part";
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
@@ -265,15 +265,15 @@ public class SubpartsIntegrationTests
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
 
-        Assert.False(await DoesAssignmentContainSubpartWithSuchANameAsync(1, SubpartName));
+        Assert.False(await DoesAssignmentContainsSubpartWithSuchANameAsync(1, SubpartName));
     }
     [Fact]
     public async Task AssignmentController_DeleteSubpart_DoesNotDeleteSubpartIfItDoesNotBelongToThisAssignment()
     {
         await PrepareTestFixture();
         const string SubpartName = "First Part";
-        await _seedHelper.CreateAssignment(new Assignment() { Id = 2, BoardId = 1, Topic = "Assignment 2" });
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 1, AssignmentId = 2, Name = SubpartName });
+        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 2, BoardId = 1, Topic = "Assignment 2" });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 2, Name = SubpartName });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
@@ -281,14 +281,14 @@ public class SubpartsIntegrationTests
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
 
-        Assert.True(await DoesAssignmentContainSubpartWithSuchANameAsync(2, SubpartName));
+        Assert.True(await DoesAssignmentContainsSubpartWithSuchANameAsync(2, SubpartName));
     }
     [Fact]
     public async Task AssignmentController_DeleteSubpart_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
         const string SubpartName = "First Part";
-        await _seedHelper.CreateSubpart(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
+        await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
         const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
@@ -302,7 +302,7 @@ public class SubpartsIntegrationTests
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         return expected == await context!.Subparts.Where(s => s.AssignmentId == assignmentId).CountAsync();
     }
-    private async Task<bool> DoesAssignmentContainSubpartWithSuchANameAsync(int assignmentId, string name)
+    private async Task<bool> DoesAssignmentContainsSubpartWithSuchANameAsync(int assignmentId, string name)
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();

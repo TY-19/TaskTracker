@@ -5,7 +5,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using TaskTracker.Application.Models;
-using TaskTracker.Domain.Entities;
 using TaskTracker.Infrastructure;
 using TaskTracker.WebAPI.IntegrationTests.Helpers;
 

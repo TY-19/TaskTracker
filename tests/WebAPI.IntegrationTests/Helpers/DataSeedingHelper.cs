@@ -13,42 +13,42 @@ internal class DataSeedingHelper
         _factory = factory;
     }
 
-    public async Task CreateBoard()
+    public async Task CreateBoardAsync()
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         await context!.Boards.AddAsync(Board1);
         await context.SaveChangesAsync();
     }
-    public async Task CreateBoard(Board board)
+    public async Task CreateBoardAsync(Board board)
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         await context!.Boards.AddAsync(board);
         await context.SaveChangesAsync();
     }
-    public async Task CreateStage()
+    public async Task CreateStageAsync()
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         await context!.Stages.AddAsync(Stage1);
         await context.SaveChangesAsync();
     }
-    public async Task CreateStage(WorkflowStage stage)
+    public async Task CreateStageAsync(WorkflowStage stage)
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         await context!.Stages.AddAsync(stage);
         await context.SaveChangesAsync();
     }
-    public async Task CreateAssignment()
+    public async Task CreateAssignmentAsync()
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         await context!.Assignments.AddAsync(Assignment1);
         await context!.SaveChangesAsync();
     }
-    public async Task CreateAssignment(Assignment assignment)
+    public async Task CreateAssignmentAsync(Assignment assignment)
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
@@ -56,7 +56,7 @@ internal class DataSeedingHelper
         await context!.SaveChangesAsync();
     }
 
-    public async Task CreateSubpart(Subpart subpart)
+    public async Task CreateSubpartAsync(Subpart subpart)
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();

@@ -44,7 +44,9 @@ public class StagesController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        return CreatedAtAction(nameof(GetStageById), result);
+        return CreatedAtAction(nameof(GetStageById), 
+            new { boardId = result.BoardId, stageId = result.Id }, 
+            result);
     }
 
     [Route("{stageId}")]
