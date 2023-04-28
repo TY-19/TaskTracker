@@ -5,24 +5,35 @@ using TaskTracker.Application.Models;
 using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Entities;
 
-namespace TaskTracker.WebAPI.IntegrationTests;
+namespace TaskTracker.WebAPI.IntegrationTests.Helpers;
 
-internal static class IntegrationTestsHelper
+internal class AuthenticationTestsHelper
 {
-    public static string? TestAdminUserToken { get; private set; }
-    public static string? TestManagerUserToken { get; private set; }
-    public static string? TestEmployeeUserToken { get; private set; }
+    private readonly CustomWebApplicationFactory _factory;
+    public string? TestAdminUserToken { get; private set; }
+    public string? TestManagerUserToken { get; private set; }
+    public string? TestEmployeeUserToken { get; private set; }
 
-    public static async Task SetUsersTokens(CustomWebApplicationFactory factory)
+    public AuthenticationTestsHelper(CustomWebApplicationFactory factory)
     {
-        await SeedTestUsers(factory);
-        TestAdminUserToken = await GetAdminUserToken(factory);
-        TestManagerUserToken = await GetManagerUserToken(factory);
-        TestEmployeeUserToken = await GetEmployeeUserToken(factory);
+        _factory = factory;
     }
-    private static async Task<string?> GetEmployeeUserToken(CustomWebApplicationFactory factory)
+
+    public async Task ConfigureAuthenticatorAsync()
     {
-        using var test = factory.Services.CreateScope();
+        await SeedTestUsersAsync();
+        await SetUsersTokensAsync();
+    }
+
+    private async Task SetUsersTokensAsync()
+    {
+        TestAdminUserToken = await GetAdminUserTokenAsync();
+        TestManagerUserToken = await GetManagerUserTokenAsync();
+        TestEmployeeUserToken = await GetEmployeeUserTokenAsync();
+    }
+    private async Task<string?> GetEmployeeUserTokenAsync()
+    {
+        using var test = _factory.Services.CreateScope();
         var accountService = test.ServiceProvider.GetService<IAccountService>();
         var response = await accountService!.LoginAsync(new LoginRequestModel()
         {
@@ -31,9 +42,9 @@ internal static class IntegrationTestsHelper
         });
         return response.Token;
     }
-    private static async Task<string?> GetManagerUserToken(CustomWebApplicationFactory factory)
+    private async Task<string?> GetManagerUserTokenAsync()
     {
-        using var test = factory.Services.CreateScope();
+        using var test = _factory.Services.CreateScope();
         var accountService = test.ServiceProvider.GetService<IAccountService>();
         var response = await accountService!.LoginAsync(new LoginRequestModel()
         {
@@ -42,9 +53,9 @@ internal static class IntegrationTestsHelper
         });
         return response.Token;
     }
-    private static async Task<string?> GetAdminUserToken(CustomWebApplicationFactory factory)
+    private async Task<string?> GetAdminUserTokenAsync()
     {
-        using var test = factory.Services.CreateScope();
+        using var test = _factory.Services.CreateScope();
         var accountService = test.ServiceProvider.GetService<IAccountService>();
         var response = await accountService!.LoginAsync(new LoginRequestModel()
         {
@@ -54,9 +65,9 @@ internal static class IntegrationTestsHelper
         return response.Token;
     }
 
-    private static async Task SeedTestUsers(CustomWebApplicationFactory factory)
+    private async Task SeedTestUsersAsync()
     {
-        using var test = factory.Services.CreateScope();
+        using var test = _factory.Services.CreateScope();
         var userManager = test.ServiceProvider.GetService<UserManager<User>>();
         foreach (var (user, password, role) in testUsers)
         {
@@ -102,6 +113,6 @@ internal static class IntegrationTestsHelper
         testManager,
         testEmployee
     };
-    
+
 
 }

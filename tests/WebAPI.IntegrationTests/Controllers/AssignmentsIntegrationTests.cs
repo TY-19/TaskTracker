@@ -7,6 +7,7 @@ using System.Text.Json;
 using TaskTracker.Application.Models;
 using TaskTracker.Domain.Entities;
 using TaskTracker.Infrastructure;
+using TaskTracker.WebAPI.IntegrationTests.Helpers;
 
 namespace TaskTracker.WebAPI.IntegrationTests.Controllers;
 
@@ -14,45 +15,52 @@ public class AssignmentsIntegrationTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _httpClient;
+    private readonly AuthenticationTestsHelper _authHelper;
+    private readonly DataSeedingHelper _seedHelper;
     
     public AssignmentsIntegrationTests()
 	{
         _factory = new CustomWebApplicationFactory();
         _httpClient = _factory.CreateClient();
+        _authHelper = new AuthenticationTestsHelper(_factory);
+        _seedHelper = new DataSeedingHelper(_factory);
+    }
+
+    private async Task PrepareTestFixture()
+    {
+        await _authHelper.ConfigureAuthenticatorAsync();
+        await _seedHelper.CreateBoard();
+        await _seedHelper.CreateStage();
     }
 
     [Fact]
     public async Task AssignmentsController_CreateANewAssignment_AddsAssignmentToTheDatabase()
     {
-        await IntegrationTestsHelper.SetUsersTokens(_factory);
+        await PrepareTestFixture();
         const string TOPIC = "Test";
-        const int BoardId = 1;
-        await CreateBoard(BoardId);
         var assignment = new AssignmentPostModel() { Topic = TOPIC, StageId = 1 };
-        string RequestURI = $"api/boards/{BoardId}/tasks";
+        const string RequestURI = $"api/boards/1/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
-        string? token = IntegrationTestsHelper.TestManagerUserToken;
+        string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
         httpResponse.EnsureSuccessStatusCode();
 
         Assert.True(await IsNumberOfAssignmentInTheDatabaseAsExpectedAsync(1));
-        Assert.True(await DoesAssignmentWithSuchATopicExistInTheDatabase(TOPIC));
+        Assert.True(await DoesAssignmentWithSuchATopicExistInTheDatabaseAsync(TOPIC));
     }
 
     [Fact]
     public async Task AssignmentsController_CreateANewAssignment_ReturnsBadRequestStatusCode_IfModelIsNotValid()
     {
-        await IntegrationTestsHelper.SetUsersTokens(_factory);
-        const int BoardId = 1;
-        await CreateBoard(BoardId);
+        await PrepareTestFixture();
         var assignment = (AssignmentPostModel?)null;
-        string RequestURI = $"api/boards/{BoardId}/tasks";
+        const string RequestURI = $"api/boards/1/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
-        string? token = IntegrationTestsHelper.TestManagerUserToken;
+        string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
@@ -64,14 +72,13 @@ public class AssignmentsIntegrationTests
     [Fact]
     public async Task AssignmentsController_CreateANewAssignment_ReturnsBadRequestStatusCode_IfBoardDoesNotExist()
     {
-        await IntegrationTestsHelper.SetUsersTokens(_factory);
+        await PrepareTestFixture();
         const string TOPIC = "Test";
-        const int BoardId = 1;
         var assignment = new AssignmentPostModel() { Topic = TOPIC, StageId = 1 };
-        string RequestURI = $"api/boards/{BoardId}/tasks";
+        const string RequestURI = $"api/boards/999/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
-        string? token = IntegrationTestsHelper.TestManagerUserToken;
+        string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
@@ -83,12 +90,10 @@ public class AssignmentsIntegrationTests
     [Fact]
     public async Task AssignmentsController_CreateANewAssignment_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
-        await IntegrationTestsHelper.SetUsersTokens(_factory);
+        await PrepareTestFixture();
         const string TOPIC = "Test";
-        const int BoardId = 1;
-        await CreateBoard(BoardId);
         var assignment = new AssignmentPostModel() { Topic = TOPIC, StageId = 1 };
-        string RequestURI = $"api/boards/{BoardId}/tasks";
+        const string RequestURI = $"api/boards/1/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
 
@@ -101,15 +106,13 @@ public class AssignmentsIntegrationTests
     [Fact]
     public async Task AssignmentsController_CreateANewAssignment_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
     {
-        await IntegrationTestsHelper.SetUsersTokens(_factory);
+        await PrepareTestFixture();
         const string TOPIC = "Test";
-        const int BoardId = 1;
-        await CreateBoard(BoardId);
         var assignment = new AssignmentPostModel() { Topic = TOPIC, StageId = 1 };
-        string RequestURI = $"api/boards/{BoardId}/tasks";
+        const string RequestURI = $"api/boards/1/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
-        string? token = IntegrationTestsHelper.TestEmployeeUserToken;
+        string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
@@ -121,20 +124,18 @@ public class AssignmentsIntegrationTests
     [Fact]
     public async Task AssignmentController_GetAllAssignmentsOfTheBoard_ReturnsCorrectNumbersOfAssignments()
     {
-        await IntegrationTestsHelper.SetUsersTokens(_factory);
-        const int BoardId = 1;
-        await CreateBoard(BoardId);
-        await CreateStage(new WorkflowStage { Id = 1, BoardId = BoardId, Name = "First stage", Position = 1 });
-        await CreateAssignment(new Assignment() { Id = 1, Topic = "Test assignment 1", BoardId = BoardId, StageId = 1 });
-        await CreateAssignment(new Assignment() { Id = 2, Topic = "Test assignment 2", BoardId = BoardId, StageId = 1 });
-        string? token = IntegrationTestsHelper.TestEmployeeUserToken;
+        await PrepareTestFixture();
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = "Test assignment 1", BoardId = 1, StageId = 1 });
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 2, Topic = "Test assignment 2", BoardId = 1, StageId = 1 });
+        string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        string RequestURI = $"api/boards/{BoardId}/tasks";
+        const string RequestURI = $"api/boards/1/tasks";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
 
-        var result = JsonSerializer.Deserialize<IEnumerable<AssignmentGetModel>>(httpResponse.Content.ReadAsStream());
+        var result = JsonSerializer.Deserialize<IEnumerable<AssignmentGetModel>>(httpResponse.Content.ReadAsStream(),
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count());
@@ -142,13 +143,10 @@ public class AssignmentsIntegrationTests
     [Fact]
     public async Task AssignmentController_GetAllAssignmentsOfTheBoard_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
-        await IntegrationTestsHelper.SetUsersTokens(_factory);
-        const int BoardId = 1;
-        await CreateBoard(BoardId);
-        await CreateStage(new WorkflowStage { Id = 1, BoardId = BoardId, Name = "First stage", Position = 1 });
-        await CreateAssignment(new Assignment() { Id = 1, Topic = "Test assignment 1", BoardId = BoardId, StageId = 1 });
-        await CreateAssignment(new Assignment() { Id = 2, Topic = "Test assignment 2", BoardId = BoardId, StageId = 1 });
-        string RequestURI = $"api/boards/{BoardId}/tasks";
+        await PrepareTestFixture();
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = "Test assignment 1", BoardId = 1, StageId = 1 });
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 2, Topic = "Test assignment 2", BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -158,84 +156,177 @@ public class AssignmentsIntegrationTests
     [Fact]
     public async Task AssignmentController_GetAssignmentById_ReturnsTheCorrectAssignment()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string TOPIC = "Test assignment 1";
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+        httpResponse.EnsureSuccessStatusCode();
+        var result = JsonSerializer.Deserialize<AssignmentGetModel>(httpResponse.Content.ReadAsStream(), 
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+        Assert.NotNull(result);
+        Assert.Equal(TOPIC, result.Topic);
     }
 
     [Fact]
     public async Task AssignmentController_GetAssignmentById_ReturnsNotFoundStatusCode_IfAssignmentDoesNotExist()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status404NotFound, (int)httpResponse.StatusCode);
     }
     [Fact]
     public async Task AssignmentController_GetAssignmentById_ReturnsNotFoundStatusCode_IfAssignmentDoesNotBelongToThisBoard()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string TOPIC = "Test assignment 1";
+        await _seedHelper.CreateBoard(new Board() { Id = 2 });
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 2, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status404NotFound, (int)httpResponse.StatusCode);
     }
 
     [Fact]
     public async Task AssignmentController_GetAssignmentById_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string TOPIC = "Test assignment 1";
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
     }
 
     [Fact]
     public async Task AssignmentController_UpdateAssignmentById_UpdatesAssignment()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string OLD_TOPIC = "Old topic";
+        const string NEW_TOPIC = "New topic";
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = OLD_TOPIC, BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var model = new AssignmentPutModel() { Topic = NEW_TOPIC };
+        var content = new StringContent(JsonSerializer.Serialize(model),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, content);
+        httpResponse.EnsureSuccessStatusCode();
+
+        Assert.False(await DoesAssignmentWithSuchATopicExistInTheDatabaseAsync(OLD_TOPIC));
+        Assert.True(await DoesAssignmentWithSuchATopicExistInTheDatabaseAsync(NEW_TOPIC));
     }
 
     [Fact]
     public async Task AssignmentController_UpdateAssignmentById_ReturnsBadRequest_IfBoardIdIsIncorrect()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string OLD_TOPIC = "Old topic";
+        const string NEW_TOPIC = "New topic";
+        await _seedHelper.CreateBoard(new Board() { Id = 2 });
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = OLD_TOPIC, BoardId = 2, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var model = new AssignmentPutModel() { Topic = NEW_TOPIC };
+        var content = new StringContent(JsonSerializer.Serialize(model),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, content);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, ((int)httpResponse.StatusCode));
     }
     [Fact]
     public async Task AssignmentController_UpdateAssignmentById_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string OLD_TOPIC = "Old topic";
+        const string NEW_TOPIC = "New topic";
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = OLD_TOPIC, BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        var model = new AssignmentPutModel() { Topic = NEW_TOPIC };
+        var content = new StringContent(JsonSerializer.Serialize(model),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, content);
+
+        Assert.Equal(StatusCodes.Status401Unauthorized, ((int)httpResponse.StatusCode));
     }
     [Fact]
     public async Task AssignmentController_UpdateAssignmentById_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string OLD_TOPIC = "Old topic";
+        const string NEW_TOPIC = "New topic";
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = OLD_TOPIC, BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var model = new AssignmentPutModel() { Topic = NEW_TOPIC };
+        var content = new StringContent(JsonSerializer.Serialize(model),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, content);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, ((int)httpResponse.StatusCode));
     }
     [Fact]
     public async Task AssignmentController_DeleteAssignmentById_DeletesAssignment()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string TOPIC = "Test assignment 1";
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var httpResponse = await _httpClient.DeleteAsync(RequestURI);
+        httpResponse.EnsureSuccessStatusCode();
+
+        Assert.False(await DoesAssignmentWithSuchATopicExistInTheDatabaseAsync(TOPIC));
     }
     [Fact]
     public async Task AssignmentController_DeleteAssignmentById_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
-        throw new NotImplementedException();
+        await PrepareTestFixture();
+        const string TOPIC = "Test assignment 1";
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        
+        var httpResponse = await _httpClient.DeleteAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
     }
     [Fact]
     public async Task AssignmentController_DeleteAssignmentById_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
     {
-        throw new NotImplementedException();
-    }
+        await PrepareTestFixture();
+        const string TOPIC = "Test assignment 1";
+        await _seedHelper.CreateAssignment(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-    private async Task CreateBoard(int boardId)
-    {
-        using var test = _factory.Services.CreateScope();
-        var context = test.ServiceProvider.GetService<TrackerDbContext>();
-        await context!.Boards.AddAsync(new Board { Id = boardId });
-        await context.SaveChangesAsync();
-    }
-    private async Task CreateStage(WorkflowStage stage)
-    {
-        using var test = _factory.Services.CreateScope();
-        var context = test.ServiceProvider.GetService<TrackerDbContext>();
-        await context!.Stages.AddAsync(stage);
-        await context.SaveChangesAsync();
-    }
+        var httpResponse = await _httpClient.DeleteAsync(RequestURI);
 
-    private async Task CreateAssignment(Assignment assignment)
-    {
-        using var test = _factory.Services.CreateScope();
-        var context = test.ServiceProvider.GetService<TrackerDbContext>();
-        await context!.Assignments.AddAsync(assignment);
-        await context!.SaveChangesAsync();
+        Assert.Equal(StatusCodes.Status403Forbidden, ((int)httpResponse.StatusCode));
     }
 
     private async Task<bool> IsNumberOfAssignmentInTheDatabaseAsExpectedAsync(int expected)
@@ -245,7 +336,7 @@ public class AssignmentsIntegrationTests
         return expected == await context!.Assignments.CountAsync();
     }
 
-    private async Task<bool> DoesAssignmentWithSuchATopicExistInTheDatabase(string topic)
+    private async Task<bool> DoesAssignmentWithSuchATopicExistInTheDatabaseAsync(string topic)
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();

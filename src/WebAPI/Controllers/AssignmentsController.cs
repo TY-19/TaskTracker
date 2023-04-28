@@ -142,8 +142,12 @@ public class AssignmentsController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-
-        return CreatedAtAction(nameof(GetSubpartById), subpart);
+        return CreatedAtAction(nameof(GetSubpartById), new
+        {
+            boardId = boardId,
+            taskId = subpart?.AssignmentId,
+            subpartId = subpart?.Id
+        }, subpart);
     }
 
     [Route("{taskId}/subparts/{subpartId}")]
