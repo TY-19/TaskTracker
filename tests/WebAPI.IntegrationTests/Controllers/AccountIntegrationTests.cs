@@ -205,8 +205,8 @@ public class AccountIntegrationTests
         var httpResponse = await _httpClient.PutAsync(RequestURI, content);
         httpResponse.EnsureSuccessStatusCode();
 
-        Assert.True(await IsTryLoginSuccessfulAync("testemployee", NewPassword));
-        Assert.False(await IsTryLoginSuccessfulAync("testemployee", "Pa$$w0rd"));
+        Assert.True(await AuthenticationTestsHelper.IsTryLoginSuccessfulAync(_httpClient, "testemployee", NewPassword));
+        Assert.False(await AuthenticationTestsHelper.IsTryLoginSuccessfulAync(_httpClient, "testemployee", "Pa$$w0rd"));
     }
     [Fact]
     public async Task AccountController_ChangePassword_DoesNotChangePassword_IfOldPasswordIsInvalid()
@@ -221,9 +221,10 @@ public class AccountIntegrationTests
             Encoding.UTF8, "application/json");
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, content);
-
-        Assert.True(await IsTryLoginSuccessfulAync("testemployee", "Pa$$w0rd"));
-        Assert.False(await IsTryLoginSuccessfulAync("testemployee", NewPassword));
+        
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+        Assert.True(await AuthenticationTestsHelper.IsTryLoginSuccessfulAync(_httpClient, "testemployee", "Pa$$w0rd"));
+        Assert.False(await AuthenticationTestsHelper.IsTryLoginSuccessfulAync(_httpClient, "testemployee", NewPassword));
     }
     [Fact]
     public async Task AccountController_ChangePassword_ReturnsBadRequest_IfOldPasswordIsInvalid()
@@ -268,18 +269,5 @@ public class AccountIntegrationTests
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         return await context!.Users.FirstOrDefaultAsync(a => a.Email == email) != null;
     }
-    private async Task<bool> IsTryLoginSuccessfulAync(string nameOrEmail, string password)
-    {
-        const string RequestURI = $"api/account/login";
-        var loginRequest = new LoginRequestModel() { NameOrEmail = nameOrEmail, Password = password };
-        var content = new StringContent(JsonSerializer.Serialize(loginRequest),
-            Encoding.UTF8, "application/json");
-
-        var httpResponse = await _httpClient.PostAsync(RequestURI, content);
-        httpResponse.EnsureSuccessStatusCode();
-        var result = JsonSerializer.Deserialize<LoginResponseModel>(httpResponse.Content.ReadAsStream(),
-            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-
-        return result?.Success ?? false;
-    }
+    
 }

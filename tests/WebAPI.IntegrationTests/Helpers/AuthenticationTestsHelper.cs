@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
+using System.Text;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.Domain.Common;
@@ -27,92 +30,88 @@ internal class AuthenticationTestsHelper
 
     private async Task SetUsersTokensAsync()
     {
-        TestAdminUserToken = await GetAdminUserTokenAsync();
-        TestManagerUserToken = await GetManagerUserTokenAsync();
-        TestEmployeeUserToken = await GetEmployeeUserTokenAsync();
+        TestAdminUserToken = await GetUserTokenAsync(testAdmin.Email, password);
+        TestManagerUserToken = await GetUserTokenAsync(testManager.Email, password);
+        TestEmployeeUserToken = await GetUserTokenAsync(testEmployee.Email, password);
     }
-    private async Task<string?> GetEmployeeUserTokenAsync()
+    private async Task<string?> GetUserTokenAsync(string email, string password)
     {
         using var test = _factory.Services.CreateScope();
         var accountService = test.ServiceProvider.GetService<IAccountService>();
         var response = await accountService!.LoginAsync(new LoginRequestModel()
         {
-            NameOrEmail = testEmployee.user.Email,
-            Password = testEmployee.password
+            NameOrEmail = email,
+            Password = password
         });
         return response.Token;
     }
-    private async Task<string?> GetManagerUserTokenAsync()
-    {
-        using var test = _factory.Services.CreateScope();
-        var accountService = test.ServiceProvider.GetService<IAccountService>();
-        var response = await accountService!.LoginAsync(new LoginRequestModel()
-        {
-            NameOrEmail = testManager.user.Email,
-            Password = testManager.password
-        });
-        return response.Token;
-    }
-    private async Task<string?> GetAdminUserTokenAsync()
-    {
-        using var test = _factory.Services.CreateScope();
-        var accountService = test.ServiceProvider.GetService<IAccountService>();
-        var response = await accountService!.LoginAsync(new LoginRequestModel()
-        {
-            NameOrEmail = testAdmin.user.Email,
-            Password = testAdmin.password
-        });
-        return response.Token;
-    }
-
     private async Task SeedTestUsersAsync()
     {
         using var test = _factory.Services.CreateScope();
         var userManager = test.ServiceProvider.GetService<UserManager<User>>();
-        foreach (var (user, password, role) in testUsers)
+        if (userManager != null)
         {
-            await userManager!.CreateAsync(user, password);
-            await userManager.AddToRoleAsync(user, role);
+            await CreateUserAsync(testAdmin, password, DefaultRolesNames.DEFAULT_ADMIN_ROLE, userManager);
+            await CreateUserAsync(testManager, password, DefaultRolesNames.DEFAULT_MANAGER_ROLE, userManager);
+            await CreateUserAsync(testEmployee, password, DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE, userManager);
         }
     }
-
-    private static readonly (User user, string password, string role) testAdmin = (
-        new User()
-        {
-            UserName = "testadmin",
-            Email = "testadmin@example.com",
-            EmailConfirmed = true
-        },
-        "Pa$$w0rd",
-        DefaultRolesNames.DEFAULT_ADMIN_ROLE
-    );
-    private static readonly (User user, string password, string role) testManager = (
-        new User()
-        {
-            UserName = "testmanager",
-            Email = "testmanager@example.com",
-            EmailConfirmed = true
-        },
-        "Pa$$w0rd",
-        DefaultRolesNames.DEFAULT_MANAGER_ROLE
-    );
-    private static readonly (User user, string password, string role) testEmployee = (
-        new User()
-        {
-            UserName = "testemployee",
-            Email = "testemployee@example.com",
-            EmailConfirmed = true
-        },
-        "Pa$$w0rd",
-        DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE
-    );
-
-    private static readonly (User user, string password, string role)[] testUsers = new[]
+    private static async Task CreateUserAsync(User user, string password, string role,
+        UserManager<User> userManager)
     {
-        testAdmin,
-        testManager,
-        testEmployee
+        try
+        {
+            await userManager!.CreateAsync(user, password);
+        }
+        catch (Exception ex)
+        {
+            if (ex is not DbUpdateConcurrencyException && ex is not ArgumentException)
+                throw;
+        }
+        try
+        {
+            await userManager.AddToRoleAsync(user, role);
+        }
+        catch (Exception ex)
+        {
+            if (ex is not DbUpdateConcurrencyException && ex is not ArgumentException)
+                throw;
+        }
+    }
+    
+    private static readonly string password = "Pa$$w0rd";
+    private static readonly User testAdmin = new ()
+    {
+        UserName = "testadmin",
+        Email = "testadmin@example.com",
+        EmailConfirmed = true,
+    };
+    private static readonly User testManager = new()
+    {
+        UserName = "testmanager",
+        Email = "testmanager@example.com",
+        EmailConfirmed = true,
+    };
+    private static readonly User testEmployee = new()
+    {
+        UserName = "testemployee",
+        Email = "testemployee@example.com",
+        EmailConfirmed = true,
+        Employee = new Employee() { Id = 100, FirstName = "Test", LastName = "Employee" }
     };
 
+    public static async Task<bool> IsTryLoginSuccessfulAync(HttpClient httpClient, string nameOrEmail, string password)
+    {
+        const string RequestURI = $"api/account/login";
+        var loginRequest = new LoginRequestModel() { NameOrEmail = nameOrEmail, Password = password };
+        var content = new StringContent(JsonSerializer.Serialize(loginRequest),
+        Encoding.UTF8, "application/json");
 
+        var httpResponse = await httpClient.PostAsync(RequestURI, content);
+        httpResponse.EnsureSuccessStatusCode();
+        var result = JsonSerializer.Deserialize<LoginResponseModel>(httpResponse.Content.ReadAsStream(),
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+        return result?.Success ?? false;
+    }
 }

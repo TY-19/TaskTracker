@@ -45,8 +45,9 @@ public class EmployeeService : IEmployeeService
 
     public async Task AddEmployeeToTheBoardAsync(int boardId, string userNameOrId)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(
-            u => u.Id == userNameOrId || u.UserName == userNameOrId);
+        var user = await _context.Users
+            .Include(u => u.Employee)
+            .FirstOrDefaultAsync(u => u.Id == userNameOrId || u.UserName == userNameOrId);
         if (user == null)
             throw new ArgumentException("User with a such id or name does not exist", nameof(userNameOrId));
 

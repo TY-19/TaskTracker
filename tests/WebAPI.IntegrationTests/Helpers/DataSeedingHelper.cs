@@ -64,6 +64,14 @@ internal class DataSeedingHelper
         await context!.SaveChangesAsync();
     }
 
+    public async Task CreateEmployeeAsync(Employee employee)
+    {
+        using var test = _factory.Services.CreateScope();
+        var context = test.ServiceProvider.GetService<TrackerDbContext>();
+        await context!.Employees.AddAsync(employee);
+        await context!.SaveChangesAsync();
+    }
+
     private Board Board1 { get; } = new Board { Id = 1 };
     private WorkflowStage Stage1 { get; } = new WorkflowStage { 
         Id = 1, BoardId = 1, Name = "First stage", Position = 1 };
