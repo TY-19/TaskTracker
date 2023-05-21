@@ -1,6 +1,6 @@
 ﻿namespace TaskTracker.Application.Models;
 
-public class WorkflowStagePostModel
+public class WorkflowStagePostModel : IValidatableModel
 {
-    public string Name { get; set; } = String.Empty;
+    public string Name { get; set; } = string.Empty;
 }

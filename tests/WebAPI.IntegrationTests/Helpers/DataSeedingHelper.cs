@@ -73,8 +73,13 @@ internal class DataSeedingHelper
     }
 
     private Board Board1 { get; } = new Board { Id = 1 };
-    private WorkflowStage Stage1 { get; } = new WorkflowStage { 
-        Id = 1, BoardId = 1, Name = "First stage", Position = 1 };
+    private WorkflowStage Stage1 { get; } = new WorkflowStage
+    {
+        Id = 1,
+        BoardId = 1,
+        Name = "First stage",
+        Position = 1
+    };
     private Assignment Assignment1 { get; } = new Assignment() { Id = 1, Topic = "Test assignment 1", BoardId = 1, StageId = 1 };
 
 }

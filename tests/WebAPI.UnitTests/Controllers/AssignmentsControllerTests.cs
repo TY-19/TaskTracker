@@ -2,6 +2,7 @@
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.WebAPI.Controllers;
+using TaskTracker.WebAPI.UnitTests.Helpers;
 
 namespace TaskTracker.WebAPI.UnitTests.Controllers;
 
@@ -14,7 +15,8 @@ public class AssignmentsControllerTests
     {
         _assignmentServiceMock = new Mock<IAssignmentService>();
         _subpartServiceMock = new Mock<ISubpartService>();
-        _controller = new AssignmentsController(_assignmentServiceMock.Object, _subpartServiceMock.Object);
+        _controller = new AssignmentsController(_assignmentServiceMock.Object,
+            _subpartServiceMock.Object, ControllersHelper.GetValidationService());
     }
     [Fact]
     public async Task GetAllAssignmentsOfTheBoard_ReturnsOkObjectResult()

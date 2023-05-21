@@ -1,9 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace TaskTracker.Application.Models;
 
-namespace TaskTracker.Application.Models;
-
-public class BoardPostModel
+public class BoardPostModel : IValidatableModel
 {
-    [Required]
     public string Name { get; set; } = string.Empty;
 }

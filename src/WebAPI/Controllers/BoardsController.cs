@@ -12,10 +12,12 @@ namespace TaskTracker.WebAPI.Controllers;
 public class BoardsController : ControllerBase
 {
     private readonly IBoardService _boardService;
-
-    public BoardsController(IBoardService boardService)
+    private readonly IValidationService _validationService;
+    public BoardsController(IBoardService boardService,
+        IValidationService validationService)
     {
         _boardService = boardService;
+        _validationService = validationService;
     }
 
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
@@ -37,6 +39,10 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateNewBoard(BoardPostModel model)
     {
+        var validationResult = _validationService.Validate(model);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         BoardGetModel? board;
         try
         {
@@ -75,6 +81,10 @@ public class BoardsController : ControllerBase
     public async Task<IActionResult> UpdateBoardName(int id,
         BoardPutModel model)
     {
+        var validationResult = _validationService.Validate(model);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         try
         {
             await _boardService.UpdateBoardNameAsync(id, model.Name);

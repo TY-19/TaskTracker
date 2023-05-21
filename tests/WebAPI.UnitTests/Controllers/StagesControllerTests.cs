@@ -2,6 +2,7 @@
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.WebAPI.Controllers;
+using TaskTracker.WebAPI.UnitTests.Helpers;
 
 namespace TaskTracker.WebAPI.UnitTests.Controllers;
 
@@ -12,7 +13,7 @@ public class StagesControllerTests
     public StagesControllerTests()
     {
         _serviceMock = new Mock<IStageService>();
-        _controller = new StagesController(_serviceMock.Object);
+        _controller = new StagesController(_serviceMock.Object, ControllersHelper.GetValidationService());
     }
     [Fact]
     public async Task GetAllStagesOfTheBoard_ReturnsOkObjectResult()

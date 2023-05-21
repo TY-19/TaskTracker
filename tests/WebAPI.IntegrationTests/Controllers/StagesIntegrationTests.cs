@@ -85,7 +85,7 @@ public class StagesIntegrationTests
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/stages";
-        var stage = (WorkflowStagePostModel?)null;
+        var stage = new WorkflowStagePostModel();
         var content = new StringContent(JsonSerializer.Serialize(stage),
             Encoding.UTF8, "application/json");
 
@@ -215,6 +215,23 @@ public class StagesIntegrationTests
 
         Assert.False(await DoesBoardContainsStageWithSuchANameAsync(1, OldStageName));
         Assert.True(await DoesBoardContainsStageWithSuchANameAsync(1, NewStageName));
+    }
+    [Fact]
+    public async Task StagesController_UpdateStageById_ReturnsBadRequestStatusCode_IfModelIsNotValid()
+    {
+        await PrepareTestFixture();
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        const string OldStageName = "Old Stage Name";
+        await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = OldStageName });
+        const string RequestURI = $"api/boards/1/stages/1";
+        var model = new WorkflowStagePutModel() { Name = string.Empty };
+        var content = new StringContent(JsonSerializer.Serialize(model),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, content);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
     }
     [Fact]
     public async Task StagesController_UpdateStageById_ReturnsBadRequest_IfBoardIdIsIncorrect()

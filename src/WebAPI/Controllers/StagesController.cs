@@ -12,9 +12,12 @@ namespace TaskTracker.WebAPI.Controllers;
 public class StagesController : ControllerBase
 {
     private readonly IStageService _stageService;
-    public StagesController(IStageService stageService)
+    private readonly IValidationService _validationService;
+    public StagesController(IStageService stageService,
+        IValidationService validationService)
     {
         _stageService = stageService;
+        _validationService = validationService;
     }
 
     [HttpGet]
@@ -35,6 +38,10 @@ public class StagesController : ControllerBase
     public async Task<ActionResult<WorkflowStageGetModel>> CreateANewStageOnTheBoard(
         int boardId, WorkflowStagePostModel model)
     {
+        var validationResult = _validationService.Validate(model);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         WorkflowStageGetModel result;
         try
         {
@@ -44,8 +51,8 @@ public class StagesController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        return CreatedAtAction(nameof(GetStageById), 
-            new { boardId = result.BoardId, stageId = result.Id }, 
+        return CreatedAtAction(nameof(GetStageById),
+            new { boardId = result.BoardId, stageId = result.Id },
             result);
     }
 
@@ -73,6 +80,10 @@ public class StagesController : ControllerBase
     public async Task<IActionResult> UpdateStageById(int boardId, int stageId,
         WorkflowStagePutModel model)
     {
+        var validationResult = _validationService.Validate(model);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         try
         {
             await _stageService.UpdateStageAsync(boardId, stageId, model);

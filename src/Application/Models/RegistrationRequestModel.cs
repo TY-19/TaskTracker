@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace TaskTracker.Application.Models;
 
-namespace TaskTracker.Application.Models;
-
-public class RegistrationRequestModel
+public class RegistrationRequestModel : IValidatableModel
 {
     public string UserName { get; set; } = null!;
     public string Email { get; set; } = null!;

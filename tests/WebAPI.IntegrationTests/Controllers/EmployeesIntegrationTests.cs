@@ -17,7 +17,7 @@ public class EmployeesIntegrationTests
     private readonly AuthenticationTestsHelper _authHelper;
     private readonly DataSeedingHelper _seedHelper;
     public EmployeesIntegrationTests()
-	{
+    {
         _factory = new CustomWebApplicationFactory();
         _httpClient = _factory.CreateClient();
         _authHelper = new AuthenticationTestsHelper(_factory);

@@ -4,6 +4,7 @@ using System.Security.Claims;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.WebAPI.Controllers;
+using TaskTracker.WebAPI.UnitTests.Helpers;
 
 namespace TaskTracker.WebAPI.UnitTests.Controllers;
 
@@ -14,7 +15,7 @@ public class AccountControllerTests
     public AccountControllerTests()
     {
         _serviceMock = new Mock<IAccountService>();
-        _controller = new AccountController(_serviceMock.Object);
+        _controller = new AccountController(_serviceMock.Object, ControllersHelper.GetValidationService());
     }
 
     [Fact]
@@ -29,8 +30,8 @@ public class AccountControllerTests
         Assert.IsType<OkObjectResult>(result);
     }
     [Fact]
-	public async Task Login_ReturnsLoginResponseModel()
-	{
+    public async Task Login_ReturnsLoginResponseModel()
+    {
         _serviceMock.Setup(s => s.LoginAsync(It.IsAny<LoginRequestModel>()))
             .ReturnsAsync(new LoginResponseModel() { Success = true });
         var model = new LoginRequestModel() { NameOrEmail = "UserName", Password = "UserPassword" };
@@ -70,11 +71,11 @@ public class AccountControllerTests
     public async Task ViewProfile_ReturnsOkObjectResult()
     {
         _serviceMock.Setup(s => s.GetUserProfileAsync(It.IsAny<string>()))
-            .ReturnsAsync(new UserProfileModel() );
+            .ReturnsAsync(new UserProfileModel());
         AddAuthorizedIdentityUserToControllerContext(_controller);
 
         var result = (await _controller.ViewProfile()).Result;
-        
+
         Assert.IsType<OkObjectResult>(result);
     }
 
@@ -117,7 +118,7 @@ public class AccountControllerTests
     [Fact]
     public async Task UpdateProfile_ReturnsNoContentResult()
     {
-        _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(), 
+        _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(),
             It.IsAny<UserProfileUpdateModel>())).ReturnsAsync(true);
         AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new UserProfileUpdateModel() { Email = "test@example.com" };
@@ -156,7 +157,7 @@ public class AccountControllerTests
         _serviceMock.Setup(s => s.ChangePasswordAsync(It.IsAny<string>(),
             It.IsAny<ChangePasswordModel>())).ReturnsAsync(true);
         AddAuthorizedIdentityUserToControllerContext(_controller);
-        var model = new ChangePasswordModel() { OldPassword = "oldPassword", NewPassword = "newPassword"};
+        var model = new ChangePasswordModel() { OldPassword = "oldPassword", NewPassword = "newPassword" };
 
         var result = await _controller.ChangePassword(model);
 

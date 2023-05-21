@@ -1,12 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace TaskTracker.Application.Models;
 
-namespace TaskTracker.Application.Models;
-
-public class LoginRequestModel
+public class LoginRequestModel : IValidatableModel
 {
-    [Required(ErrorMessage = "Name/email is required")]
     public string NameOrEmail { get; set; } = null!;
-
-    [Required(ErrorMessage = "Password is required")]
     public string Password { get; set; } = null!;
 }

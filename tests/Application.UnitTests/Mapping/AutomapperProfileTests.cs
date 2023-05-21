@@ -84,7 +84,7 @@ public class AutomapperProfileTests
     {
         IMapper mapper = GetMapper();
         Subpart subpart = new()
-        { 
+        {
             Name = "OldName",
             Description = "CorrectDescription",
             PercentValue = 25

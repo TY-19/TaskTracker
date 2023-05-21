@@ -1,6 +1,6 @@
 ﻿namespace TaskTracker.Application.Models;
 
-public class AssignmentPostModel
+public class AssignmentPostModel : IValidatableModel
 {
     public string Topic { get; set; } = string.Empty;
     public string? Description { get; set; }

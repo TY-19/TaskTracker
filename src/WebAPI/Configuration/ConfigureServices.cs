@@ -48,6 +48,7 @@ public static class ConfigureServices
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<IStageService, StageService>();
         services.AddScoped<ISubpartService, SubpartService>();
+        services.AddScoped<IValidationService, ValidationService>();
 
         services.AddSingleton(new MapperConfiguration(cfg =>
             cfg.AddProfile<AutomapperProfile>()).CreateMapper());

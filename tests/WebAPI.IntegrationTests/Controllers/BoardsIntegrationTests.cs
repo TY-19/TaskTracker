@@ -18,7 +18,7 @@ public class BoardsIntegrationTests
     private readonly AuthenticationTestsHelper _authHelper;
     private readonly DataSeedingHelper _seedHelper;
     public BoardsIntegrationTests()
-	{
+    {
         _factory = new CustomWebApplicationFactory();
         _httpClient = _factory.CreateClient();
         _authHelper = new AuthenticationTestsHelper(_factory);
@@ -99,7 +99,7 @@ public class BoardsIntegrationTests
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/";
-        var board = (BoardPostModel?)null;
+        var board = new BoardPostModel();
         var content = new StringContent(JsonSerializer.Serialize(board),
             Encoding.UTF8, "application/json");
 
@@ -199,17 +199,18 @@ public class BoardsIntegrationTests
         Assert.False(await DoesBoardWithSuchANameExistInTheDatabaseAsync(OldName));
         Assert.True(await DoesBoardWithSuchANameExistInTheDatabaseAsync(NewName));
     }
-    [Fact]
-    public async Task BoardsController_UpdateBoardName_ReturnsBadRequestStatusCode_IfNewNameIsInvalid()
+    [Theory]
+    [InlineData("")]
+    [InlineData("123")]
+    public async Task BoardsController_UpdateBoardName_ReturnsBadRequestStatusCode_IfNewNameIsInvalid(string newName)
     {
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string OldName = "OldName";
-        const string NewName = "123";
         await _seedHelper.CreateBoardAsync(new Board() { Id = 1, Name = OldName });
         const string RequestURI = $"api/boards/1";
-        var model = new BoardPutModel() { Name = NewName };
+        var model = new BoardPutModel() { Name = newName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
 

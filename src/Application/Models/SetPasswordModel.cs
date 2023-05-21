@@ -1,9 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace TaskTracker.Application.Models;
 
-namespace TaskTracker.Application.Models;
-
-public class SetPasswordModel
+public class SetPasswordModel : IValidatableModel
 {
-    [Required]
     public string NewPassword { get; set; } = string.Empty;
 }

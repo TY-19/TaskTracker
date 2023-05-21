@@ -13,7 +13,7 @@ namespace TaskTracker.WebAPI.Configuration
             options.AddSecurityRequirement(GetSecurityRequirement());
         }
 
-        private OpenApiInfo GetVersionInfo()
+        private static OpenApiInfo GetVersionInfo()
         {
             return new OpenApiInfo
             {
@@ -21,7 +21,7 @@ namespace TaskTracker.WebAPI.Configuration
                 Version = "v1"
             };
         }
-        private OpenApiSecurityScheme GetJwtSecurityScheme()
+        private static OpenApiSecurityScheme GetJwtSecurityScheme()
         {
             return new OpenApiSecurityScheme
             {
@@ -33,7 +33,7 @@ namespace TaskTracker.WebAPI.Configuration
                 Scheme = "Bearer"
             };
         }
-        private OpenApiSecurityRequirement GetSecurityRequirement()
+        private static OpenApiSecurityRequirement GetSecurityRequirement()
         {
             return new OpenApiSecurityRequirement
             {

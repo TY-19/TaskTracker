@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using TaskTracker.Application.Interfaces;
@@ -15,18 +14,15 @@ public class AccountService : IAccountService
     private readonly JwtHandlerService _jwtHandlerService;
     private readonly IMapper _mapper;
     private readonly ITrackerDbContext _context;
-    private readonly IValidator<RegistrationRequestModel> _validator;
     public AccountService(UserManager<User> userManager,
         JwtHandlerService jwtHandlerService,
         IMapper mapper,
-        ITrackerDbContext context,
-        IValidator<RegistrationRequestModel> validator)
+        ITrackerDbContext context)
     {
         _userManager = userManager;
         _jwtHandlerService = jwtHandlerService;
         _mapper = mapper;
         _context = context;
-        _validator = validator;
     }
 
     public async Task<LoginResponseModel> LoginAsync(LoginRequestModel loginRequest)
@@ -44,10 +40,6 @@ public class AccountService : IAccountService
     public async Task<RegistrationResponseModel> RegistrationAsync(
         RegistrationRequestModel registrationRequest)
     {
-        var validationResult = _validator.Validate(registrationRequest);
-        if (!validationResult.IsValid)
-            return GetRegistrationResult(false, validationResult.ToString());
-
         if (await _userManager.FindByNameAsync(registrationRequest.UserName) != null)
             return GetRegistrationResult(false, "User with this name already exists");
 
@@ -71,10 +63,10 @@ public class AccountService : IAccountService
 
     private static RegistrationResponseModel GetRegistrationResult(bool success, string message)
     {
-        return new RegistrationResponseModel() 
-        { 
-            Success = success, 
-            Message = message 
+        return new RegistrationResponseModel()
+        {
+            Success = success,
+            Message = message
         };
     }
 
@@ -82,8 +74,8 @@ public class AccountService : IAccountService
     {
         var user = await _userManager.FindByNameAsync(userName);
 
-        return user == null 
-            ? null 
+        return user == null
+            ? null
             : _mapper.Map<UserProfileModel>(user);
     }
 

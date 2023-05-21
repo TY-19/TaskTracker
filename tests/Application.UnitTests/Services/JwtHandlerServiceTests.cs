@@ -51,7 +51,7 @@ public class JwtHandlerServiceTests
         var service = new JwtHandlerService(configuration.Object,
             ServicesTestsHelper.GetUserManager(context));
 
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => 
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await service.GetTokenAsync(user!));
     }
 }

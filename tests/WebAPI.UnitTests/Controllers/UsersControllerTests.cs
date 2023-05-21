@@ -2,6 +2,7 @@
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.WebAPI.Controllers;
+using TaskTracker.WebAPI.UnitTests.Helpers;
 
 namespace TaskTracker.WebAPI.UnitTests.Controllers;
 
@@ -14,7 +15,8 @@ public class UsersControllerTests
     {
         _userServiceMock = new Mock<IUserService>();
         _accountServiceMock = new Mock<IAccountService>();
-        _controller = new UsersController(_userServiceMock.Object, _accountServiceMock.Object);
+        _controller = new UsersController(_userServiceMock.Object, _accountServiceMock.Object,
+            ControllersHelper.GetValidationService());
     }
     [Fact]
     public async Task GetAllUsers_ReturnsOkObjectResult()
@@ -94,13 +96,13 @@ public class UsersControllerTests
     public async Task UpdateUserProfile_ReturnsNoContentResult_WhenCorrectlyUpdatesUsername()
     {
         _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
-            .ReturnsAsync(new UserProfileModel() { UserName = "oldName"});
+            .ReturnsAsync(new UserProfileModel() { UserName = "oldName" });
         _userServiceMock.Setup(u => u.UpdateUserNameAsync(It.IsAny<string>(), It.IsAny<string>()))
             .Callback(() => { });
         _accountServiceMock.Setup(a => a.UpdateUserProfileAsync(It.IsAny<string>(), It.IsAny<UserProfileUpdateModel>()))
             .ReturnsAsync(true);
 
-        var result = await _controller.UpdateUserProfile("oldName", new UserProfileUpdateModel() { UserName = "newName"});
+        var result = await _controller.UpdateUserProfile("oldName", new UserProfileUpdateModel() { UserName = "newName" });
 
         Assert.IsType<NoContentResult>(result);
     }

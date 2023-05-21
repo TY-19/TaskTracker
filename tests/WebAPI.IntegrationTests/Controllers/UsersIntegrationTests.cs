@@ -16,7 +16,7 @@ public class UsersIntegrationTests
     private readonly HttpClient _httpClient;
     private readonly AuthenticationTestsHelper _authHelper;
     public UsersIntegrationTests()
-	{
+    {
         _factory = new CustomWebApplicationFactory();
         _httpClient = _factory.CreateClient();
         _authHelper = new AuthenticationTestsHelper(_factory);
@@ -91,7 +91,7 @@ public class UsersIntegrationTests
         const string RequestURI = $"api/users/nonexistinguser";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
-        
+
         Assert.Equal(StatusCodes.Status404NotFound, (int)httpResponse.StatusCode);
     }
     [Fact]
@@ -163,7 +163,7 @@ public class UsersIntegrationTests
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/users/";
-        var user = new RegistrationRequestModel() { UserName = "NewName", Email = "notemail", Password = "1234"};
+        var user = new RegistrationRequestModel() { UserName = "NewName", Email = "notemail", Password = "1234" };
         var content = new StringContent(JsonSerializer.Serialize(user),
             Encoding.UTF8, "application/json");
 
@@ -335,6 +335,21 @@ public class UsersIntegrationTests
         Assert.False(await AuthenticationTestsHelper.IsTryLoginSuccessfulAync(_httpClient, "testemployee", "Pa$$w0rd"));
     }
     [Fact]
+    public async Task UsersController_ChangeUserPassword_ReturnsBadRequestStatusCode_IfModelIsNotValidd()
+    {
+        await PrepareTestFixture();
+        string? token = _authHelper.TestAdminUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        const string RequestURI = $"api/users/testemployee/changepassword";
+        var model = new SetPasswordModel() { NewPassword = string.Empty };
+        var content = new StringContent(JsonSerializer.Serialize(model),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, content);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+    }
+    [Fact]
     public async Task UsersController_ChangeUserPassword_ReturnsBadRequest_IfUserDoesNotExist()
     {
         await PrepareTestFixture();
@@ -361,7 +376,7 @@ public class UsersIntegrationTests
             Encoding.UTF8, "application/json");
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, content);
-        
+
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
     }
     [Fact]

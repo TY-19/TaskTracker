@@ -17,9 +17,9 @@ public class AssignmentsIntegrationTests
     private readonly HttpClient _httpClient;
     private readonly AuthenticationTestsHelper _authHelper;
     private readonly DataSeedingHelper _seedHelper;
-    
+
     public AssignmentsIntegrationTests()
-	{
+    {
         _factory = new CustomWebApplicationFactory();
         _httpClient = _factory.CreateClient();
         _authHelper = new AuthenticationTestsHelper(_factory);
@@ -56,7 +56,7 @@ public class AssignmentsIntegrationTests
     public async Task AssignmentsController_CreateANewAssignment_ReturnsBadRequestStatusCode_IfModelIsNotValid()
     {
         await PrepareTestFixture();
-        var assignment = (AssignmentPostModel?)null;
+        var assignment = new AssignmentPostModel();
         const string RequestURI = $"api/boards/1/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");
@@ -64,7 +64,7 @@ public class AssignmentsIntegrationTests
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
-        
+
         Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
         Assert.True(await IsNumberOfAssignmentInTheDatabaseAsExpectedAsync(0));
     }
@@ -165,7 +165,7 @@ public class AssignmentsIntegrationTests
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
-        var result = JsonSerializer.Deserialize<AssignmentGetModel>(httpResponse.Content.ReadAsStream(), 
+        var result = JsonSerializer.Deserialize<AssignmentGetModel>(httpResponse.Content.ReadAsStream(),
             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
         Assert.NotNull(result);
@@ -232,6 +232,23 @@ public class AssignmentsIntegrationTests
 
         Assert.False(await DoesAssignmentWithSuchATopicExistInTheDatabaseAsync(OLD_TOPIC));
         Assert.True(await DoesAssignmentWithSuchATopicExistInTheDatabaseAsync(NEW_TOPIC));
+    }
+
+    [Fact]
+    public async Task AssignmentController_UpdateAssignmentById_ReturnsBadRequestStatusCode_IfModelIsNotValid()
+    {
+        await PrepareTestFixture();
+        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = "Topic", BoardId = 1, StageId = 1 });
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var model = new AssignmentPutModel() { Topic = string.Empty };
+        var content = new StringContent(JsonSerializer.Serialize(model),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, content);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, ((int)httpResponse.StatusCode));
     }
 
     [Fact]
@@ -309,7 +326,7 @@ public class AssignmentsIntegrationTests
         const string TOPIC = "Test assignment 1";
         await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1 });
         const string RequestURI = $"api/boards/1/tasks/1";
-        
+
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
 
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);

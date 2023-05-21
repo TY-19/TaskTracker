@@ -12,13 +12,13 @@ namespace TaskTracker.WebAPI.IntegrationTests.Controllers;
 
 public class AccountIntegrationTests
 {
-	private readonly CustomWebApplicationFactory _factory;
-	private readonly HttpClient _httpClient;
+    private readonly CustomWebApplicationFactory _factory;
+    private readonly HttpClient _httpClient;
     private readonly AuthenticationTestsHelper _authHelper;
     public AccountIntegrationTests()
-	{
-		_factory = new CustomWebApplicationFactory();
-		_httpClient = _factory.CreateClient();
+    {
+        _factory = new CustomWebApplicationFactory();
+        _httpClient = _factory.CreateClient();
         _authHelper = new AuthenticationTestsHelper(_factory);
     }
     private async Task PrepareTestFixture()
@@ -27,8 +27,8 @@ public class AccountIntegrationTests
     }
 
     [Fact]
-	public async Task AccountController_Login_ReturnsCorrectUserToken()
-	{
+    public async Task AccountController_Login_ReturnsCorrectUserToken()
+    {
         await PrepareTestFixture();
         const string RequestURI = $"api/account/login";
         var loginRequest = new LoginRequestModel() { NameOrEmail = "testemployee@example.com", Password = "Pa$$w0rd" };
@@ -63,15 +63,33 @@ public class AccountIntegrationTests
         Assert.Null(result.Token);
     }
     [Fact]
+    public async Task AccountController_Login_ReturnsNoUserToken_IfRequestModelIsInvalid()
+    {
+        await PrepareTestFixture();
+        const string RequestURI = $"api/account/login";
+        var loginRequest = new LoginRequestModel() { NameOrEmail = string.Empty, Password = string.Empty };
+        var content = new StringContent(JsonSerializer.Serialize(loginRequest),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PostAsync(RequestURI, content);
+        httpResponse.EnsureSuccessStatusCode();
+        var result = JsonSerializer.Deserialize<LoginResponseModel>(httpResponse.Content.ReadAsStream(),
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+        Assert.NotNull(result);
+        Assert.False(result.Success);
+        Assert.Null(result.Token);
+    }
+    [Fact]
     public async Task AccountController_Registration_CreatesNewUser()
     {
         const string RequestURI = $"api/account/registration";
         const string UserName = "NewTestUser";
-        var registrationRequest = new RegistrationRequestModel() 
-        { 
-            UserName = UserName, 
-            Email = "newtestuser@example.com", 
-            Password = "Pa$$w0rd" 
+        var registrationRequest = new RegistrationRequestModel()
+        {
+            UserName = UserName,
+            Email = "newtestuser@example.com",
+            Password = "Pa$$w0rd"
         };
         var content = new StringContent(JsonSerializer.Serialize(registrationRequest),
             Encoding.UTF8, "application/json");
@@ -80,7 +98,7 @@ public class AccountIntegrationTests
         httpResponse.EnsureSuccessStatusCode();
         var result = JsonSerializer.Deserialize<RegistrationResponseModel>(httpResponse.Content.ReadAsStream(),
             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-        
+
         Assert.NotNull(result);
         Assert.True(result.Success);
         Assert.True(await DoesUserWithSuchANameExistInTheDatabaseAsync(UserName));
@@ -176,6 +194,21 @@ public class AccountIntegrationTests
         Assert.False(await DoesUserWithSuchAnEmailExistInTheDatabaseAsync("testemployee@example.com"));
     }
     [Fact]
+    public async Task AccountController_UpdateProfile_ReturnsBadRequestStatusCode_IfModelIsNotValid()
+    {
+        await PrepareTestFixture();
+        const string RequestURI = $"api/account/profile";
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var model = new UserProfileUpdateModel() { Email = "notEmail.com" };
+        var content = new StringContent(JsonSerializer.Serialize(model),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, content);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+    }
+    [Fact]
     public async Task AccountController_UpdateProfile_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
@@ -221,7 +254,7 @@ public class AccountIntegrationTests
             Encoding.UTF8, "application/json");
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, content);
-        
+
         Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
         Assert.True(await AuthenticationTestsHelper.IsTryLoginSuccessfulAync(_httpClient, "testemployee", "Pa$$w0rd"));
         Assert.False(await AuthenticationTestsHelper.IsTryLoginSuccessfulAync(_httpClient, "testemployee", NewPassword));
@@ -243,6 +276,21 @@ public class AccountIntegrationTests
         Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
     }
     [Fact]
+    public async Task AccountController_ChangePassword_ReturnsBadRequestStatusCode_IfModelIsNotValid()
+    {
+        await PrepareTestFixture();
+        const string RequestURI = $"api/account/profile/changepassword";
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var model = new ChangePasswordModel() { OldPassword = "Pa$$w0rd", NewPassword = "123" };
+        var content = new StringContent(JsonSerializer.Serialize(model),
+            Encoding.UTF8, "application/json");
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, content);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+    }
+    [Fact]
     public async Task AccountController_ChangePassword_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
@@ -256,7 +304,7 @@ public class AccountIntegrationTests
 
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
     }
-    
+
     private async Task<bool> DoesUserWithSuchANameExistInTheDatabaseAsync(string userName)
     {
         using var test = _factory.Services.CreateScope();
@@ -269,5 +317,5 @@ public class AccountIntegrationTests
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         return await context!.Users.FirstOrDefaultAsync(a => a.Email == email) != null;
     }
-    
+
 }

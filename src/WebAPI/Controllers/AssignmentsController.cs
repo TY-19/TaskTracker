@@ -13,11 +13,14 @@ public class AssignmentsController : ControllerBase
 {
     private readonly IAssignmentService _assignmentService;
     private readonly ISubpartService _subpartService;
+    private readonly IValidationService _validationService;
     public AssignmentsController(IAssignmentService assignmentService,
-        ISubpartService subpartService)
+        ISubpartService subpartService,
+        IValidationService validationService)
     {
         _assignmentService = assignmentService;
         _subpartService = subpartService;
+        _validationService = validationService;
     }
 
     [HttpGet]
@@ -38,6 +41,10 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> CreateANewAssignment(int boardId,
         AssignmentPostModel model)
     {
+        var validationResult = _validationService.Validate(model);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         AssignmentGetModel? assignment;
         try
         {
@@ -76,6 +83,10 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> UpdateAssignmentById(int boardId, int taskId,
         AssignmentPutModel model)
     {
+        var validationResult = _validationService.Validate(model);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         try
         {
             await _assignmentService.UpdateAssignmentAsync(boardId, taskId, model);
@@ -130,6 +141,10 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> AddSubpartToTheAssignment(int boardId, int taskId,
         SubpartPostModel model)
     {
+        var validationResult = _validationService.Validate(model);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         if (model.AssignmentId != taskId)
             return BadRequest("Not created");
 
@@ -158,6 +173,10 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> UpdateSubpart(int boardId, int taskId,
         int subpartId, SubpartPutModel model)
     {
+        var validationResult = _validationService.Validate(model);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         try
         {
             await _subpartService.UpdateSubpartAsync(taskId, subpartId, model);

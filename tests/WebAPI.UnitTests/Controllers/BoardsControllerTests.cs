@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.WebAPI.Controllers;
+using TaskTracker.WebAPI.UnitTests.Helpers;
 
 namespace TaskTracker.WebAPI.UnitTests.Controllers;
 
@@ -12,8 +12,8 @@ public class BoardsControllerTests
     private readonly BoardsController _controller;
     public BoardsControllerTests()
     {
-        _serviceMock= new Mock<IBoardService>();
-        _controller = new BoardsController(_serviceMock.Object);
+        _serviceMock = new Mock<IBoardService>();
+        _controller = new BoardsController(_serviceMock.Object, ControllersHelper.GetValidationService());
     }
     [Fact]
     public async Task GetAllBoards_ReturnsOkObjectResult()

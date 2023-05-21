@@ -159,7 +159,7 @@ public class EmployeeServiceTests
         Assert.Null(exception);
     }
 
-    private EmployeeService GetEmployeeService(TestDbContext context)
+    private static EmployeeService GetEmployeeService(TestDbContext context)
     {
         return new EmployeeService(context, ServicesTestsHelper.GetMapper());
     }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.Domain.Common;
@@ -78,9 +78,9 @@ internal class AuthenticationTestsHelper
                 throw;
         }
     }
-    
+
     private static readonly string password = "Pa$$w0rd";
-    private static readonly User testAdmin = new ()
+    private static readonly User testAdmin = new()
     {
         UserName = "testadmin",
         Email = "testadmin@example.com",

@@ -10,9 +10,12 @@ namespace TaskTracker.WebAPI.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
-    public AccountController(IAccountService accountService)
+    private readonly IValidationService _validationService;
+    public AccountController(IAccountService accountService,
+        IValidationService validationService)
     {
         _accountService = accountService;
+        _validationService = validationService;
     }
 
     [Route("login")]
@@ -20,6 +23,14 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<LoginResponseModel>> Login(LoginRequestModel loginRequest)
     {
+        var validationResult = _validationService.Validate(loginRequest);
+        if (!validationResult.IsValid)
+            return new LoginResponseModel()
+            {
+                Success = false,
+                Message = $"Validation errors:{Environment.NewLine}{validationResult}"
+            };
+
         LoginResponseModel loginResult = await _accountService.LoginAsync(loginRequest);
         return Ok(loginResult);
     }
@@ -29,9 +40,15 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<RegistrationResponseModel>> Registration(RegistrationRequestModel registrationRequest)
     {
-        RegistrationResponseModel registrationResponse =
-            await _accountService.RegistrationAsync(registrationRequest);
-        return Ok(registrationResponse);
+        var validationResult = _validationService.Validate(registrationRequest);
+        if (!validationResult.IsValid)
+            return new RegistrationResponseModel()
+            {
+                Success = false,
+                Message = $"Validation errors:{Environment.NewLine}{validationResult}"
+            };
+
+        return Ok(await _accountService.RegistrationAsync(registrationRequest));
     }
 
     [Authorize]
@@ -62,6 +79,10 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateProfile(UserProfileUpdateModel updatedUser)
     {
+        var validationResult = _validationService.Validate(updatedUser);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         var userName = User?.Identity?.Name;
         if (userName == null)
             return NotFound();
@@ -85,6 +106,10 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
     {
+        var validationResult = _validationService.Validate(model);
+        if (!validationResult.IsValid)
+            return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
+
         var userName = User?.Identity?.Name;
         if (userName == null)
             return NotFound();

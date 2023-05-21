@@ -1,6 +1,6 @@
 ﻿namespace TaskTracker.Application.Models;
 
-public class BoardPutModel
+public class BoardPutModel : IValidatableModel
 {
     public string? Name { get; set; }
 }

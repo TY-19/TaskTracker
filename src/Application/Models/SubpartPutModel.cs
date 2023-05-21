@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace TaskTracker.Application.Models;
 
-namespace TaskTracker.Application.Models;
-
-public class SubpartPutModel
+public class SubpartPutModel : IValidatableModel
 {
     public string? Name { get; set; }
     public string? Description { get; set; }

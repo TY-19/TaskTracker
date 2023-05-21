@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -83,7 +81,7 @@ public class AccountServiceTests
     public async Task RegistrationAsync_ReturnsResponsWithFalse_IfProvidedWithInvalidData()
     {
         var context = ServicesTestsHelper.GetTestDbContext();
-        var service = await GetAccountServiceAsync(context, validationResult: false);
+        var service = await GetAccountServiceAsync(context);
 
         var result = await service.RegistrationAsync(new RegistrationRequestModel()
         {
@@ -263,16 +261,9 @@ public class AccountServiceTests
     private static async Task<AccountService> GetAccountServiceAsync(
         TestDbContext context,
         bool seedDefaultUser = false,
-        bool seedDefaultEmployee = false, 
-        bool seedDefaultAdmin = false,
-        bool validationResult = true)
+        bool seedDefaultEmployee = false,
+        bool seedDefaultAdmin = false)
     {
-        var validatorMock = new Mock<IValidator<RegistrationRequestModel>>();
-        var validationErrors = validationResult
-            ? new List<ValidationFailure>()
-            : new List<ValidationFailure>() { new ValidationFailure() };
-        validatorMock.Setup(v => v.Validate(It.IsAny<RegistrationRequestModel>()))
-            .Returns(new ValidationResult() { Errors = validationErrors });
         var userManager = ServicesTestsHelper.GetUserManager(context);
         await AddDefaultRolesAsync(context);
 
@@ -284,7 +275,7 @@ public class AccountServiceTests
             await AddAdminAsync(userManager);
 
         return new AccountService(userManager, GetJwtHandlerService(userManager),
-            ServicesTestsHelper.GetMapper(), context, validatorMock.Object);
+            ServicesTestsHelper.GetMapper(), context);
     }
 
     private static JwtHandlerService GetJwtHandlerService(UserManager<User> userManager)
