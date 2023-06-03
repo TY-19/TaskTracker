@@ -1,0 +1,33 @@
+<div class="login">
+    <h3>Sign in</h3>
+    <p>to continue to Task Tracker</p>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <p>
+            <mat-error *ngIf="loginResult && !loginResult.success">
+                <strong>ERROR</strong>: {{loginResult.message}}
+            </mat-error>
+        </p>
+
+        <mat-form-field>
+            <mat-label>Name/Email:</mat-label>
+            <input matInput formControlName="nameOrEmail" required>
+            <mat-error>Name or email is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Password:</mat-label>
+            <input matInput type="password" formControlName="password" required>
+            <mat-error>Password is required</mat-error>
+        </mat-form-field>
+        <div>
+            <button mat-flat-button color="primary" type="submit">
+                Login
+            </button>
+            <button mat-flat-button color="accent" [routerLink]="['/']">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>
+
+
