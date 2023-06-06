@@ -16,6 +16,8 @@ export class AuthService {
     public tokenKey: string = "token";
     private _authStatus = new Subject<boolean>();
     public authStatus = this._authStatus.asObservable();
+    private _userRoles = new Subject<string[]>();
+    public userRoles = this._userRoles.asObservable();
 
     isAuthenticated() : boolean {
         return this.getToken() != null;
@@ -37,6 +39,7 @@ export class AuthService {
                 if(loginResult.success && loginResult.token) {
                     localStorage.setItem(this.tokenKey, loginResult.token);
                     this.setAuthStatus(true);
+                    this.setUserRoles(loginResult.roles);
                 }
             }));
     }
@@ -44,9 +47,14 @@ export class AuthService {
     logout() {
         localStorage.removeItem(this.tokenKey);
         this.setAuthStatus(false);
+        this.setUserRoles([]);
       }
     
-      private setAuthStatus(isAuthenticated: boolean): void {
+    private setAuthStatus(isAuthenticated: boolean): void {
         this._authStatus.next(isAuthenticated);
-      }
+    }
+
+    private setUserRoles(roles: string[]) {
+        this._userRoles.next(roles);
+    }
 }

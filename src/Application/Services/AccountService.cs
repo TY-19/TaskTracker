@@ -34,7 +34,7 @@ public class AccountService : IAccountService
 
         var token = await _jwtHandlerService.GetTokenAsync(user);
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        return GetLoginSucceedResult(jwt);
+        return await GetLoginSucceedResult(jwt, user);
     }
 
     public async Task<RegistrationResponseModel> RegistrationAsync(
@@ -135,16 +135,14 @@ public class AccountService : IAccountService
 
     private async Task<User?> FindUserAsync(string nameOrEmail)
     {
-        User user;
         if (nameOrEmail.Contains('@'))
         {
-            user = await _userManager.FindByEmailAsync(nameOrEmail);
+            return await _userManager.FindByEmailAsync(nameOrEmail);
         }
         else
         {
-            user = await _userManager.FindByNameAsync(nameOrEmail);
+            return await _userManager.FindByNameAsync(nameOrEmail);
         }
-        return user;
     }
 
     private async Task<bool> CheckPasswordAsync(User user, string password)
@@ -162,13 +160,21 @@ public class AccountService : IAccountService
         };
     }
 
-    private static LoginResponseModel GetLoginSucceedResult(string token)
+    private async Task<LoginResponseModel> GetLoginSucceedResult(string token, User user)
     {
         return new LoginResponseModel
         {
             Success = true,
             Message = "Login successful",
-            Token = token
+            Token = token,
+            Roles = await GetUserRoles(user)
         };
+    }
+
+    private async Task<IEnumerable<string>> GetUserRoles(User user)
+    {
+        List<string> roles = new();
+        roles.AddRange(await _userManager.GetRolesAsync(user));
+        return roles;
     }
 }

@@ -1,0 +1,18 @@
+.canvas {
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: left;
+    padding: 20px 20px;   
+}
+
+.card {
+    width: 250px;
+    max-width: 250px;
+    margin: 10px 20px;
+    flex-grow: 1;
+}
+
+.mat-card-title {
+    font-size: 20px;
+    font-weight: 500;
+}
