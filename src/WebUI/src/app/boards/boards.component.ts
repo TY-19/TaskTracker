@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BoardService } from './board.service';
 import { Board } from '../models/board';
-import { CurrentUserService } from '../auth/currentuser.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'tt-boards',
@@ -13,8 +13,7 @@ export class BoardsComponent implements OnInit {
   boards!: Board[];
 
   constructor(private boardService: BoardService,
-    public currentUserService: CurrentUserService) { 
-
+    private auth: AuthService) { 
   }
 
   ngOnInit(): void {
@@ -30,11 +29,11 @@ export class BoardsComponent implements OnInit {
   }
 
   isAdmin() : boolean {
-    return this.currentUserService.isAdmin();
+    return this.auth.isAdmin();
   }
   
   isManager() : boolean {
-    return this.currentUserService.isManager();
+    return this.auth.isManager();
   }
 
 }

@@ -3,21 +3,34 @@ import { Injectable } from "@angular/core";
 import { LoginRequest } from "./login-request";
 import { Observable, Subject, tap } from "rxjs";
 import { LoginResult } from "./login-result";
+import { DefaultRolesNames } from "../config/default-roles-names";
 
 @Injectable({
     providedIn: 'root',
 })
 
 export class AuthService {
-    constructor(
-        protected http: HttpClient) {
-    }
-
+    
     public tokenKey: string = "token";
     private _authStatus = new Subject<boolean>();
     public authStatus = this._authStatus.asObservable();
-    private _userRoles = new Subject<string[]>();
-    public userRoles = this._userRoles.asObservable();
+    
+    private rolesKey: string = "roles";
+    private userRoles: string[] = [];
+
+    constructor(
+        protected http: HttpClient) {
+            this.init();
+    }
+
+    init() : void {
+        this.setAuthStatus(this.isAuthenticated());
+        this.userRoles = this.getRoles();
+    }
+
+    setAuthStatus(isAuthenticated: boolean): void {
+        this._authStatus.next(isAuthenticated);
+    }
 
     isAuthenticated() : boolean {
         return this.getToken() != null;
@@ -26,11 +39,12 @@ export class AuthService {
     getToken() : string | null {
         return localStorage.getItem(this.tokenKey);
     }
-    
-    init() : void {
-        if (this.isAuthenticated())
-          this.setAuthStatus(true);
-      } 
+
+    getRoles() : string[] {
+        let roles = localStorage.getItem(this.rolesKey);
+        if (roles) return JSON.parse(roles);
+        else return [];
+    }    
 
     login(item: LoginRequest): Observable<LoginResult> {
         const url = "api/Account/login";
@@ -39,22 +53,28 @@ export class AuthService {
                 if(loginResult.success && loginResult.token) {
                     localStorage.setItem(this.tokenKey, loginResult.token);
                     this.setAuthStatus(true);
-                    this.setUserRoles(loginResult.roles);
+                    localStorage.setItem(this.rolesKey, JSON.stringify(loginResult.roles));
+                    this.userRoles = loginResult.roles;
                 }
             }));
     }
 
     logout() {
         localStorage.removeItem(this.tokenKey);
+        localStorage.removeItem(this.rolesKey);
         this.setAuthStatus(false);
-        this.setUserRoles([]);
+        this.userRoles = [];
       }
-    
-    private setAuthStatus(isAuthenticated: boolean): void {
-        this._authStatus.next(isAuthenticated);
+
+    isAdmin() : boolean {
+        return this.userRoles.includes(DefaultRolesNames.DEFAULT_ADMIN_ROLE);
     }
 
-    private setUserRoles(roles: string[]) {
-        this._userRoles.next(roles);
+    isManager() : boolean {
+        return this.userRoles.includes(DefaultRolesNames.DEFAULT_MANAGER_ROLE);
+    }
+
+    isEmployee() : boolean {
+        return this.userRoles.includes(DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE);
     }
 }
