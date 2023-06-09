@@ -13,13 +13,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthComponent } from './auth/auth.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { BoardsComponent } from './boards/boards.component';
+import { BoardEditComponent } from './boards/board-edit/board-edit.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthComponent,
     NavMenuComponent,
-    BoardsComponent
+    BoardsComponent,
+    BoardEditComponent
   ],
   imports: [
     BrowserModule,

@@ -6,9 +6,9 @@
         <mat-card-content>Assignments: {{board.assignments?.length}}</mat-card-content>
         <mat-card-content>Employees: {{board.employees?.length}}</mat-card-content>
         <mat-card-actions>
-            <button mat-button>View</button>
-            <button *ngIf="isAdmin() || isManager()" mat-button>Edit</button>
-            <button *ngIf="isAdmin() || isManager()" mat-button>Delete</button>
+            <a [routerLink]="['/boards', board.id]" mat-button>View</a>
+            <a *ngIf="isAdmin() || isManager()" [routerLink]="['/boards', board.id, 'edit']" mat-button>Edit</a>
+            <a *ngIf="isAdmin() || isManager()" mat-button>Delete</a>
         </mat-card-actions>
     </mat-card>
 </div>

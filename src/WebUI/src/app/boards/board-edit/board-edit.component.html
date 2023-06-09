@@ -1,0 +1,37 @@
+<div class="content">
+    <h3>Edit the board</h3>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        
+        <mat-form-field floatLabel="always">
+            <mat-label>Id:</mat-label>
+            <input matInput formControlName="id" readonly required>
+        </mat-form-field>
+        <br>
+        <mat-form-field floatLabel="always">
+            <mat-label>Name:</mat-label>
+            <input matInput formControlName="name" required
+                placeholder="Type a name">
+        </mat-form-field>
+        <p>
+            <mat-error *ngIf="form.controls['name'].errors?.['required']" class="form-error-message">
+                Name is required.
+            </mat-error>
+            <mat-error *ngIf="form.controls['name'].errors?.['minlength']" class="form-error-message" >
+                Name must be at least 3 characters long.
+            </mat-error>
+            <mat-error *ngIf="form.controls['name'].errors?.['nameIsNumber']" class="form-error-message" >
+                Name cannot consist from the digits only.
+            </mat-error>
+        </p>
+        <div>
+            <button mat-flat-button color="primary" type="submit">
+                Save
+            </button>
+            <button mat-flat-button color="secondary" [routerLink]="['/boards']">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>
+
+
