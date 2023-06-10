@@ -1,18 +1,13 @@
 <div class="content">
-    <h3>Edit the board</h3>
+    <h3>Create the board</h3>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         
-        <mat-form-field floatLabel="always">
-            <mat-label>Id:</mat-label>
-            <input matInput formControlName="id" readonly required>
-        </mat-form-field>
-        <br>
         <mat-form-field floatLabel="always">
             <mat-label>Name:</mat-label>
             <input matInput formControlName="name" required
                 placeholder="Type a name">
         </mat-form-field>
-        <p>
+        <p *ngIf="form.touched">
             <mat-error *ngIf="form.controls['name'].errors?.['required']" class="form-error-message">
                 Name is required.
             </mat-error>
@@ -25,7 +20,7 @@
         </p>
         <div>
             <button mat-flat-button color="primary" type="submit">
-                Save
+                Create
             </button>
             <button mat-flat-button color="accent" [routerLink]="['/boards']">
                 Cancel
@@ -33,5 +28,4 @@
         </div>
     </form>
 </div>
-
 

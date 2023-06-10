@@ -28,6 +28,15 @@ export class BoardsComponent implements OnInit {
       });
   }
 
+  deleteBoard(id: number) {
+    if(confirm("Do you really want to delete the board? All tasks will be deleted as well"))
+    {
+      this.boardService.deleteBoard(id.toString()).subscribe({
+        next: () => this.getData()
+      });
+    }
+  }
+
   isAdmin() : boolean {
     return this.auth.isAdmin();
   }

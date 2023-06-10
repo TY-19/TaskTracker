@@ -1,0 +1,11 @@
+<div *ngIf="board" class="content">
+    <h2>{{board.name}}</h2>
+    <div>
+        <a mat-flat-button color="primary">Create Task</a>
+        <a mat-flat-button class="edit-button">Manage Stages</a>
+        <a mat-flat-button class="edit-button">Manage Employees</a>
+    </div>
+    <div>
+        <div *ngFor="let stage of board.stages">{{stage.name}}</div>
+    </div>
+</div>

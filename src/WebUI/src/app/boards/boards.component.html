@@ -1,3 +1,6 @@
+<div *ngIf="isAdmin() || isManager()" class="button-wrapper">
+    <a mat-flat-button color="primary" [routerLink]="['/boards', 'create']">Create</a>
+</div>
 <div *ngIf="boards" class="canvas">
     <mat-card *ngFor="let board of boards" class="card">
         <mat-card-header>
@@ -6,9 +9,12 @@
         <mat-card-content>Assignments: {{board.assignments?.length}}</mat-card-content>
         <mat-card-content>Employees: {{board.employees?.length}}</mat-card-content>
         <mat-card-actions>
-            <a [routerLink]="['/boards', board.id]" mat-button>View</a>
-            <a *ngIf="isAdmin() || isManager()" [routerLink]="['/boards', board.id, 'edit']" mat-button>Edit</a>
-            <a *ngIf="isAdmin() || isManager()" mat-button>Delete</a>
+            <a [routerLink]="['/boards', board.id]" 
+                mat-flat-button color="primary">View</a>
+            <a *ngIf="isAdmin() || isManager()" [routerLink]="['/boards', board.id, 'edit']" 
+                mat-flat-button class="edit-button">Edit</a>
+            <a *ngIf="isAdmin() || isManager()" (click)="deleteBoard(board.id)"
+                mat-flat-button color="warn">Delete</a>
         </mat-card-actions>
     </mat-card>
 </div>

@@ -14,6 +14,8 @@ import { AuthComponent } from './auth/auth.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { BoardsComponent } from './boards/boards.component';
 import { BoardEditComponent } from './boards/board-edit/board-edit.component';
+import { BoardCreateComponent } from './boards/board-create/board-create.component';
+import { BoardDetailsComponent } from './boards/board-details/board-details.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,9 @@ import { BoardEditComponent } from './boards/board-edit/board-edit.component';
     AuthComponent,
     NavMenuComponent,
     BoardsComponent,
-    BoardEditComponent
+    BoardEditComponent,
+    BoardCreateComponent,
+    BoardDetailsComponent
   ],
   imports: [
     BrowserModule,
