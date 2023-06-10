@@ -95,6 +95,46 @@ public class StagesController : ControllerBase
         return NoContent();
     }
 
+    [Route("{stageId}/moveforward")]
+    [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> MoveStageForward(int boardId, int stageId)
+    {
+        try
+        {
+            await _stageService.MoveStage(boardId, stageId, true);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        return NoContent();
+    }
+
+    [Route("{stageId}/moveback")]
+    [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> MoveStageBack(int boardId, int stageId)
+    {
+        try
+        {
+            await _stageService.MoveStage(boardId, stageId, false);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        return NoContent();
+    }
+
     [Route("{stageId}")]
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
     [HttpDelete]

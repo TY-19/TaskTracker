@@ -7,6 +7,7 @@ import { BoardEditComponent } from './boards/board-edit/board-edit.component';
 import { DefaultRolesNames } from './config/default-roles-names';
 import { BoardCreateComponent } from './boards/board-create/board-create.component';
 import { BoardDetailsComponent } from './boards/board-details/board-details.component';
+import { StagesComponent } from './stages/stages.component';
 
 const routes: Routes = [
   { path: '', component: BoardsComponent, pathMatch: 'full' },
@@ -16,6 +17,8 @@ const routes: Routes = [
   { path: 'boards/create', component: BoardCreateComponent, canActivate: [AuthGuard],
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
   { path: 'boards/:id/edit', component: BoardEditComponent, canActivate: [AuthGuard], 
+    data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
+  { path: 'boards/:boardId/stages', component: StagesComponent, canActivate: [AuthGuard], 
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
 ];
 

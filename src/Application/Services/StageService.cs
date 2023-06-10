@@ -26,25 +26,28 @@ public class StageService : IStageService
 
     public async Task<WorkflowStageGetModel> AddStageToTheBoardAsync(int boardId, WorkflowStagePostModel model)
     {
-        var board = await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
+        var board = await _context.Boards
+            .Include(b => b.Stages)
+            .FirstOrDefaultAsync(b => b.Id == boardId);
 
         if (board == null)
             throw new ArgumentException("The board with such an id does not exist", nameof(boardId));
 
-        var stage = await CreateStage(model, boardId);
+        var stage = CreateStage(model, board);
         board.Stages.Add(stage);
         await _context.SaveChangesAsync();
         return _mapper.Map<WorkflowStageGetModel>(stage);
     }
 
-    private async Task<WorkflowStage> CreateStage(WorkflowStagePostModel model, int boardId)
+    private static WorkflowStage CreateStage(WorkflowStagePostModel model, Board board)
     {
         return new WorkflowStage()
         {
             Name = model.Name,
-            BoardId = boardId,
-            Position = ((await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId))?
-                .Stages?.Select(s => s.Position).DefaultIfEmpty().Max() ?? 0) + 1,
+            BoardId = board.Id,
+            Position = (board.Stages?
+                .Select(s => s.Position)
+                .DefaultIfEmpty().Max() ?? 0) + 1,
         };
     }
 
@@ -66,6 +69,33 @@ public class StageService : IStageService
         _mapper.Map(model, stage);
 
         _context.Stages.Update(stage);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task MoveStage(int boardId, int stageId, bool isMovingForward)
+    {
+        WorkflowStage? stageToMove = await _context.Stages
+            .FirstOrDefaultAsync(s => s.Id == stageId && s.BoardId == boardId);
+
+        if (stageToMove == null)
+            throw new ArgumentException("There is no stage with the id on the board");
+
+        int newPosition = isMovingForward
+            ? stageToMove.Position + 1
+            : stageToMove.Position - 1;
+
+        if (newPosition == 0 || newPosition > await _context.Stages.MaxAsync(s => s.Position))
+            throw new ArgumentException(
+                $"Stage is already on the {(isMovingForward ? "last" : "first")} position and can't be moved");
+
+        WorkflowStage? stageToDisplace = await _context.Stages
+            .FirstOrDefaultAsync(s => s.Position == newPosition);
+
+        stageToDisplace!.Position = stageToMove.Position;
+        _context.Stages.Update(stageToDisplace);
+
+        stageToMove.Position = newPosition;
+        _context.Stages.Update(stageToMove);
         await _context.SaveChangesAsync();
     }
 
