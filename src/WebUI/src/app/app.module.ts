@@ -17,6 +17,7 @@ import { BoardEditComponent } from './boards/board-edit/board-edit.component';
 import { BoardCreateComponent } from './boards/board-create/board-create.component';
 import { BoardDetailsComponent } from './boards/board-details/board-details.component';
 import { StagesComponent } from './stages/stages.component';
+import { StageCreateEditComponent } from './stages/stage-create-edit/stage-create-edit.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { StagesComponent } from './stages/stages.component';
     BoardEditComponent,
     BoardCreateComponent,
     BoardDetailsComponent,
-    StagesComponent
+    StagesComponent,
+    StageCreateEditComponent
   ],
   imports: [
     BrowserModule,

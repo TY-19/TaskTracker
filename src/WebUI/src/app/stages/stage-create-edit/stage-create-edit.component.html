@@ -1,0 +1,21 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <input matInput formControlName="id" hidden required readonly>
+    <mat-form-field floatLabel="always">
+        <mat-label>Name:</mat-label>
+        <input matInput formControlName="name" required
+            placeholder="Type a name">
+    </mat-form-field>
+    <p *ngIf="form.touched">
+        <mat-error *ngIf="form.controls['name'].errors?.['required']" class="form-error-message">
+            Name is required.
+        </mat-error>
+        <mat-error *ngIf="form.controls['name'].errors?.['minlength']" class="form-error-message" >
+            Name must be at least 3 characters long.
+        </mat-error>
+    </p>
+    <div>
+        <button mat-flat-button color="primary" type="submit">
+            {{mode == "edit" ? 'Save' : 'Add'}}
+        </button>
+    </div>
+</form>

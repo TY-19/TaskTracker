@@ -89,10 +89,13 @@ public class StageService : IStageService
                 $"Stage is already on the {(isMovingForward ? "last" : "first")} position and can't be moved");
 
         WorkflowStage? stageToDisplace = await _context.Stages
-            .FirstOrDefaultAsync(s => s.Position == newPosition);
+            .FirstOrDefaultAsync(s=> s.BoardId == boardId && s.Position == newPosition);
 
-        stageToDisplace!.Position = stageToMove.Position;
-        _context.Stages.Update(stageToDisplace);
+        if(stageToDisplace != null)
+        {
+            stageToDisplace.Position = stageToMove.Position;
+            _context.Stages.Update(stageToDisplace);
+        }
 
         stageToMove.Position = newPosition;
         _context.Stages.Update(stageToMove);
