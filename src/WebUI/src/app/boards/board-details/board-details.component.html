@@ -7,6 +7,19 @@
         <a mat-flat-button class="edit-button">Manage Employees</a>
     </div>
     <div>
-        <div *ngFor="let stage of board.stages">{{stage.name}}</div>
+        <div cdkDropListGroup class="board">
+            <div class="stage" cdkDropList (cdkDropListDropped)="drop($event)"
+                *ngFor="let stage of getSortedStages()"
+                [attr.stage-id]="stage.id">
+                    <div class="stage-name">{{stage.name}}</div>
+                    <div *ngFor="let task of filterAssignmentOfTheStage(stage.id)">
+                        <div cdkDrag [cdkDragData]="task">
+                            <div [routerLink]="['/boards', board.id, 'tasks', task.id]">
+                                {{task.topic}}
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
     </div>
 </div>

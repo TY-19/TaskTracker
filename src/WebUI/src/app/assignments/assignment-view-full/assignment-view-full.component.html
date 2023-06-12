@@ -1,0 +1,46 @@
+<div class="content">
+    <button class="back-container" [routerLink]="['/boards', boardId]">
+        <mat-icon>
+            arrow_back
+        </mat-icon>
+        <p class="back-text">Back to the board</p>
+    </button>
+    <div class="assignment-full">
+        <table aria-labelledby="assignment-details">
+            <tr hidden="true">
+                <th>Detail</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Topic:</td>
+                <td>
+                    {{assignment?.topic}}
+                </td>
+            </tr>
+            <tr>
+                <td>Description:</td>
+                <td>{{assignment?.description}}</td>
+            </tr>
+            <tr>
+                <td>Stage:</td>
+                <td>{{stage?.name}}</td>
+            </tr>
+            <tr>
+                <td>Deadline:</td>
+                <td>{{assignment?.deadline | date}}</td>
+            </tr>
+            <tr *ngIf="assignment?.isCompleted">
+                <p>Completed</p>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <button mat-flat-button class="edit-button"
+            [routerLink]="['/boards', boardId, 'tasks', assignmentId, 'edit']">
+            Edit
+        </button>
+        <button mat-flat-button color="warn">
+            Delete
+        </button>
+    </div>
+</div>

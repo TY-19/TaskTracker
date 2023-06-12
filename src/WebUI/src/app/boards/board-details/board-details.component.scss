@@ -5,3 +5,31 @@ h2 {
 .mat-flat-button {
     margin: 0px 3px;
 }
+
+.board {
+    margin-top: 20px;
+    display: flex;
+    overflow-x: auto;
+}
+
+.stage {
+    white-space: nowrap;
+    border: 2px solid grey;
+    border-radius: 20px;
+    padding: 3px 3px;
+    text-align: center;
+    background-color: cornsilk;
+    min-width: 200px;
+    width: 50%;
+    height: 200px;
+    margin-right: 5px;
+}
+
+.stage-name {
+    font-size: 16px;
+    border-bottom: 1px solid black;
+}
+
+.cdk-drag {
+    background-color: bisque;
+}

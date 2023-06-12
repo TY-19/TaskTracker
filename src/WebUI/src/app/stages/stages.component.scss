@@ -41,5 +41,23 @@ td.mat-cell:last-of-type {
 }
 
 .highlight-row {
-background-color: cadetblue;
+    background-color: cadetblue;
+}
+
+.back-container {
+    display: flex;
+    align-items: center;
+    border: none;
+}
+.back-text {
+    margin-left: 3px;
+}
+
+th {
+    color: black;
+    font-size: medium;
+}
+
+td {
+    font-size: 16px;
 }

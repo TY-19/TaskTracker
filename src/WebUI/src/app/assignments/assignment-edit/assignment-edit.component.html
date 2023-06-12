@@ -1,0 +1,59 @@
+<div class="content">
+    <button class="back-container" [routerLink]="['/boards', boardId]">
+        <mat-icon>
+            arrow_back
+        </mat-icon>
+        <p class="back-text">Back to the board</p>
+    </button>
+    <form [formGroup]="form" (submit)="onSubmit()" class="form-content">
+        <input matInput formControlName="id" readonly required hidden="true">
+        <mat-form-field floatLabel="always">
+            <mat-label>Topic:</mat-label>
+            <input matInput formControlName="topic" required>
+        </mat-form-field>
+        <p>
+            <mat-error *ngIf="form.controls['topic'].errors?.['required']" class="form-error-message">
+                Topic is required.
+            </mat-error>
+        </p>
+
+        <mat-form-field floatLabel="always">
+            <mat-label>Description:</mat-label>
+            <input matInput formControlName="description">
+        </mat-form-field>
+        
+        <br>
+        <mat-form-field floatLabel="always">
+            <mat-label>Stage:</mat-label>
+            <mat-select formControlName="stage">
+                <mat-option *ngFor="let stage of stages" [value]="stage.id">
+                    {{stage.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <br>
+        <mat-form-field floatLabel="always">
+            <mat-label>Deadline</mat-label>
+            <input matInput [matDatepicker]="datePicker" formControlName="deadline">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+            <mat-datepicker #datePicker></mat-datepicker>
+          </mat-form-field>
+
+        <br>
+            <mat-label class="right-margin">Completed:</mat-label>
+            <mat-checkbox color="primary" formControlName="isCompleted"></mat-checkbox>
+        <br><br>
+
+
+        <div>
+            <button mat-flat-button color="primary" type="submit">
+                Save
+            </button>
+            <button mat-flat-button color="accent" [routerLink]="['/boards', boardId, 'tasks', assignmentId]">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>

@@ -8,7 +8,11 @@ import { MatSortModule } from '@angular/material/sort'
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatCardModule } from '@angular/material/card'
+import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [],
@@ -22,7 +26,11 @@ import { MatCardModule } from '@angular/material/card'
     MatInputModule,
     MatSelectModule,
     MatFormFieldModule,
-    MatCardModule
+    MatCardModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatCheckboxModule,
+    DragDropModule
   ],
   exports: [
     MatButtonModule,
@@ -34,7 +42,11 @@ import { MatCardModule } from '@angular/material/card'
     MatInputModule,
     MatSelectModule,
     MatFormFieldModule,
-    MatCardModule
+    MatCardModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatCheckboxModule,
+    DragDropModule
   ]
 })
 export class AngularMaterialModule { }

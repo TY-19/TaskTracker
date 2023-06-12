@@ -18,6 +18,9 @@ import { BoardCreateComponent } from './boards/board-create/board-create.compone
 import { BoardDetailsComponent } from './boards/board-details/board-details.component';
 import { StagesComponent } from './stages/stages.component';
 import { StageCreateEditComponent } from './stages/stage-create-edit/stage-create-edit.component';
+import { AssignmentsComponent } from './assignments/assignments.component';
+import { AssignmentViewFullComponent } from './assignments/assignment-view-full/assignment-view-full.component';
+import { AssignmentEditComponent } from './assignments/assignment-edit/assignment-edit.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,10 @@ import { StageCreateEditComponent } from './stages/stage-create-edit/stage-creat
     BoardCreateComponent,
     BoardDetailsComponent,
     StagesComponent,
-    StageCreateEditComponent
+    StageCreateEditComponent,
+    AssignmentsComponent,
+    AssignmentViewFullComponent,
+    AssignmentEditComponent
   ],
   imports: [
     BrowserModule,

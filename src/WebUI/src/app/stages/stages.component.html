@@ -1,4 +1,11 @@
 <div class="content">
+    <button class="back-container" [routerLink]="['/boards', boardId]">
+        <mat-icon>
+            arrow_back
+        </mat-icon>
+        <p class="back-text">Back to the board</p>
+    </button>
+
     <table mat-table [dataSource]="stages"
         class="mat-elevation-z8"
         [hidden]="!stages"

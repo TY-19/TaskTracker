@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Stage } from 'src/app/models/stage';
 import { StageService } from '../stage.service';
 import { ActivatedRoute } from '@angular/router';
 
