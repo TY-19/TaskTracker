@@ -19,3 +19,50 @@
     margin-right: 5px;
 }
 
+.flex-container {
+    display: flex;
+    vertical-align: middle;
+}
+
+.vartical-center {
+    display: flex;
+    vertical-align: middle;
+}
+
+.buttons {
+    margin-top: 10px;
+    white-space: nowrap;
+}
+
+.mat-hint.small-font {
+    font-size: 12px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.date-input {
+    width: 70px;
+}
+
+.time-input {
+    width: 40px;
+    border: none;
+    font-size: 14px;
+}
+
+.hint {
+    font-weight: 200;
+    font-size: 11px;
+}
+.right-hint {
+    margin-left: 45px;
+}

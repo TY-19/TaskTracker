@@ -50,3 +50,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   margin: 0 0 0;
   font: 400 16px Roboto, "Helvetica Neue", sans-serif;
 }
+
+input, mat-label, mat-select, mat-option {
+  font-size: 16px;
+}
+
+mat-hint {
+  font-size: 12px;
+}

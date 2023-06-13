@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Assignment } from 'src/app/models/assignment';
 import { AssignmentService } from '../assignments.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Stage } from 'src/app/models/stage';
 import { StageService } from 'src/app/stages/stage.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'tt-assignment-view-full',
@@ -19,6 +18,7 @@ export class AssignmentViewFullComponent implements OnInit {
   stage?: Stage;
 
   constructor(private activatedRoute: ActivatedRoute,
+    private router: Router,
     private assignmentService: AssignmentService,
     private stageService: StageService) { 
 
@@ -41,6 +41,14 @@ export class AssignmentViewFullComponent implements OnInit {
   getStage(boardId: string, stageId: number) {
     this.stageService.getStage(boardId, stageId.toString())
       .subscribe((result) => this.stage = result);
+  }
+
+  deleteAssignment() {
+    this.assignmentService.deleteAssignment(this.boardId, this.assignmentId)
+      .subscribe(() => {
+        this.router.navigate(['/boards', this.boardId])
+          .catch(error => console.log(error))
+      });
   }
 
 

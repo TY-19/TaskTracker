@@ -10,9 +10,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 @NgModule({
   declarations: [],
@@ -28,9 +30,10 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MatFormFieldModule,
     MatCardModule,
     MatDatepickerModule,
-    MatNativeDateModule,
+    MatMomentDateModule,
     MatCheckboxModule,
-    DragDropModule
+    DragDropModule,
+    NgxMaterialTimepickerModule
   ],
   exports: [
     MatButtonModule,
@@ -44,9 +47,13 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MatFormFieldModule,
     MatCardModule,
     MatDatepickerModule,
-    MatNativeDateModule,
+    MatMomentDateModule,
     MatCheckboxModule,
-    DragDropModule
+    DragDropModule,
+    NgxMaterialTimepickerModule
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
   ]
 })
 export class AngularMaterialModule { }

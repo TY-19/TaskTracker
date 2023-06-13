@@ -9,23 +9,23 @@
         <input matInput formControlName="id" readonly required hidden="true">
         <mat-form-field floatLabel="always">
             <mat-label>Topic:</mat-label>
-            <input matInput formControlName="topic" required>
+            <p><input matInput formControlName="topic" required></p>
         </mat-form-field>
-        <p>
+        <p *ngIf="form.touched">
             <mat-error *ngIf="form.controls['topic'].errors?.['required']" class="form-error-message">
                 Topic is required.
             </mat-error>
         </p>
-
+        <br>
         <mat-form-field floatLabel="always">
             <mat-label>Description:</mat-label>
-            <input matInput formControlName="description">
+            <p><input matInput formControlName="description"></p>
         </mat-form-field>
         
         <br>
         <mat-form-field floatLabel="always">
             <mat-label>Stage:</mat-label>
-            <mat-select formControlName="stage">
+            <mat-select formControlName="stage" required>
                 <mat-option *ngFor="let stage of stages" [value]="stage.id">
                     {{stage.name}}
                 </mat-option>
@@ -35,23 +35,38 @@
         <br>
         <mat-form-field floatLabel="always">
             <mat-label>Deadline</mat-label>
-            <input matInput [matDatepicker]="datePicker" formControlName="deadline">
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
-            <mat-datepicker #datePicker></mat-datepicker>
-          </mat-form-field>
-
+            <div class="container">
+                <div class="row">
+                  <div class="flex-container">
+                    <input class="date-input" matInput [matDatepicker]="datePicker" formControlName="deadlineDate" required>
+                    <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #datePicker></mat-datepicker>
+                  </div>
+                  <div class="flex-container">
+                    <input class="time-input" [ngxTimepicker]="timePicker" [format]=24 formControlName="deadlineTime">
+                    <ngx-material-timepicker-toggle [for]="timePicker"></ngx-material-timepicker-toggle>
+                    <ngx-material-timepicker #timePicker></ngx-material-timepicker>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="hint">DD/MM/YYYY</div>
+                  <div class="hint right-hint">HH:MM</div>
+                </div>
+            </div>
+        </mat-form-field>
+        
         <br>
+        <div class="flex-container">
             <mat-label class="right-margin">Completed:</mat-label>
-            <mat-checkbox color="primary" formControlName="isCompleted"></mat-checkbox>
-        <br><br>
+            <mat-checkbox class="vartical-center" color="primary" formControlName="isCompleted"></mat-checkbox>
+        </div>
 
-
-        <div>
+        <div class="buttons">
             <button mat-flat-button color="primary" type="submit">
-                Save
+                {{ mode === "create" ? "Add" : "Save" }}
             </button>
-            <button mat-flat-button color="accent" [routerLink]="['/boards', boardId, 'tasks', assignmentId]">
+            <button mat-flat-button color="accent" 
+                [routerLink]="mode === 'create' ? ['/boards', boardId] : ['/boards', boardId, 'tasks', assignmentId]">
                 Cancel
             </button>
         </div>

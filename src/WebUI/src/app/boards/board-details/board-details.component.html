@@ -1,7 +1,9 @@
 <div *ngIf="board" class="content">
     <h2>{{board.name}}</h2>
     <div>
-        <a mat-flat-button color="primary">Create Task</a>
+        <a mat-flat-button color="primary" 
+            [routerLink]="['/boards', board.id, 'tasks', 'create']">Create Task</a>
+        <a mat-flat-button class="edit-button">Manage Tasks</a>
         <a mat-flat-button class="edit-button" 
             [routerLink]="['/boards', board.id, 'stages']">Manage Stages</a>
         <a mat-flat-button class="edit-button">Manage Employees</a>

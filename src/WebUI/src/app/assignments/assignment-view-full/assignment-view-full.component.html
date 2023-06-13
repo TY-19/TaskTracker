@@ -27,10 +27,13 @@
             </tr>
             <tr>
                 <td>Deadline:</td>
-                <td>{{assignment?.deadline | date}}</td>
+                <td>{{assignment?.deadline | date: 'dd/MM/YYYY HH:mm' }}</td>
             </tr>
-            <tr *ngIf="assignment?.isCompleted">
-                <p>Completed</p>
+            <tr>
+                <td>Status:</td>
+                <td [class]="assignment?.isCompleted ? 'success-text' : 'warn-text'">
+                    {{assignment?.isCompleted ? "Completed" : "Incompleted"}}
+                </td>
             </tr>
         </table>
     </div>
@@ -39,7 +42,7 @@
             [routerLink]="['/boards', boardId, 'tasks', assignmentId, 'edit']">
             Edit
         </button>
-        <button mat-flat-button color="warn">
+        <button mat-flat-button color="warn" (click)="deleteAssignment()">
             Delete
         </button>
     </div>

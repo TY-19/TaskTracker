@@ -7,4 +7,5 @@ public class AssignmentPutModel : IValidatableModel
     public DateTime? Deadline { get; set; }
     public int? StageId { get; set; }
     public int? ResponsibleEmployeeId { get; set; }
+    public bool IsCompleted { get; set; } = false;
 }

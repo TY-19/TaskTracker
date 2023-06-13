@@ -17,8 +17,18 @@ export class AssignmentService {
     return this.http.get<Assignment>(url);
   }
 
+  createAssignment(boardId: string, assignment: Assignment) {
+    const url = "/api/boards/" + boardId + "/tasks/";
+    return this.http.post(url, assignment);
+  }
+
   updateAssignment(boardId: string, assignment: Assignment) {
     const url = "/api/boards/" + boardId + "/tasks/" + assignment.id;
     return this.http.put(url, assignment);
+  }
+
+  deleteAssignment(boardId: string, assignmentId: string) {
+    const url = "/api/boards/" + boardId + "/tasks/" + assignmentId;
+    return this.http.delete(url);
   }
 }
