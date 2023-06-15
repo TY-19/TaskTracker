@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Represents the set of default user's roles names in the application.
-/// Is user to seed default data and ensure authorization by roles.
+/// Is used to seed default data and ensure authorization by roles.
 /// </summary>
 public static class DefaultRolesNames
 {

@@ -21,6 +21,9 @@ import { StageCreateEditComponent } from './stages/stage-create-edit/stage-creat
 import { AssignmentsComponent } from './assignments/assignments.component';
 import { AssignmentViewFullComponent } from './assignments/assignment-view-full/assignment-view-full.component';
 import { AssignmentEditComponent } from './assignments/assignment-edit/assignment-edit.component';
+import { RegistrationComponent } from './auth/registration/registration.component';
+import { EmployeesComponent } from './employees/employees.component';
+import { AccountComponent } from './account/account.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,10 @@ import { AssignmentEditComponent } from './assignments/assignment-edit/assignmen
     StageCreateEditComponent,
     AssignmentsComponent,
     AssignmentViewFullComponent,
-    AssignmentEditComponent
+    AssignmentEditComponent,
+    RegistrationComponent,
+    EmployeesComponent,
+    AccountComponent
   ],
   imports: [
     BrowserModule,

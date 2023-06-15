@@ -27,6 +27,7 @@ public class EmployeeService : IEmployeeService
     public async Task<IEnumerable<EmployeeGetBoardModel>> GetAllEmployeeFromTheBoardAsync(int boardId)
     {
         var employees = await _context.Employees
+                .Include(e => e.User)
                 .Where(s => s.Boards.Select(b => b.Id).Contains(boardId))
                 .AsNoTracking()
                 .ToListAsync();
@@ -38,6 +39,7 @@ public class EmployeeService : IEmployeeService
     public async Task<EmployeeGetBoardModel?> GetEmployeeByIdAsync(int id)
     {
         var employee = await _context.Employees
+            .Include(e => e.User)
             .FirstOrDefaultAsync(e => e.Id == id);
         var mapped = _mapper.Map<EmployeeGetBoardModel>(employee);
         return mapped;

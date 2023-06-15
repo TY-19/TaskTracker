@@ -5,3 +5,28 @@
 a {
     font-size: 16px;
 }
+
+.wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  
+.trigger {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.links {
+    font-size: 16px;
+    background-color: #009688;
+    position: absolute;
+    min-width: 100px;
+    right: -16px;
+    padding-top: 10px;
+    display: none;
+}
+
+.wrapper:hover .links {
+    display: block;
+    z-index: 100;
+}

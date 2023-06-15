@@ -16,9 +16,20 @@
          [routerLink]="['/login']">
         Login
       </a>
-      <a *ngIf="isLoggedIn" mat-flat-button color="primary"
-         (click)="onLogout()">
-        Logout
-      </a>
+
+      <div *ngIf="isLoggedIn" class="wrapper">
+        <div class="trigger">{{username ?? "User"}}</div>
+        <div class="links" color="primary">
+          <a *ngIf="isLoggedIn" mat-flat-button color="primary"
+            [routerLink]="['profile']">
+            Profile
+          </a>
+          <br>
+          <a *ngIf="isLoggedIn" mat-flat-button color="primary"
+            (click)="onLogout()">
+            Logout
+          </a>
+        </div>
+      </div>
     </mat-toolbar>
   </header>

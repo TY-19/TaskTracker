@@ -2,10 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { BoardService } from '../board.service';
 import { Board } from 'src/app/models/board';
 import { ActivatedRoute } from '@angular/router';
-import { CdkDragDrop, CdkDrag, CdkDropList, CdkDropListGroup,
-  moveItemInArray,  transferArrayItem, } from '@angular/cdk/drag-drop';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Assignment } from 'src/app/models/assignment';
-import { AssignmentService } from 'src/app/assignments/assignments.service';
+import { AssignmentService } from 'src/app/assignments/assignment.service';
 import { Stage } from 'src/app/models/stage';
 
 

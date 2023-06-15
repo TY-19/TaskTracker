@@ -6,7 +6,8 @@
         <a mat-flat-button class="edit-button">Manage Tasks</a>
         <a mat-flat-button class="edit-button" 
             [routerLink]="['/boards', board.id, 'stages']">Manage Stages</a>
-        <a mat-flat-button class="edit-button">Manage Employees</a>
+        <a mat-flat-button class="edit-button"
+            [routerLink]="['/boards', board.id, 'employees']">Manage Employees</a>
     </div>
     <div>
         <div cdkDropListGroup class="board">

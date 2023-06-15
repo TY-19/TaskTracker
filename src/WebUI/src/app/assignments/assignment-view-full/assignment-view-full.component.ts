@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Assignment } from 'src/app/models/assignment';
-import { AssignmentService } from '../assignments.service';
+import { AssignmentService } from '../assignment.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Stage } from 'src/app/models/stage';
 import { StageService } from 'src/app/stages/stage.service';

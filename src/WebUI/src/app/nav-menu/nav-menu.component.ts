@@ -12,6 +12,7 @@ export class NavMenuComponent implements OnInit {
   
   private destroySubject = new Subject();
   isLoggedIn: boolean = false;
+  username: string | null = null;
 
   constructor(private authService: AuthService,
     private router: Router) { 
@@ -32,6 +33,7 @@ export class NavMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isAuthenticated();
+    this.username = this.authService.getUserName();
   }
 
   ngOnDestroy() {

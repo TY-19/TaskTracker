@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AssignmentService } from '../assignments.service';
+import { AssignmentService } from '../assignment.service';
 import { StageService } from 'src/app/stages/stage.service';
 import { Stage } from 'src/app/models/stage';
 import * as moment from 'moment';

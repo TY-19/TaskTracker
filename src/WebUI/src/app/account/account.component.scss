@@ -1,0 +1,72 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+}
+  
+.row {
+    display: flex;
+}
+
+.one-item-row {
+    width: 280px;
+}
+
+.first-column {
+    width: 90px;
+}
+.second-column {
+    width: 190px;
+}
+  
+.cell {
+    padding-right: 14px;
+    padding-bottom: 14px;
+    font: 16px Roboto, "Helvetica Neue", sans-serif;
+    vertical-align: middle;
+}
+
+.cell-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.span-line {
+    margin-top: 10px;
+}
+
+.center-text {
+    justify-content: center;
+}
+
+.bold-text {
+    font-weight: 500;
+}
+
+.mat-input-element:read-only {
+    color: grey;
+}
+
+:host ::ng-deep {
+    .mat-form-field-appearance-legacy .mat-form-field-wrapper {
+        padding-bottom: 0px;
+    }
+
+    .mat-flat-button {
+        margin: 0px 3px;
+    }
+
+    .mat-form-field-wrapper {
+        padding-bottom: 0px;
+    }
+
+    .mat-form-field-infix {
+        padding: 0 0;
+        border-top: 0;
+    }
+
+    .mat-form-field-appearance-legacy .mat-form-field-underline {
+        bottom: 0;
+    }
+}

@@ -1,9 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Stage } from '../models/stage';
 import { StageService } from './stage.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
-import { StageCreateEditComponent } from './stage-create-edit/stage-create-edit.component';
 
 @Component({
   selector: 'tt-stages',
@@ -11,7 +10,6 @@ import { StageCreateEditComponent } from './stage-create-edit/stage-create-edit.
   styleUrls: ['./stages.component.scss']
 })
 export class StagesComponent implements OnInit {
-  @ViewChild(StageCreateEditComponent) stageCreateEditComponent!: StageCreateEditComponent;
 
   boardId: string = "";
   stages!: MatTableDataSource<Stage>;

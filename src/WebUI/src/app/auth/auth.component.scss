@@ -12,12 +12,16 @@ p {
     margin-bottom: 0;
 }
 
-mat-form-field {
+.mat-form-field {
     display: block;
     margin: 10px 0;
     max-width: 350px;
 }
 
 .mat-flat-button {
-    margin: 0 5px;
+    margin: 0 3px;
+}
+
+.separate-block {
+    margin-top: 20px;
 }

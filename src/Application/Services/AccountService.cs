@@ -167,6 +167,7 @@ public class AccountService : IAccountService
             Success = true,
             Message = "Login successful",
             Token = token,
+            UserName = user.UserName,
             Roles = await GetUserRoles(user)
         };
     }

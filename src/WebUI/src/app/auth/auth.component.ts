@@ -43,7 +43,6 @@ export class AuthComponent implements OnInit {
         next: result => {
           this.loginResult = result;
           if (result.success && result.token) {
-            localStorage.setItem(this.authService.tokenKey, result.token);
             this.router.navigate(["/"]).catch(error => console.log(error));
           }},
         error: error => {

@@ -11,10 +11,15 @@ import { StagesComponent } from './stages/stages.component';
 import { AssignmentViewFullComponent } from './assignments/assignment-view-full/assignment-view-full.component';
 import { AssignmentsComponent } from './assignments/assignments.component';
 import { AssignmentEditComponent } from './assignments/assignment-edit/assignment-edit.component';
+import { RegistrationComponent } from './auth/registration/registration.component';
+import { EmployeesComponent } from './employees/employees.component';
+import { AccountComponent } from './account/account.component';
 
 const routes: Routes = [
   { path: '', component: BoardsComponent, pathMatch: 'full' },
   { path: 'login', component: AuthComponent },
+  { path: 'registration', component: RegistrationComponent },
+  { path: 'profile', component: AccountComponent, canActivate: [AuthGuard] },
   { path: 'boards', component: BoardsComponent, canActivate: [AuthGuard] },
   { path: 'boards/create', component: BoardCreateComponent, canActivate: [AuthGuard],
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
@@ -22,6 +27,8 @@ const routes: Routes = [
   { path: 'boards/:id/edit', component: BoardEditComponent, canActivate: [AuthGuard], 
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
   { path: 'boards/:boardId/stages', component: StagesComponent, canActivate: [AuthGuard], 
+    data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
+  { path: 'boards/:boardId/employees', component: EmployeesComponent, canActivate: [AuthGuard], 
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
   { path: 'boards/:boardId/tasks/', component: AssignmentsComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/create', component: AssignmentEditComponent, canActivate: [AuthGuard] },

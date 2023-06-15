@@ -1,0 +1,38 @@
+<div class="content">
+    <button class="back-container" [routerLink]="['/boards', boardId]">
+        <mat-icon>
+            arrow_back
+        </mat-icon>
+        <p class="back-text">Back to the board</p>
+    </button>
+
+    <table mat-table [dataSource]="employees"
+        class="mat-elevation-z8 table"
+        [hidden]="!employees"
+        aria-label="List of the employees">
+
+        <ng-container matColumnDef="userName">
+            <th mat-header-cell *matHeaderCellDef class="align-center"> User </th>
+            <td mat-cell *matCellDef="let employee" class="short-column align-center"> {{employee.userName}} </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="firstName">
+            <th mat-header-cell *matHeaderCellDef class="align-center"> First name </th>
+            <td mat-cell *matCellDef="let employee" class="short-column align-center"> {{employee.firstName}} </td>
+        </ng-container>
+        
+        <ng-container matColumnDef="lastName">
+            <th mat-header-cell *matHeaderCellDef> Last name </th>
+            <td mat-cell *matCellDef="let employee"> {{employee.lastName}} </td>
+        </ng-container>
+        
+
+        <tr mat-header-row *matHeaderRowDef="['userName', 'firstName', 'lastName']"></tr>
+        <tr mat-row *matRowDef="let row; let i = index;
+            columns: ['userName', 'firstName', 'lastName']">
+        </tr>
+    </table>
+
+    
+
+</div>

@@ -1,0 +1,74 @@
+<div class="content">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="wrapper">
+            <div class="row cell one-item-row center-text">
+                <div class="bold-text center-text">Your profile information</div>
+            </div>
+            <div hidden="true">
+                <div class="cell first-column">Id:</div>
+                <div class="cell second-column">
+                    <mat-form-field>
+                        <input matInput formControlName="id" readonly required>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="cell first-column">
+                    <div class="cell-content">Username:</div>
+                </div>
+              <div class="cell second-column">
+                <mat-form-field>
+                    <input matInput formControlName="userName" readonly required>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+                <div class="cell first-column">
+                    <div class="cell-content">Email:</div>
+                </div>
+              <div class="cell second-column">
+                <mat-form-field>
+                    <input matInput formControlName="email" required>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="cell first-column">
+                <div class="cell-content">Password:</div>
+              </div>
+              <div class="cell second-column">
+                <button mat-flat-button class="edit-button">Change</button>
+              </div>
+            </div>
+            <div class="row cell one-item-row center-text span-line">
+                <div class="bold-text center-text">Employee information</div>
+            </div>
+            <div class="row">
+              <div class="cell first-column">
+                <div class="cell-content">First name:</div>
+              </div>
+              <div class="cell second-column">
+                <mat-form-field>
+                    <input matInput formControlName="firstName">
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="cell first-column">
+                <div class="cell-content">Last name:</div>
+              </div>
+              <div class="cell second-column">
+                <mat-form-field>
+                    <input matInput formControlName="lastName">
+                </mat-form-field>
+              </div>
+            </div>
+            <div>
+                <button mat-flat-button color="primary" type="submit">
+                    Save
+                </button>
+                <button mat-flat-button color="accent" [routerLink]="['/']">
+                    Cancel
+                </button>
+            </div>
+        </form>
+</div>
