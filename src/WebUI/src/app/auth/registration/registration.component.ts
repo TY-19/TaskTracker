@@ -4,6 +4,7 @@ import { AuthService } from '../auth.service';
 import { RegistrationResult } from './registration-result';
 import { RegistrationRequest } from './registration-request';
 import { Router } from '@angular/router';
+import { CustomValidators } from 'src/app/common/custom-validators';
 
 @Component({
   selector: 'tt-registration',
@@ -32,11 +33,14 @@ export class RegistrationComponent implements OnInit {
         Validators.required, 
         Validators.email
       ]),
-      password: new FormControl('', Validators.required),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8)
+      ]),
       passwordConfirm: new FormControl('', Validators.required),
     },
     { 
-      validators: this.authService.passwordMatchValidator()
+      validators: CustomValidators.passwordMatchValidator()
     }
     );
   }
@@ -50,13 +54,10 @@ export class RegistrationComponent implements OnInit {
 
     this.authService.registration(registrationRequest)
       .subscribe((result) => {
-        if(result.success)
-        {
+        if(result.success) {
           this.router.navigate(["/"])
             .catch(error => console.log(error));
-        }
-        else
-        {
+        } else {
           this.registrationResult = result;
         }
       });

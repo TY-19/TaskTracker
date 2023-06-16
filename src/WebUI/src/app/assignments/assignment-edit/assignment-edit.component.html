@@ -65,10 +65,10 @@
             <button mat-flat-button color="primary" type="submit">
                 {{ mode === "create" ? "Add" : "Save" }}
             </button>
-            <button mat-flat-button color="accent" 
+            <a mat-flat-button color="accent" 
                 [routerLink]="mode === 'create' ? ['/boards', boardId] : ['/boards', boardId, 'tasks', assignmentId]">
                 Cancel
-            </button>
+            </a>
         </div>
     </form>
 </div>

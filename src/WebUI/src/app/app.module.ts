@@ -24,6 +24,7 @@ import { AssignmentEditComponent } from './assignments/assignment-edit/assignmen
 import { RegistrationComponent } from './auth/registration/registration.component';
 import { EmployeesComponent } from './employees/employees.component';
 import { AccountComponent } from './account/account.component';
+import { ChangePasswordComponent } from './account/change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { AccountComponent } from './account/account.component';
     AssignmentEditComponent,
     RegistrationComponent,
     EmployeesComponent,
-    AccountComponent
+    AccountComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,

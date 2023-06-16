@@ -5,10 +5,6 @@
     text-align: center;
 }
 
-.mat-flat-button {
-    margin: 0 3px;
-}
-
 .small-warn-text {
     color: #f44336;
     font-size: 75%;
@@ -16,4 +12,14 @@
 
 .buttons {
     margin-top: 5px;
+}
+
+:host ::ng-deep {
+    .mat-flat-button {
+        margin: 0px 3px;
+    }
+
+    .mat-form-field-infix {
+        width: 300px;
+    }
 }

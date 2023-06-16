@@ -22,6 +22,8 @@ export class AuthService {
     private userRoles: string[] = [];
 
     private userNameKey: string = "UserName";
+    private _userName = new Subject<string|null>();
+    public userName = this._userName.asObservable();
 
     constructor(
         protected http: HttpClient) {
@@ -45,14 +47,21 @@ export class AuthService {
         return localStorage.getItem(this.tokenKey);
     }
 
-    getUserName() : string | null {
-        return localStorage.getItem(this.userNameKey);
+    setUserName(userName?: string | null) : void {
+        if (!userName)
+            this._userName.next(null);
+        else
+            this._userName.next(userName);
     }
 
     getRoles() : string[] {
         let roles = localStorage.getItem(this.rolesKey);
         if (roles) return JSON.parse(roles);
         else return [];
+    }
+
+    getUserName() : string | null {
+        return localStorage.getItem(this.userNameKey);
     }
 
     registration(registrationRequest: RegistrationRequest): Observable<RegistrationResult> {
@@ -66,6 +75,7 @@ export class AuthService {
             .pipe(tap(loginResult => {
                 if(loginResult.success && loginResult.token) {
                     this.setAuthStatus(true);
+                    this.setUserName(loginResult.userName);
                     this.userRoles = loginResult.roles;
                     this.writeToLocalStorage(loginResult);
                 }
@@ -82,7 +92,9 @@ export class AuthService {
     logout() {
         localStorage.removeItem(this.tokenKey);
         localStorage.removeItem(this.rolesKey);
+        localStorage.removeItem(this.userNameKey);
         this.setAuthStatus(false);
+        this.setUserName(null);
         this.userRoles = [];
       }
 
@@ -96,18 +108,5 @@ export class AuthService {
 
     isEmployee() : boolean {
         return this.userRoles.includes(DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE);
-    }
-
-    passwordMatchValidator(): ValidatorFn {
-        return (control: AbstractControl): ValidationErrors | null => {
-            let password = control.get('password');
-            let passwordConfirm = control.get('passwordConfirm');
-            if (password && passwordConfirm
-                && password.value !== "" && passwordConfirm.value !== ""
-                && password?.value != passwordConfirm?.value) {
-                return { passwordMatchError: true };
-            }
-            return null;
-          };
-    }
+    }   
 }

@@ -61,3 +61,15 @@ input, mat-label, mat-select, mat-option {
 mat-hint {
   font-size: 12px;
 }
+
+.bold-text {
+  font-weight: 500;
+}
+
+.warn-text {
+  color: #F44336;
+}
+
+.success-text {
+  color: #009688;
+}

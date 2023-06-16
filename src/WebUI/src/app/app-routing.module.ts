@@ -14,12 +14,14 @@ import { AssignmentEditComponent } from './assignments/assignment-edit/assignmen
 import { RegistrationComponent } from './auth/registration/registration.component';
 import { EmployeesComponent } from './employees/employees.component';
 import { AccountComponent } from './account/account.component';
+import { ChangePasswordComponent } from './account/change-password/change-password.component';
 
 const routes: Routes = [
   { path: '', component: BoardsComponent, pathMatch: 'full' },
   { path: 'login', component: AuthComponent },
   { path: 'registration', component: RegistrationComponent },
   { path: 'profile', component: AccountComponent, canActivate: [AuthGuard] },
+  { path: 'profile/changepassword', component: ChangePasswordComponent, canActivate: [AuthGuard] },
   { path: 'boards', component: BoardsComponent, canActivate: [AuthGuard] },
   { path: 'boards/create', component: BoardCreateComponent, canActivate: [AuthGuard],
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },

@@ -1,6 +1,6 @@
 .container {
     margin: auto;
-    width: 350px;
+    width: fit-content;
     padding: 20px 10px;
     text-align: center;
   }
@@ -15,7 +15,7 @@ p {
 .mat-form-field {
     display: block;
     margin: 10px 0;
-    max-width: 350px;
+    max-width: 250px;
 }
 
 .mat-flat-button {
@@ -24,4 +24,5 @@ p {
 
 .separate-block {
     margin-top: 20px;
+    width: 250px;
 }

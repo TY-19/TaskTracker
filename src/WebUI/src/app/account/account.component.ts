@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AccountService } from './account.service';
 import { UserProfile } from './user-profile';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'tt-account',
@@ -14,7 +15,11 @@ export class AccountComponent implements OnInit {
 
   form!: FormGroup;
 
-  constructor(private accountService: AccountService) { 
+  updateResult: boolean | null = null;
+  updateErrors?: string;
+
+  constructor(private router: Router,
+    private accountService: AccountService) { 
 
   }
 
@@ -69,7 +74,16 @@ export class AccountComponent implements OnInit {
 
   updateProfile(profile: any) {
     this.accountService.updateUserProfile(profile)
-      .subscribe(result => console.log(result));
+      .subscribe({
+        next: response => {
+        if (response.status == 204)
+          this.updateResult = true;
+      },
+        error: response => {
+          this.updateResult = false;
+          this.updateErrors = response.error;
+        }
+    });
   }
 
 }

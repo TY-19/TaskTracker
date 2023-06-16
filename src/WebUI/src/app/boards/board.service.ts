@@ -37,12 +37,4 @@ export class BoardService {
     const url = "/api/boards/" + id;
     return this.http.delete(url);
   }
-
-  boardNameValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const forbidden = !Number.isNaN(control.value) && 
-        Number.parseInt(control.value) == control.value;
-      return forbidden ? { nameIsNumber: {value: control.value}} : null;
-    };
-  }
 }

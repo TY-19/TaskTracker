@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BoardService } from '../board.service';
 import { FormControl, FormGroup,  Validators } from '@angular/forms';
 import { Board } from 'src/app/models/board';
+import { CustomValidators } from 'src/app/common/custom-validators';
 
 @Component({
   selector: 'tt-board-edit',
@@ -33,7 +34,7 @@ export class BoardEditComponent implements OnInit {
       name: new FormControl("", [
         Validators.required,
         Validators.minLength(3),
-        this.boardService.boardNameValidator()
+        CustomValidators.boardNameValidator()
       ])
     });
   }

@@ -21,25 +21,45 @@ public class UserService : IUserService
     public async Task<IEnumerable<UserProfileModel>> GetAllUsersAsync()
     {
         return _mapper.Map<IEnumerable<UserProfileModel>>(
-            await _userManager.Users.ToListAsync());
+            await _userManager.Users
+                .Include(u => u.Employee)
+                .ThenInclude(e => e!.Boards)
+                .ThenInclude(e => e.Assignments)
+                .ToListAsync()
+            );
     }
 
     public async Task<UserProfileModel?> GetUserByNameOrIdAsync(string userNameOrId)
     {
-        var user = await GetUserByNameOrIdInnerAsync(userNameOrId);
+        var user = await GetUserByIdOrNameInnerAsync(userNameOrId);
 
         if (user == null)
             return null;
 
-        user.Employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == user.EmployeeId);
-
         return _mapper.Map<UserProfileModel>(user);
     }
 
-    private async Task<User?> GetUserByNameOrIdInnerAsync(string userNameOrId)
+    private async Task<User?> GetUserByIdOrNameInnerAsync(string userNameOrId)
     {
-        return await _userManager.FindByIdAsync(userNameOrId) ??
-            await _userManager.FindByNameAsync(userNameOrId);
+        return await GetUserByIdInnerAsync(userNameOrId) ??
+            await GetUserByNameInnerAsync(userNameOrId);
+    }
+
+    private async Task<User?> GetUserByIdInnerAsync(string userId)
+    {
+        return await _context.Users
+            .Include(u => u.Employee)
+            .ThenInclude(e => e!.Boards)
+            .ThenInclude(e => e.Assignments)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+    }
+    private async Task<User?> GetUserByNameInnerAsync(string userName)
+    {
+        return await _context.Users
+            .Include(u => u.Employee)
+            .ThenInclude(e => e!.Boards)
+            .ThenInclude(e => e.Assignments)
+            .FirstOrDefaultAsync(u => u.UserName == userName);
     }
 
     public async Task UpdateUserNameAsync(string oldName, string newName)
@@ -55,7 +75,7 @@ public class UserService : IUserService
 
     public async Task ChangeUserPasswordAsync(string usernameOrId, string newPassword)
     {
-        var user = await GetUserByNameOrIdInnerAsync(usernameOrId);
+        var user = await GetUserByIdOrNameInnerAsync(usernameOrId);
         if (user == null)
             throw new ArgumentException(
                 "User with such an Id or Name does not exist", nameof(usernameOrId));
@@ -66,7 +86,7 @@ public class UserService : IUserService
 
     public async Task DeleteUserAsync(string usernameOrId)
     {
-        var user = await GetUserByNameOrIdInnerAsync(usernameOrId);
+        var user = await GetUserByIdOrNameInnerAsync(usernameOrId);
         if (user == null)
             return;
 

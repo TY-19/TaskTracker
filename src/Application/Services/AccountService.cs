@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
@@ -72,7 +73,9 @@ public class AccountService : IAccountService
 
     public async Task<UserProfileModel?> GetUserProfileAsync(string userName)
     {
-        var user = await _userManager.FindByNameAsync(userName);
+        var user = await _context.Users
+            .Include(u => u.Employee)
+            .FirstOrDefaultAsync(u => u.UserName == userName);
 
         return user == null
             ? null
@@ -82,13 +85,14 @@ public class AccountService : IAccountService
     public async Task<bool> UpdateUserProfileAsync(string userName,
         UserProfileUpdateModel updatedUser)
     {
-        var user = await _userManager.FindByNameAsync(userName);
+        var user = await _context.Users
+            .Include(u => u.Employee)
+            .FirstOrDefaultAsync(u => u.UserName == userName);
+
         if (user == null)
             return false;
 
         await UpdateUserInfo(user, updatedUser);
-        await _userManager.UpdateAsync(user);
-
         return true;
     }
 
@@ -112,6 +116,7 @@ public class AccountService : IAccountService
         {
             user.Employee.LastName = updatedUser.LastName;
         }
+        await _userManager.UpdateAsync(user);
     }
 
     public async Task<bool> ChangePasswordAsync(string userName,
