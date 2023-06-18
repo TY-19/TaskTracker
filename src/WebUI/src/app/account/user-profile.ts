@@ -1,10 +1,12 @@
 export interface UserProfile {
-    Id: string;
-    UserName: string;
-    Email: string;
-    EmployeeId?: number;
-    FirstName: string;
-    LastName: string;
-    BoardsIds: number[];
-    AssignmentsIds: number[];
+    id: string;
+    userName: string;
+    email: string;
+    roles: string[];
+    employeeId?: number;
+    firstName: string;
+    lastName: string;
+    boardsIds: number[];
+    assignmentsIds: number[];
+    [key: string]: any;
 }

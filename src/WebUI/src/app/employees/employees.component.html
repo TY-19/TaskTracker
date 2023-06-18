@@ -6,33 +6,75 @@
         <p class="back-text">Back to the board</p>
     </button>
 
+    <mat-form-field [hidden]="!employees" class="filter" floatLabel="never">
+        <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
+            placeholder="Find user on the board" />
+    </mat-form-field>
+
     <table mat-table [dataSource]="employees"
         class="mat-elevation-z8 table"
         [hidden]="!employees"
+        matSort 
         aria-label="List of the employees">
 
         <ng-container matColumnDef="userName">
-            <th mat-header-cell *matHeaderCellDef class="align-center"> User </th>
-            <td mat-cell *matCellDef="let employee" class="short-column align-center"> {{employee.userName}} </td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="userName"> 
+                User 
+            </th>
+            <td mat-cell *matCellDef="let employee" class="first-column"> 
+                {{employee.userName}} 
+                <span *ngIf="isAdmin(employee.roles)" class="badge admin-badge">Admin</span>
+                <span *ngIf="isManager(employee.roles)" class="badge manager-badge">Manager</span>
+            </td>
         </ng-container>
     
         <ng-container matColumnDef="firstName">
-            <th mat-header-cell *matHeaderCellDef class="align-center"> First name </th>
-            <td mat-cell *matCellDef="let employee" class="short-column align-center"> {{employee.firstName}} </td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="firstName"> 
+                First name 
+            </th>
+            <td mat-cell *matCellDef="let employee"> 
+                {{employee.firstName}} 
+            </td>
         </ng-container>
         
         <ng-container matColumnDef="lastName">
-            <th mat-header-cell *matHeaderCellDef> Last name </th>
-            <td mat-cell *matCellDef="let employee"> {{employee.lastName}} </td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="lastName"> 
+                Last name 
+            </th>
+            <td mat-cell *matCellDef="let employee"> 
+                {{employee.lastName}} 
+            </td>
         </ng-container>
         
+        <ng-container matColumnDef="buttons">
+            <th hidden mat-header-cell *matHeaderCellDef> 
+                Buttons
+            </th>
+            <td mat-cell *matCellDef="let employee" class="align-center"> 
+                <a mat-flat-button color="warn" (click)="onRemovingEmployee(employee)">
+                    Remove
+                </a>
+            </td>
+        </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="['userName', 'firstName', 'lastName']"></tr>
+        <tr mat-header-row *matHeaderRowDef="['userName', 'firstName', 'lastName', 'buttons']"></tr>
         <tr mat-row *matRowDef="let row; let i = index;
-            columns: ['userName', 'firstName', 'lastName']">
+            columns: ['userName', 'firstName', 'lastName', 'buttons']">
         </tr>
     </table>
 
+    <div class="button-wrapper">
+        <a *ngIf="mode !== 'create' && mode !== 'edit'"
+            mat-flat-button color="primary" (click)="changeMode('create');">
+            Add employee to the board
+        </a>
+        <a *ngIf="mode === 'create' || mode === 'edit'"
+            mat-flat-button color="accent" (click)="changeMode('view')">
+            Collapse
+        </a>
+    </div>
     
-
+    <tt-employee-add [boardEmployees]="boardEmployees" 
+        (employeeAdded)="onAddingEmployee($event)"
+        [hidden]="mode === 'view'"></tt-employee-add>
 </div>

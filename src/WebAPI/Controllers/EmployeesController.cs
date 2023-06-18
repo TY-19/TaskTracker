@@ -17,6 +17,15 @@ public class EmployeesController : ControllerBase
         _employeeService = employeeService;
     }
 
+    [Route("~/api/employees")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<IEnumerable<EmployeeGetBoardModel>>> GetAllEmployees()
+    {
+        return Ok(await _employeeService.GetAllAsync());
+    }
+
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -71,4 +80,5 @@ public class EmployeesController : ControllerBase
         await _employeeService.RemoveEmployeeFromTheBoardAsync(boardId, employeeId);
         return NoContent();
     }
+
 }

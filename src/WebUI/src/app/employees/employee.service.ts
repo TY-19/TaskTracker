@@ -12,8 +12,23 @@ export class EmployeeService {
 
   }
 
+  getAllEmployees(): Observable<Employee[]> {
+    const url = "/api/employees";
+    return this.http.get<Employee[]>(url);
+  }
+
   getEmployees(boardId: string): Observable<Employee[]> {
     const url = "/api/boards/" + boardId + "/employees";
     return this.http.get<Employee[]>(url);
+  }
+
+  addEmployeeToTheBoard(boardId: string, userName: string) {
+    const url = "/api/boards/" + boardId + "/employees/" + userName;
+    return this.http.post(url, null);
+  }
+
+  removeEmployeeFromTheBoard(boardId: string, employeeId: string | number) {
+    const url = "/api/boards/" + boardId + "/employees/" + employeeId;
+    return this.http.delete(url);
   }
 }

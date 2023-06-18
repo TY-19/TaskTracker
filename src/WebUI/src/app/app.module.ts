@@ -25,6 +25,8 @@ import { RegistrationComponent } from './auth/registration/registration.componen
 import { EmployeesComponent } from './employees/employees.component';
 import { AccountComponent } from './account/account.component';
 import { ChangePasswordComponent } from './account/change-password/change-password.component';
+import { EmployeeAddComponent } from './employees/employee-add/employee-add.component';
+import { UsersComponent } from './users/users.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,9 @@ import { ChangePasswordComponent } from './account/change-password/change-passwo
     RegistrationComponent,
     EmployeesComponent,
     AccountComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    EmployeeAddComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,

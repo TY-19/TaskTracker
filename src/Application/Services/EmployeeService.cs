@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
@@ -9,31 +10,32 @@ public class EmployeeService : IEmployeeService
 {
     private readonly ITrackerDbContext _context;
     private readonly IMapper _mapper;
-    public EmployeeService(ITrackerDbContext context, IMapper mapper)
+    private readonly UserManager<User> _userManager;
+    public EmployeeService(ITrackerDbContext context,
+        UserManager<User> userManager,
+        IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
+        _userManager = userManager;
     }
 
     public async Task<IEnumerable<EmployeeGetBoardModel>> GetAllAsync()
     {
         var employees = await _context.Employees
+                .Include(e => e.User)
                 .AsNoTracking()
                 .ToListAsync();
-        var mapped = _mapper.Map<List<EmployeeGetBoardModel>>(employees);
-        return mapped;
+        return await GetEmployeeModelsWithRolesAsync(employees);
     }
 
     public async Task<IEnumerable<EmployeeGetBoardModel>> GetAllEmployeeFromTheBoardAsync(int boardId)
     {
-        var employees = await _context.Employees
+        var employees = _context.Employees
                 .Include(e => e.User)
                 .Where(s => s.Boards.Select(b => b.Id).Contains(boardId))
-                .AsNoTracking()
-                .ToListAsync();
-
-        var mapped = _mapper.Map<List<EmployeeGetBoardModel>>(employees);
-        return mapped;
+                .AsNoTracking();
+        return await GetEmployeeModelsWithRolesAsync(employees);
     }
 
     public async Task<EmployeeGetBoardModel?> GetEmployeeByIdAsync(int id)
@@ -41,8 +43,18 @@ public class EmployeeService : IEmployeeService
         var employee = await _context.Employees
             .Include(e => e.User)
             .FirstOrDefaultAsync(e => e.Id == id);
-        var mapped = _mapper.Map<EmployeeGetBoardModel>(employee);
-        return mapped;
+
+        if (employee == null)
+            return null;
+
+        if(employee.User != null)
+        {
+            return await GetEmployeeModelWithRolesAsync(employee);
+        }
+        else
+        {
+            return _mapper.Map<EmployeeGetBoardModel>(employee);
+        }
     }
 
     public async Task AddEmployeeToTheBoardAsync(int boardId, string userNameOrId)
@@ -76,5 +88,26 @@ public class EmployeeService : IEmployeeService
 
         board.Employees.Remove(employee);
         await _context.SaveChangesAsync();
+    }
+
+    private async Task<IEnumerable<EmployeeGetBoardModel>> GetEmployeeModelsWithRolesAsync(IEnumerable<Employee> employees)
+    {
+        var models = new List<EmployeeGetBoardModel>();
+        foreach (var employee in employees)
+        {
+            models.Add(await GetEmployeeModelWithRolesAsync(employee));
+        }
+        return models;
+    }
+    private async Task<EmployeeGetBoardModel> GetEmployeeModelWithRolesAsync(Employee employee)
+    {
+        IList<string> roles = new List<string>();
+        if (employee.User != null)
+        {
+            roles = await _userManager.GetRolesAsync(employee.User);
+        }
+        var model = _mapper.Map<EmployeeGetBoardModel>(employee);
+        model.Roles = roles;
+        return model;
     }
 }

@@ -12,7 +12,9 @@ public class UserService : IUserService
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
     private readonly ITrackerDbContext _context;
-    public UserService(IMapper mapper, UserManager<User> userManager, ITrackerDbContext context)
+    public UserService(IMapper mapper,
+        UserManager<User> userManager,
+        ITrackerDbContext context)
     {
         _mapper = mapper;
         _userManager = userManager;
@@ -20,13 +22,11 @@ public class UserService : IUserService
     }
     public async Task<IEnumerable<UserProfileModel>> GetAllUsersAsync()
     {
-        return _mapper.Map<IEnumerable<UserProfileModel>>(
-            await _userManager.Users
+        var users = _userManager.Users
                 .Include(u => u.Employee)
                 .ThenInclude(e => e!.Boards)
-                .ThenInclude(e => e.Assignments)
-                .ToListAsync()
-            );
+                .ThenInclude(e => e.Assignments);
+        return await GetUserProfileModelsWithRolesAsync(users);
     }
 
     public async Task<UserProfileModel?> GetUserByNameOrIdAsync(string userNameOrId)
@@ -36,7 +36,7 @@ public class UserService : IUserService
         if (user == null)
             return null;
 
-        return _mapper.Map<UserProfileModel>(user);
+        return await GetUserProfileModelWithRolesAsync(user);
     }
 
     private async Task<User?> GetUserByIdOrNameInnerAsync(string userNameOrId)
@@ -91,5 +91,21 @@ public class UserService : IUserService
             return;
 
         await _userManager.DeleteAsync(user);
+    }
+
+    private async Task<IEnumerable<UserProfileModel>> GetUserProfileModelsWithRolesAsync(IEnumerable<User> users)
+    {
+        var models = new List<UserProfileModel>();
+        foreach (var user in users)
+        {
+            models.Add(await GetUserProfileModelWithRolesAsync(user));
+        }
+        return models;
+    }
+    private async Task<UserProfileModel> GetUserProfileModelWithRolesAsync(User user)
+    {
+        var model = _mapper.Map<UserProfileModel>(user);
+        model.Roles = await _userManager.GetRolesAsync(user);
+        return model;
     }
 }
