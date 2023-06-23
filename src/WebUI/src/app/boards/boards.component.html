@@ -1,5 +1,5 @@
 <div *ngIf="isAdmin() || isManager()" class="button-wrapper">
-    <a mat-flat-button color="primary" [routerLink]="['/boards', 'create']">Create</a>
+    <a mat-flat-button color="primary" [routerLink]="['/boards', 'create']">Create Board</a>
 </div>
 <div *ngIf="boards" class="canvas">
     <mat-card *ngFor="let board of boards" class="card">

@@ -3,8 +3,10 @@ import { MatTableDataSource } from '@angular/material/table';
 import { EmployeeService } from '../employee.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatSort } from '@angular/material/sort';
-import { DefaultRolesNames } from 'src/app/config/default-roles-names';
 import { Employee } from 'src/app/models/employee';
+import { RolesService } from 'src/app/users/roles.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableHelper } from 'src/app/common/helpers/mat-table-helper';
 
 @Component({
   selector: 'tt-employee-add',
@@ -14,14 +16,17 @@ import { Employee } from 'src/app/models/employee';
 export class EmployeeAddComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('filter') filter!: ElementRef;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @Input() boardEmployees: Employee[] = [];
-  @Output() employeeAdded = new EventEmitter<Employee>()
+  @Output() employeeAdded = new EventEmitter<Employee>();
+  tableHelper = new MatTableHelper<Employee>();
   
   boardId!: number;
-  employeesList!: MatTableDataSource<Employee>;
-  employees!: Employee[];
+  employeesTable!: MatTableDataSource<Employee>;
+  allEmployees!: Employee[];
 
   constructor(private employeeService: EmployeeService,
+    public rolesService: RolesService,
     private activatedRoute: ActivatedRoute) { 
 
   }
@@ -32,38 +37,30 @@ export class EmployeeAddComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.initiateSort();
+    this.tableHelper.initiateTable(this.employeesTable, this.sort, this.paginator);
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes['boardEmployees'] && this.employees)
-      this.employeesList.data = this.filterEmployees();
+    if(changes['boardEmployees'] && this.allEmployees)
+      this.employeesTable.data = this.filterEmployees();
   }
 
   filterEmployees(): Employee[] {
-    return this.employees.filter((e => !this.boardEmployees
+    return this.allEmployees.filter((e => !this.boardEmployees
       .some(be => be.userName === e.userName)))
   }
 
   loadEmployees() {
     this.employeeService.getAllEmployees()
       .subscribe(result => {
-        this.employees = result;
-        this.employeesList = new MatTableDataSource(this.filterEmployees());
-        this.initiateSort();
+        this.allEmployees = result;
+        this.employeesTable = new MatTableDataSource(this.filterEmployees());
+        this.tableHelper.initiateTable(this.employeesTable, this.sort, this.paginator);
       });
   }
 
-  private initiateSort() {
-    if(this.employeesList && this.sort && this.employeesList.sort !== this.sort) {
-      this.sort.disableClear = true;
-      this.employeesList.sort = this.sort;
-      this.employeesList.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLowerCase();
-    }
-  }
-
   onFilterTextChanged(filterText: string) {
-    this.employeesList.data = this.filterEmployees()
+    this.employeesTable.data = this.filterEmployees()
       .filter(x => x.userName.toLowerCase()
         .includes(filterText.toLowerCase()) 
           || (x.lastName?.includes(filterText.toLowerCase()) ?? false)
@@ -71,20 +68,16 @@ export class EmployeeAddComponent implements OnInit {
           || (x.roles.filter(r => r.toLowerCase().includes(filterText.toLowerCase())).length > 0));
   }
 
+  clearFilter() {
+    this.filter.nativeElement['value'] = '';
+    this.onFilterTextChanged('');
+  }
+
   onAddEmployeeToBoard(employee: Employee) {
     this.employeeService.addEmployeeToTheBoard(this.boardId.toString(), employee.userName)
       .subscribe(() => {
         this.employeeAdded.emit(employee);
-        console.log(this.filter);
         this.filter.nativeElement['value'] = '';
       });
-  }
-
-  isAdmin(roles: string[]) {
-    return roles.includes(DefaultRolesNames.DEFAULT_ADMIN_ROLE);
-  }
-
-  isManager(roles: string[]) {
-    return roles.includes(DefaultRolesNames.DEFAULT_MANAGER_ROLE);
   }
 }

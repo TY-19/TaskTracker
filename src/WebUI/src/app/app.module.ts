@@ -27,6 +27,8 @@ import { AccountComponent } from './account/account.component';
 import { ChangePasswordComponent } from './account/change-password/change-password.component';
 import { EmployeeAddComponent } from './employees/employee-add/employee-add.component';
 import { UsersComponent } from './users/users.component';
+import { UserCreateComponent } from './users/user-create/user-create.component';
+import { UserDetailsComponent } from './users/user-details/user-details.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import { UsersComponent } from './users/users.component';
     AccountComponent,
     ChangePasswordComponent,
     EmployeeAddComponent,
-    UsersComponent
+    UsersComponent,
+    UserCreateComponent,
+    UserDetailsComponent
   ],
   imports: [
     BrowserModule,

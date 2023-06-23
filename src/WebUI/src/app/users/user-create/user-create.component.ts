@@ -1,24 +1,23 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../user.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../auth.service';
-import { RegistrationResult } from '../../models/registration-result';
-import { RegistrationRequest } from '../../models/registration-request';
-import { Router } from '@angular/router';
+import { RegistrationResult } from 'src/app/models/registration-result';
 import { CustomValidators } from 'src/app/common/custom-validators';
+import { RegistrationRequest } from 'src/app/models/registration-request';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'tt-registration',
-  templateUrl: './registration.component.html',
-  styleUrls: ['./registration.component.scss']
+  selector: 'tt-user-create',
+  templateUrl: './user-create.component.html',
+  styleUrls: ['./user-create.component.scss']
 })
-export class RegistrationComponent implements OnInit {
+export class UserCreateComponent implements OnInit {
 
   form!: FormGroup;
-
   registrationResult?: RegistrationResult;
 
-  constructor(private router: Router,
-    private authService: AuthService) { 
+  constructor(private userService: UserService,
+    private router: Router) { 
 
   }
 
@@ -45,17 +44,17 @@ export class RegistrationComponent implements OnInit {
     );
   }
 
-  onSubmit(): void {
+  onSubmit() {
     let registrationRequest: RegistrationRequest = {
       userName: this.form.controls['userName'].value,
       email: this.form.controls['email'].value,
       password: this.form.controls['password'].value
     }
-
-    this.authService.registration(registrationRequest)
-      .subscribe((result) => {
+    
+    this.userService.addUser(registrationRequest)
+      .subscribe(result => {
         if(result.success) {
-          this.router.navigate(["/"])
+          this.router.navigate(["/users", registrationRequest.userName])
             .catch(error => console.log(error));
         } else {
           this.registrationResult = result;

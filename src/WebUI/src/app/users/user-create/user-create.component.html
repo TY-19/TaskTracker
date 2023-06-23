@@ -1,0 +1,62 @@
+<div class="content">
+    <button class="back-container" [routerLink]="['/users']">
+        <mat-icon>
+            arrow_back
+        </mat-icon>
+        <p class="back-text">Back to the users</p>
+    </button>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <p>
+            <mat-error *ngIf="registrationResult && !registrationResult.success">
+                <strong>ERROR</strong>: {{registrationResult.message}}
+            </mat-error>
+        </p>
+
+        <mat-form-field>
+            <mat-label>Username:</mat-label>
+            <input matInput formControlName="userName" required>
+            <mat-error>Name is required</mat-error>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <mat-label>Email:</mat-label>
+            <input matInput formControlName="email" required>
+            <mat-error *ngIf="form.controls['email'].errors?.['required']">
+                Email is required
+            </mat-error>
+            <p *ngIf="form.controls['email'].touched">
+                <mat-error *ngIf="form.controls['email'].errors?.['email']"
+                    class="small-warn-text">
+                    Provide a valid email
+                </mat-error>
+            </p>
+        </mat-form-field>
+
+        <br>
+        <mat-form-field>
+            <mat-label>Password:</mat-label>
+            <input matInput type="password" formControlName="password" required>
+            <mat-error>Password have to be at least 8 characters long</mat-error>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <mat-label>Confirm password:</mat-label>
+            <input matInput type="password" formControlName="passwordConfirm" required>
+            <mat-error>Confirm the password</mat-error>
+            <p *ngIf="form.errors && form.errors['passwordMatchError']" 
+                class="small-warn-text">
+                Passwords doesn't match
+            </p>
+        </mat-form-field>
+        
+        <div class="buttons">
+            <button mat-flat-button color="primary" type="submit">
+                Create
+            </button>
+            <button mat-flat-button color="accent" [routerLink]="['/users']">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>

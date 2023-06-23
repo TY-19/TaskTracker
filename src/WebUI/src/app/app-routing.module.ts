@@ -15,6 +15,9 @@ import { RegistrationComponent } from './auth/registration/registration.componen
 import { EmployeesComponent } from './employees/employees.component';
 import { AccountComponent } from './account/account.component';
 import { ChangePasswordComponent } from './account/change-password/change-password.component';
+import { UsersComponent } from './users/users.component';
+import { UserCreateComponent } from './users/user-create/user-create.component';
+import { UserDetailsComponent } from './users/user-details/user-details.component';
 
 const routes: Routes = [
   { path: '', component: BoardsComponent, pathMatch: 'full' },
@@ -36,6 +39,12 @@ const routes: Routes = [
   { path: 'boards/:boardId/tasks/create', component: AssignmentEditComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/:taskId', component: AssignmentViewFullComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/:taskId/edit', component: AssignmentEditComponent, canActivate: [AuthGuard] },
+  { path: 'users', component: UsersComponent, canActivate: [AuthGuard],
+    data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },
+  { path: 'users/create', component: UserCreateComponent, canActivate: [AuthGuard], 
+    data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },
+  { path: 'users/:userName', component: UserDetailsComponent, canActivate: [AuthGuard], 
+    data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },
 ];
 
 @NgModule({

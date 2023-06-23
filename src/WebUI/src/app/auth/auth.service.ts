@@ -1,12 +1,11 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { LoginRequest } from "./login-request";
+import { LoginRequest } from "../models/login-request";
 import { Observable, Subject, tap } from "rxjs";
-import { LoginResult } from "./login-result";
+import { LoginResult } from "../models/login-result";
 import { DefaultRolesNames } from "../config/default-roles-names";
-import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
-import { RegistrationRequest } from "./registration/registration-request";
-import { RegistrationResult } from "./registration/registration-result";
+import { RegistrationRequest } from "../models/registration-request";
+import { RegistrationResult } from "../models/registration-result";
 
 @Injectable({
     providedIn: 'root',

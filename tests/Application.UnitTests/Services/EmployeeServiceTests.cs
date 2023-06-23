@@ -161,6 +161,7 @@ public class EmployeeServiceTests
 
     private static EmployeeService GetEmployeeService(TestDbContext context)
     {
-        return new EmployeeService(context, ServicesTestsHelper.GetMapper());
+        return new EmployeeService(context, ServicesTestsHelper.GetUserManager(context),
+            ServicesTestsHelper.GetMapper());
     }
 }

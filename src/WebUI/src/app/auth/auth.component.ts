@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { LoginRequest } from './login-request';
+import { LoginRequest } from '../models/login-request';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { LoginResult } from './login-result';
+import { LoginResult } from '../models/login-result';
 
 @Component({
   selector: 'tt-auth',
