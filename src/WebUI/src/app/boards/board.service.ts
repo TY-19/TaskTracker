@@ -2,7 +2,6 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Board } from "../models/board";
 import { Observable } from "rxjs";
-import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 
 @Injectable({
     providedIn: 'root',

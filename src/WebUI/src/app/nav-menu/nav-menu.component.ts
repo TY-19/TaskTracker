@@ -14,7 +14,7 @@ export class NavMenuComponent implements OnInit {
   isLoggedIn: boolean = false;
   username: string | null = null;
 
-  constructor(private authService: AuthService,
+  constructor(public authService: AuthService,
     private router: Router) { 
       this.authService.authStatus
       .pipe(takeUntil(this.destroySubject))

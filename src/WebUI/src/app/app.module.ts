@@ -29,6 +29,8 @@ import { EmployeeAddComponent } from './employees/employee-add/employee-add.comp
 import { UsersComponent } from './users/users.component';
 import { UserCreateComponent } from './users/user-create/user-create.component';
 import { UserDetailsComponent } from './users/user-details/user-details.component';
+import { UserBoardsComponent } from './users/user-boards/user-boards.component';
+import { UserBoardsAddComponent } from './users/user-boards-add/user-boards-add.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { UserDetailsComponent } from './users/user-details/user-details.componen
     EmployeeAddComponent,
     UsersComponent,
     UserCreateComponent,
-    UserDetailsComponent
+    UserDetailsComponent,
+    UserBoardsComponent,
+    UserBoardsAddComponent
   ],
   imports: [
     BrowserModule,

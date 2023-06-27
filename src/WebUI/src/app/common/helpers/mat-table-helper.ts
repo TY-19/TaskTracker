@@ -26,7 +26,12 @@ export class MatTableHelper<T extends Record<string, any>> {
             sort.disableClear = true;
             dataSource!.sort = sort;
             dataSource!.sortingDataAccessor = 
-               (data, sortHeaderId) => data[sortHeaderId].toLowerCase();
+               (data, sortHeaderId) => {
+                if (typeof(data[sortHeaderId]) === 'string')
+                  return data[sortHeaderId].toLowerCase()
+                else
+                  return data[sortHeaderId];
+              };
             this.isSortInitiated = true;
         }
       }

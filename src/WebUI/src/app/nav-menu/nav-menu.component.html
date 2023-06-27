@@ -11,7 +11,7 @@
       <a mat-flat-button color="primary" [routerLink]="['/tasks']">
         Tasks
       </a>
-      <a mat-flat-button color="primary" [routerLink]="['/users']">
+      <a *ngIf="authService.isAdmin()" mat-flat-button color="primary" [routerLink]="['/users']">
         Users
       </a>
 

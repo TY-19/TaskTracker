@@ -1,0 +1,44 @@
+<div class="content">
+    <button class="back-container" [routerLink]="['/users', userName]">
+        <mat-icon>
+            arrow_back
+        </mat-icon>
+        <p class="back-text">Back to the user</p>
+    </button>
+    <p class="boards-section-title">{{userName}}'s boards:</p>
+    <div class="boards">
+        <div *ngFor="let board of userBoards" class="board-wrapper">
+            <mat-card  class="board">
+                <mat-card-header>
+                    <mat-card-title class="board-title" [routerLink]="['/boards', board.id]">
+                        {{board.name}}
+                    </mat-card-title>
+                </mat-card-header>
+                <mat-card-content *ngFor="let assignment of getUserAssignments(board)" class="assignment"
+                    [routerLink]="['/boards', assignment.boardId, 'tasks', assignment.id]">
+                    {{assignment.topic}}
+                </mat-card-content>
+            </mat-card>
+            <a mat-flat-button color="warn" class="action-button" (click)="onBoardRemoved(board.id)">
+                Remove user from the board
+            </a>
+        </div>
+    </div>
+
+    <div>
+        <a mat-flat-button color="primary" 
+            *ngIf="mode !== 'add'"
+            (click)="changeMode('add')">
+            Add the user to a board
+        </a>
+        <a mat-flat-button color="accent" 
+            *ngIf="mode !== 'view'"
+            (click)="changeMode('view')">
+            Close
+        </a>
+    </div>
+
+    <tt-user-boards-add [hidden]="mode === 'view'"
+        [employeeId]="user?.employeeId" (boardAdded)="onBoardAdded()">
+    </tt-user-boards-add>
+</div>

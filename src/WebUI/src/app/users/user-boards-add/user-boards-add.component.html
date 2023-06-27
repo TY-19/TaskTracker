@@ -1,0 +1,52 @@
+<mat-form-field [hidden]="!boardsTable" class="filter" floatLabel="never">
+    <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
+        placeholder="Find user to add" />
+    <button *ngIf="filter.value" matSuffix mat-icon-button aria-label="Clear" 
+        (click)="clearFilter()">
+        <mat-icon>close</mat-icon>
+    </button>
+</mat-form-field>
+
+<table mat-table [dataSource]="boardsTable"
+    class="mat-elevation-z8 table"
+    [hidden]="!boardsTable"
+    matSort 
+    aria-label="List of the boards">
+
+    <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="id"> 
+            Id
+        </th>
+        <td mat-cell *matCellDef="let board" class="short-column"> 
+            {{board.id}}
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="name"> 
+            Board name 
+        </th>
+        <td mat-cell *matCellDef="let board" class="content-column"> 
+            {{board.name}}
+        </td>
+    </ng-container>
+    
+    <ng-container matColumnDef="buttons">
+        <th hidden mat-header-cell *matHeaderCellDef> 
+            Buttons
+        </th>
+        <td mat-cell *matCellDef="let board" class="short-column align-center"> 
+            <a mat-flat-button color="primary" (click)="onAddUserToBoard(board.id)">Add</a>
+        </td>
+    </ng-container>
+    
+
+    <tr mat-header-row *matHeaderRowDef="['id', 'name', 'buttons']"></tr>
+    <tr mat-row *matRowDef="let row; let i = index;
+        columns: ['id', 'name', 'buttons']">
+    </tr>
+</table>
+
+<mat-paginator [pageSizeOptions]="[10, 20, 50, 100]"
+    showFirstLastButtons
+    aria-label="Select page of boards">
+</mat-paginator>

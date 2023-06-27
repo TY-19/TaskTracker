@@ -1,0 +1,87 @@
+.back-container {
+    display: flex;
+    align-items: center;
+    border: none;
+}
+
+.back-text {
+    margin-left: 3px;
+}
+
+.boards-section-title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.boards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.board-wrapper {
+    width: 200px;
+    margin: 5px;
+}
+
+.board {
+    width: 200px;
+    min-height: 200px;
+    background-color: cornsilk;
+    text-align: center;
+    margin-right: 5px;
+    white-space: nowrap;
+    border: 2px solid grey;
+}
+
+.board-title {
+    font-size: 18px;
+    font-weight: 500;
+    border-bottom: 2px solid grey;
+}
+
+.assignment {
+    width: 100%;
+    font-size: 16px;
+    border-bottom: 2px solid grey;
+}
+
+.mat-flat-button {
+    margin: 1px 3px;
+}
+
+.mat-card {
+    padding: 0;
+}
+
+.mat-card-content {
+    margin-bottom: 2px;
+}
+
+.mat-card-header {
+    display: block;
+    margin-bottom: 0;
+}
+
+.mat-card-header .mat-card-title {
+    margin-bottom: 0;
+}
+
+.mat-card-actions {
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+:host ::ng-deep .mat-card-header-text {
+    margin: 0 0;
+}
+
+.action-button {
+    max-width: 100%;
+    width: 100%;
+    padding: 0 5px;
+    margin: 0 2px;
+}

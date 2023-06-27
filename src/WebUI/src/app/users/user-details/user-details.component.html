@@ -1,1 +1,48 @@
-<p>user-details works!</p>
+<div class="content">
+    <button class="back-container" [routerLink]="['/users']">
+        <mat-icon>
+            arrow_back
+        </mat-icon>
+        <p class="back-text">Back to the users</p>
+    </button>
+    <table *ngIf="user" aria-labelledby="assignment-details">
+        <tr hidden="true">
+            <th>Detail</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Username:</td>
+            <td>
+               {{user.userName}}
+            </td>
+        </tr>
+        <tr>
+            <td>Email:</td>
+            <td>{{user.email}}</td>
+        </tr>
+        <tr>
+            <td>Roles:</td>
+            <td><span *ngFor="let role of user.roles">{{role}}</span></td>
+        </tr>
+        <tr>
+            <td>First name:</td>
+            <td>{{user.firstName}}</td>
+        </tr>
+        <tr>
+            <td>Last name:</td>
+            <td>{{user.lastName}}</td>
+        </tr>
+    </table>
+    <div class="buttons">
+        <a mat-flat-button class="edit-button">Edit info</a>
+        <a mat-flat-button class="edit-button">Change password</a>
+        <br>
+        <a mat-flat-button class="edit-button" [routerLink]="['boards']">
+            Manage user's boards
+        </a>
+        <br>
+        <a mat-flat-button color="warn">
+            Delete user
+        </a>
+    </div>
+</div>

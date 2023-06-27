@@ -8,4 +8,5 @@ export interface Board {
     stages?: Stage[];
     employees?: Employee[];
     assignments?: Assignment[];
+    [key: string]: any;
 }
