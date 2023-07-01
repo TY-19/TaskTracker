@@ -144,6 +144,7 @@ public class UserServiceTests
     private static UserService GetUserService(TestDbContext context)
     {
         return new UserService(ServicesTestsHelper.GetMapper(),
-            ServicesTestsHelper.GetUserManager(context), context);
+            ServicesTestsHelper.GetUserManager(context),
+            ServicesTestsHelper.GetRoleManager(context), context);
     }
 }

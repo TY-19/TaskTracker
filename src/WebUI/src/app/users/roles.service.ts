@@ -1,11 +1,19 @@
 import { Injectable } from "@angular/core";
 import { DefaultRolesNames } from "../config/default-roles-names";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 
 @Injectable({
     providedIn: 'root',
   })
 export class RolesService {
-    
+
+  constructor(private http: HttpClient) {
+
+  }
+
+  allRoles: string[] = [];
+  
   adminRole = DefaultRolesNames.DEFAULT_ADMIN_ROLE;
   managerRole = DefaultRolesNames.DEFAULT_MANAGER_ROLE;
   employeeRole = DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE;
@@ -20,5 +28,10 @@ export class RolesService {
 
   isEmployee(roles: string[]) : boolean {
     return roles.includes(DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE);
+  }
+
+  getAllRoles(): Observable<string[]> {
+    const url = "/api/users/roles"
+    return this.http.get<string[]>(url);
   }
 }

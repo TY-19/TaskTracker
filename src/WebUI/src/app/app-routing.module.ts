@@ -19,6 +19,8 @@ import { UsersComponent } from './users/users.component';
 import { UserCreateComponent } from './users/user-create/user-create.component';
 import { UserDetailsComponent } from './users/user-details/user-details.component';
 import { UserBoardsComponent } from './users/user-boards/user-boards.component';
+import { UserEditComponent } from './users/user-edit/user-edit.component';
+import { UserChangePasswordComponent } from './users/user-change-password/user-change-password.component';
 
 const routes: Routes = [
   { path: '', component: BoardsComponent, pathMatch: 'full' },
@@ -45,6 +47,10 @@ const routes: Routes = [
   { path: 'users/create', component: UserCreateComponent, canActivate: [AuthGuard], 
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },
   { path: 'users/:userName', component: UserDetailsComponent, canActivate: [AuthGuard], 
+    data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },
+  { path: 'users/:userName/edit', component: UserEditComponent, canActivate: [AuthGuard], 
+    data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },
+  { path: 'users/:userName/changepassword', component: UserChangePasswordComponent, canActivate: [AuthGuard], 
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },
   { path: 'users/:userName/boards', component: UserBoardsComponent, canActivate: [AuthGuard], 
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },

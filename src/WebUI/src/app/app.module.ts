@@ -31,6 +31,8 @@ import { UserCreateComponent } from './users/user-create/user-create.component';
 import { UserDetailsComponent } from './users/user-details/user-details.component';
 import { UserBoardsComponent } from './users/user-boards/user-boards.component';
 import { UserBoardsAddComponent } from './users/user-boards-add/user-boards-add.component';
+import { UserEditComponent } from './users/user-edit/user-edit.component';
+import { UserChangePasswordComponent } from './users/user-change-password/user-change-password.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +57,9 @@ import { UserBoardsAddComponent } from './users/user-boards-add/user-boards-add.
     UserCreateComponent,
     UserDetailsComponent,
     UserBoardsComponent,
-    UserBoardsAddComponent
+    UserBoardsAddComponent,
+    UserEditComponent,
+    UserChangePasswordComponent
   ],
   imports: [
     BrowserModule,

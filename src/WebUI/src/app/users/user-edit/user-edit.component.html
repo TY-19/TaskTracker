@@ -1,17 +1,12 @@
 <div class="content">
-    <button class="back-container" [routerLink]="['/users']">
+    <button class="back-container" [routerLink]="['/users', userName]">
         <mat-icon>
             arrow_back
         </mat-icon>
-        <p class="back-text">Back to the users</p>
+        <p class="back-text">Back to the user</p>
     </button>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <p>
-            <mat-error *ngIf="registrationResult && !registrationResult.success">
-                <strong>ERROR</strong>: {{registrationResult.message}}
-            </mat-error>
-        </p>
 
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <mat-form-field>
             <mat-label>Username:</mat-label>
             <input matInput formControlName="userName" required>
@@ -51,28 +46,32 @@
 
         <br>
         <mat-form-field>
-            <mat-label>Password:</mat-label>
-            <input matInput type="password" formControlName="password" required>
-            <mat-error>Password have to be at least 8 characters long</mat-error>
+            <mat-label>Roles:</mat-label>
+            <mat-select formControlName="roles" multiple required
+                disableOptionCentering panelClass="select-option-margin40">
+                <mat-option *ngFor="let role of allRoles" [value]="role">{{role}}</mat-option>
+            </mat-select>
         </mat-form-field>
         <br>
         <mat-form-field>
-            <mat-label>Confirm password:</mat-label>
-            <input matInput type="password" formControlName="passwordConfirm" required>
-            <mat-error>Confirm the password</mat-error>
-            <p *ngIf="form.errors && form.errors['passwordMatchError']" 
-                class="small-warn-text">
-                Passwords doesn't match
-            </p>
+            <mat-label>First name:</mat-label>
+            <input matInput formControlName="firstName" required>
         </mat-form-field>
+        <br>
+        <mat-form-field>
+            <mat-label>Last name:</mat-label>
+            <input matInput formControlName="lastName" required>
+        </mat-form-field>
+
         
-        <div class="buttons">
+        <div>
             <button mat-flat-button color="primary" type="submit">
-                Create
+                Save
             </button>
             <button mat-flat-button color="accent" [routerLink]="['/users']">
                 Cancel
             </button>
         </div>
+
     </form>
 </div>

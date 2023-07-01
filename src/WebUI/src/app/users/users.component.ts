@@ -37,9 +37,17 @@ export class UsersComponent implements OnInit {
   loadUsers() {
     this.userSevice.getUsers()
       .subscribe(result => {
-        this.users = result
+        this.users = result;
         this.usersTable = new MatTableDataSource(this.users);
         this.tableHelper.initiateTable(this.usersTable, this.sort, this.paginator);
+      });
+  }
+
+  reloadUsers() {
+    this.userSevice.getUsers()
+      .subscribe(result => {
+        this.users = result;
+        this.usersTable.data = this.users;
       });
   }
 
@@ -60,6 +68,13 @@ export class UsersComponent implements OnInit {
   clearFilter() {
     this.filter.nativeElement['value'] = '';
     this.onFilterTextChanged('');
+  }
+
+  onDeleteUser(userName: string) {
+    this.userSevice.deleteUser(userName)
+      .subscribe(() => {
+        this.reloadUsers();
+      })
   }
 
 }

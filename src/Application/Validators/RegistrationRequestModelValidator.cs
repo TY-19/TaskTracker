@@ -11,6 +11,8 @@ public class RegistrationRequestModelValidator : AbstractValidator<RegistrationR
             .WithMessage("UserName is required");
         RuleFor(x => x.UserName).Length(3, 25)
             .WithMessage("Username length must be between 3 and 25 characters");
+        RuleFor(x => x.UserName).Matches("^[a-zA-Z0-9_]*$")
+            .WithMessage("Username may contain only letters, digits or undescore");
         RuleFor(x => x.Email).NotEmpty()
             .WithMessage("Email is required");
         RuleFor(x => x.Email).EmailAddress()

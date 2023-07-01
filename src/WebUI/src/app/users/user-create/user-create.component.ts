@@ -27,7 +27,12 @@ export class UserCreateComponent implements OnInit {
 
   private initiateForm() {
     this.form = new FormGroup({
-      userName: new FormControl('', Validators.required),
+      userName: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(25),
+        Validators.pattern("^[a-zA-Z0-9_]*$")
+      ]),
       email: new FormControl('', [
         Validators.required, 
         Validators.email
@@ -45,21 +50,22 @@ export class UserCreateComponent implements OnInit {
   }
 
   onSubmit() {
-    let registrationRequest: RegistrationRequest = {
-      userName: this.form.controls['userName'].value,
-      email: this.form.controls['email'].value,
-      password: this.form.controls['password'].value
+    if(this.form.valid) {
+      let registrationRequest: RegistrationRequest = {
+        userName: this.form.controls['userName'].value,
+        email: this.form.controls['email'].value,
+        password: this.form.controls['password'].value
+      }
+      
+      this.userService.addUser(registrationRequest)
+        .subscribe(result => {
+          if(result.success) {
+            this.router.navigate(["/users", registrationRequest.userName])
+              .catch(error => console.log(error));
+          } else {
+            this.registrationResult = result;
+          }
+        });
     }
-    
-    this.userService.addUser(registrationRequest)
-      .subscribe(result => {
-        if(result.success) {
-          this.router.navigate(["/users", registrationRequest.userName])
-            .catch(error => console.log(error));
-        } else {
-          this.registrationResult = result;
-        }
-      });
   }
-
 }

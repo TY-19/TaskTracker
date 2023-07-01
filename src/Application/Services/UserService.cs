@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
+using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Services;
@@ -11,13 +12,16 @@ public class UserService : IUserService
 {
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ITrackerDbContext _context;
     public UserService(IMapper mapper,
         UserManager<User> userManager,
+        RoleManager<IdentityRole> roleManager,
         ITrackerDbContext context)
     {
         _mapper = mapper;
         _userManager = userManager;
+        _roleManager = roleManager;
         _context = context;
     }
     public async Task<IEnumerable<UserProfileModel>> GetAllUsersAsync()
@@ -107,5 +111,44 @@ public class UserService : IUserService
         var model = _mapper.Map<UserProfileModel>(user);
         model.Roles = await _userManager.GetRolesAsync(user);
         return model;
+    }
+
+    public IEnumerable<string> GetAllRoles()
+    {
+        return _roleManager.Roles.Select(r => r.Name);
+    }
+
+    public async Task UpdateUserRoles(string userName, IEnumerable<string> roles)
+    {
+        var user = await GetUserByNameInnerAsync(userName);
+        if (user == null)
+            return;
+
+        IEnumerable<string> oldRoles = await _userManager.GetRolesAsync(user);
+        if (!await IsLastAdmin(oldRoles) || roles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
+        {
+            await _userManager.RemoveFromRolesAsync(user, oldRoles);
+            await _userManager.AddToRolesAsync(user, roles);
+        }
+    }
+
+    private async Task<bool> IsLastAdmin(IEnumerable<string> roles)
+    {
+        if (!roles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
+            return false;
+
+        int adminCount = 0;
+        foreach (var user in _context.Users)
+        {
+            if ((await _userManager.GetRolesAsync(user)).Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
+            {
+                adminCount++;
+                if (adminCount > 1)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

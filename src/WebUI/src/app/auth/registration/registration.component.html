@@ -10,7 +10,24 @@
         <mat-form-field>
             <mat-label>Username:</mat-label>
             <input matInput formControlName="userName" required>
-            <mat-error>Name is required</mat-error>
+            <p *ngIf="form.controls['userName'].touched">
+                <span *ngIf="form.controls['userName'].errors?.['required']"
+                    class="small-warn-text">
+                    Username is required
+                </span>
+                <span *ngIf="form.controls['userName'].errors?.['minlength']"
+                    class="small-warn-text">
+                    Username must be at least 3 characters long.
+                </span>
+                <span *ngIf="form.controls['userName'].errors?.['maxlength']"
+                    class="small-warn-text">
+                    Username can be at most 25 characters long.
+                </span>
+                <span *ngIf="form.controls['userName'].errors?.['pattern']"
+                    class="small-warn-text">
+                    Username may contain only letters, digits or undescore.
+                </span>
+            </p>
         </mat-form-field>
         <mat-form-field>
             <mat-label>Email:</mat-label>

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserProfile } from 'src/app/models/user-profile';
+import { RolesService } from '../roles.service';
 
 @Component({
   selector: 'tt-user-details',
@@ -14,7 +15,9 @@ export class UserDetailsComponent implements OnInit {
   user!: UserProfile;
   
   constructor(private userService: UserService,
-    private activatedRoute: ActivatedRoute) { 
+    public rolesService: RolesService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router) { 
 
   }
 
@@ -26,4 +29,10 @@ export class UserDetailsComponent implements OnInit {
       });
   }
 
+  onDeleteUser() {
+    this.userService.deleteUser(this.userName)
+      .subscribe(() => {
+        this.router.navigate(['/users']);
+      });
+  }
 }

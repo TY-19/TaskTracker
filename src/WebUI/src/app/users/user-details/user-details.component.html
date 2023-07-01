@@ -22,7 +22,17 @@
         </tr>
         <tr>
             <td>Roles:</td>
-            <td><span *ngFor="let role of user.roles">{{role}}</span></td>
+            <td>
+                <span *ngIf="rolesService.isAdmin(user.roles)" class="badge admin-badge">
+                    {{rolesService.adminRole}}
+                </span>
+                <span *ngIf="rolesService.isManager(user.roles)" class="badge manager-badge">
+                    {{rolesService.managerRole}}
+                </span>
+                <span *ngIf="rolesService.isEmployee(user.roles)" class="badge employee-badge">
+                    {{rolesService.employeeRole}}
+                </span>
+            </td>
         </tr>
         <tr>
             <td>First name:</td>
@@ -34,14 +44,18 @@
         </tr>
     </table>
     <div class="buttons">
-        <a mat-flat-button class="edit-button">Edit info</a>
-        <a mat-flat-button class="edit-button">Change password</a>
+        <a mat-flat-button class="edit-button" [routerLink]="['edit']">
+            Edit info
+        </a>
+        <a mat-flat-button class="edit-button" [routerLink]="['changepassword']">
+            Change password
+        </a>
         <br>
         <a mat-flat-button class="edit-button" [routerLink]="['boards']">
             Manage user's boards
         </a>
         <br>
-        <a mat-flat-button color="warn">
+        <a mat-flat-button color="warn" (click)="onDeleteUser()">
             Delete user
         </a>
     </div>

@@ -73,3 +73,29 @@ mat-hint {
 .success-text {
   color: #009688;
 }
+
+.select-option-margin40 {
+  margin-left: 40px;
+}
+
+.badge {
+  display: inline-block;
+  width: fit-content;
+  color: white;
+  font-size: small;
+  padding: 0px 7px;
+  border-radius: 10px;
+  margin: 2px 2px;
+}
+
+.admin-badge {
+  background-color: red;
+}
+
+.manager-badge {
+  background-color: rebeccapurple;
+}
+
+.employee-badge {
+  background-color: lightgreen;
+}

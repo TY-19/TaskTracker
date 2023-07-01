@@ -93,6 +93,9 @@ public class UsersController : ControllerBase
         if (updatedUser.UserName != null && updatedUser.UserName != userName)
             await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
 
+        if(updatedUser.Roles?.Any() == true)
+            await _userService.UpdateUserRoles(userName, updatedUser.Roles);
+
         return NoContent();
     }
 
@@ -131,5 +134,14 @@ public class UsersController : ControllerBase
     {
         await _userService.DeleteUserAsync(userNameOrId);
         return NoContent();
+    }
+
+    [HttpGet]
+    [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
+    [Route("roles")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetAllRoles()
+    {
+        return Ok(_userService.GetAllRoles());
     }
 }

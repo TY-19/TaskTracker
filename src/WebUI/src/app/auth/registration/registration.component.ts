@@ -28,7 +28,12 @@ export class RegistrationComponent implements OnInit {
 
   private initiateForm() {
     this.form = new FormGroup({
-      userName: new FormControl('', Validators.required),
+      userName: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(25),
+        Validators.pattern("^[a-zA-Z0-9_]*$")
+      ]),
       email: new FormControl('', [
         Validators.required, 
         Validators.email
