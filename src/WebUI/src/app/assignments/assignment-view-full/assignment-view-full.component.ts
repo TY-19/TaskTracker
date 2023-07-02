@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { Assignment } from 'src/app/models/assignment';
 import { AssignmentService } from '../assignment.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,9 +11,9 @@ import { StageService } from 'src/app/stages/stage.service';
   styleUrls: ['./assignment-view-full.component.scss']
 })
 export class AssignmentViewFullComponent implements OnInit {
-
-  boardId: string = "0";
-  assignmentId: string = "0";
+  @Input() boardId?: string;
+  @Input() assignmentId?: string;
+  @Input() sidebarView: boolean = false;
   assignment?: Assignment;
   stage?: Stage;
 
@@ -25,16 +25,23 @@ export class AssignmentViewFullComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.boardId = this.activatedRoute.snapshot.paramMap.get('boardId')!;
-    this.assignmentId = this.activatedRoute.snapshot.paramMap.get('taskId')!;
+    this.boardId ??= this.activatedRoute.snapshot.paramMap.get('boardId')!;
+    this.assignmentId ??= this.activatedRoute.snapshot.paramMap.get('taskId')!;
     this.getAssignment(this.boardId, this.assignmentId);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['assignmentId']) {
+      this.assignmentId = changes['assignmentId'].currentValue;
+    }
+    this.getAssignment(this.boardId ?? "0", this.assignmentId ?? "0");
   }
 
   getAssignment(boardId: string, assignmentId: string) {
     this.assignmentService.getAssignment(boardId, assignmentId)
       .subscribe((result) => { 
         this.assignment = result; 
-        this.getStage(this.boardId, this.assignment.stageId);
+        this.getStage(this.boardId ?? "0", this.assignment.stageId);
       });
   }
 
@@ -44,7 +51,7 @@ export class AssignmentViewFullComponent implements OnInit {
   }
 
   deleteAssignment() {
-    this.assignmentService.deleteAssignment(this.boardId, this.assignmentId)
+    this.assignmentService.deleteAssignment(this.boardId!, this.assignmentId!)
       .subscribe(() => {
         this.router.navigate(['/boards', this.boardId])
           .catch(error => console.log(error))

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from '../assignment.service';
@@ -12,11 +12,11 @@ import * as moment from 'moment';
   styleUrls: ['./assignment-edit.component.scss']
 })
 export class AssignmentEditComponent implements OnInit {
+  @Input() boardId?: string;
+  @Input() assignmentId?: string;
+  @Input() sidebarView: boolean = false;
 
   form!: FormGroup;
-
-  boardId: string = "0";
-  assignmentId: string = "0";
 
   stages: Stage[] = [];
   mode: string = "edit";
@@ -35,8 +35,8 @@ export class AssignmentEditComponent implements OnInit {
   }
 
   private setFields() {
-    this.boardId = this.activatedRoute.snapshot.paramMap.get('boardId')!;
-    this.assignmentId = this.activatedRoute.snapshot.paramMap.get('taskId') ?? "0";
+    this.boardId ??= this.activatedRoute.snapshot.paramMap.get('boardId')!;
+    this.assignmentId ??= this.activatedRoute.snapshot.paramMap.get('taskId') ?? "0";
     this.mode = this.assignmentId == "0" ? "create" : "edit";
   }
 
@@ -66,12 +66,12 @@ export class AssignmentEditComponent implements OnInit {
   }
 
   private loadAssignment() {
-    this.assignmentService.getAssignment(this.boardId, this.assignmentId)
+    this.assignmentService.getAssignment(this.boardId!, this.assignmentId!)
       .subscribe(result => {
         this.form.patchValue(result);
         this.form.patchValue({ 'deadlineDate': result.deadline });
         this.form.patchValue({ 'deadlineTime': this.getTimeFromDateTime(result.deadline) });
-        this.stageService.getStages(this.boardId)
+        this.stageService.getStages(this.boardId!)
           .subscribe(stages => {
             this.stages = stages;
             let selectedStageId = this.stages.find(s => s.id == result.stageId)?.id;
@@ -81,7 +81,7 @@ export class AssignmentEditComponent implements OnInit {
   }
 
   private getStages() {
-    this.stageService.getStages(this.boardId)
+    this.stageService.getStages(this.boardId!)
       .subscribe(stages => {
         this.stages = stages;
       });
@@ -131,18 +131,22 @@ export class AssignmentEditComponent implements OnInit {
   }
 
   private createAssignment(assignment: any) {
-    this.assignmentService.createAssignment(this.boardId, assignment)
+    this.assignmentService.createAssignment(this.boardId!, assignment)
       .subscribe( () => { 
-        this.router.navigate(['/boards', this.boardId])
-          .catch(error => console.log(error))
+        if(!this.sidebarView) {
+          this.router.navigate(['/boards', this.boardId])
+            .catch(error => console.log(error))
+        }
     });
   }
 
   private updateAssignment(assignment: any) {
-    this.assignmentService.updateAssignment(this.boardId, assignment)
+    this.assignmentService.updateAssignment(this.boardId!, assignment)
       .subscribe( () => { 
+        if(!this.sidebarView) {
           this.router.navigate(['/boards', this.boardId, 'tasks', this.assignmentId])
             .catch(error => console.log(error))
+        }
       });
   }
   

@@ -1,5 +1,5 @@
-<div class="content">
-    <button class="back-container" [routerLink]="['/boards', boardId]">
+<div [class]="sidebarView ? 'sidebar-view' : 'content'">
+    <button *ngIf="!sidebarView" class="back-container" [routerLink]="['/boards', boardId]">
         <mat-icon>
             arrow_back
         </mat-icon>
@@ -11,7 +11,7 @@
             <mat-label>Topic:</mat-label>
             <p><input matInput formControlName="topic" required></p>
         </mat-form-field>
-        <p *ngIf="form.touched">
+        <p *ngIf="form.touched && form.controls['topic'].errors">
             <mat-error *ngIf="form.controls['topic'].errors?.['required']" class="form-error-message">
                 Topic is required.
             </mat-error>
@@ -61,7 +61,7 @@
             <mat-checkbox class="vartical-center" color="primary" formControlName="isCompleted"></mat-checkbox>
         </div>
 
-        <div class="buttons">
+        <div *ngIf="!sidebarView" class="buttons">
             <button mat-flat-button color="primary" type="submit">
                 {{ mode === "create" ? "Add" : "Save" }}
             </button>

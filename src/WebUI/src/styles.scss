@@ -78,6 +78,15 @@ mat-hint {
   margin-left: 40px;
 }
 
+.back-container {
+  display: flex;
+  align-items: center;
+  border: none;
+}
+.back-text {
+  margin-left: 3px;
+}
+
 .badge {
   display: inline-block;
   width: fit-content;

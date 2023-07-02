@@ -1,9 +1,48 @@
+.outer-container {
+    display: block;
+}
+
+.sidebar-container {
+    position: fixed;
+    top: 80px;
+    height: calc(100% - 80px);
+    left: 0;
+    overflow-y: auto;
+    z-index: 1;
+}
+
+.sidebar-view-margin {
+    margin-left: 225px;
+}
+
+.sidebar-edit-margin {
+    margin-left: 190px;
+}
+
+.panel-container {
+    display: flex;
+    align-items: center;
+    border: none;
+    margin-left: 20px;
+}
+.panel-text {
+    margin-left: 3px;
+}
+
+.sidebar-buttons {
+    margin-left: 20px;
+}
+
 h2 {
     text-align: center;
 }
 
 .mat-flat-button {
     margin: 1px 3px;
+}
+
+.board-container {
+    display: block;
 }
 
 .board {

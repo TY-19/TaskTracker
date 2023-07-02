@@ -1,9 +1,54 @@
-<div *ngIf="board" class="content">
+<div *ngIf="board" class="content board-container" 
+    [ngClass]= "getSidebarClass()">
+    <div *ngIf="showSidebar" [@openClose] class="sidebar-container" >
+        <button class="panel-container" (click)="showSidebar=false">
+            <mat-icon>
+                arrow_back
+            </mat-icon>
+            <p class="panel-text">Hide panel</p>
+        </button>
+        <tt-assignment-view-full *ngIf="sidebarContent=='details'"
+            [sidebarView]="true"
+            [boardId]="board.id.toString()"
+            [assignmentId]="currentTaskId!.toString()">
+        </tt-assignment-view-full>
+        <tt-assignment-edit *ngIf="sidebarContent == 'create' || sidebarContent=='edit'"
+            [sidebarView]="true"
+            [boardId]="board.id.toString()"
+            [assignmentId]="currentTaskId?.toString()">
+        </tt-assignment-edit>
+        <div class="sidebar-buttons" *ngIf="sidebarContent=='details'">
+            <a mat-flat-button color="primary"
+                [routerLink]="['/boards', board.id, 'tasks', currentTaskId]">
+                Details
+            </a>
+            <a mat-flat-button class="edit-button" (click)="editTask(currentTaskId!)">
+                Edit
+            </a>
+            <a mat-flat-button color="warn" (click)="deleteAssignment()">
+                Delete
+            </a>
+        </div>
+        <div class="sidebar-buttons" *ngIf="sidebarContent == 'create' || sidebarContent == 'edit'">
+            <button mat-flat-button color="primary" (click)="onSubmit()">
+                {{ sidebarContent === "create" ? "Add" : "Save" }}
+            </button>
+            <a mat-flat-button color="accent" (click)="showSidebar=false">
+                Cancel
+            </a>
+        </div>
+    </div>
+
     <h2>{{board.name}}</h2>
     <div>
         <a mat-flat-button color="primary" 
-            [routerLink]="['/boards', board.id, 'tasks', 'create']">Create Task</a>
-        <a mat-flat-button class="edit-button">Manage Tasks</a>
+            (click)="createTask()">
+            Create Task
+        </a>
+        <a mat-flat-button class="edit-button"
+            [routerLink]="['/boards', board.id, 'tasks']">
+            Manage Tasks
+        </a>
         <a mat-flat-button class="edit-button" 
             [routerLink]="['/boards', board.id, 'stages']">Manage Stages</a>
         <a mat-flat-button class="edit-button"
@@ -17,7 +62,7 @@
                     <div class="stage-name">{{stage.name}}</div>
                     <div *ngFor="let task of filterAssignmentOfTheStage(stage.id)">
                         <div cdkDrag [cdkDragData]="task">
-                            <div [routerLink]="['/boards', board.id, 'tasks', task.id]">
+                            <div (click)="viewTask(task.id)">
                                 {{task.topic}}
                             </div>
                         </div>

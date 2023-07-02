@@ -1,5 +1,5 @@
-<div class="content">
-    <button class="back-container" [routerLink]="['/boards', boardId]">
+<div [class]="sidebarView ? 'sidebar-view' : 'content'">
+    <button *ngIf="!sidebarView" class="back-container" [routerLink]="['/boards', boardId]">
         <mat-icon>
             arrow_back
         </mat-icon>
@@ -13,37 +13,48 @@
             </tr>
             <tr>
                 <td>Topic:</td>
-                <td>
+                <td class="last-column">
                     {{assignment?.topic}}
                 </td>
             </tr>
             <tr>
                 <td>Description:</td>
-                <td>{{assignment?.description}}</td>
+                <td class="last-column">
+                    {{assignment?.description}}
+                </td>
             </tr>
             <tr>
                 <td>Stage:</td>
-                <td>{{stage?.name}}</td>
+                <td class="last-column">
+                    {{stage?.name}}
+                </td>
             </tr>
             <tr>
                 <td>Deadline:</td>
-                <td>{{assignment?.deadline | date: 'dd/MM/YYYY HH:mm' }}</td>
+                <td class="last-column">
+                    {{assignment?.deadline | date: 'dd/MM/YYYY HH:mm' }}
+                </td>
             </tr>
             <tr>
                 <td>Status:</td>
-                <td [class]="assignment?.isCompleted ? 'success-text' : 'warn-text'">
+                <td [class]="assignment?.isCompleted ? 'success-text' : 'warn-text'"
+                    class="last-column">
                     {{assignment?.isCompleted ? "Completed" : "Incompleted"}}
                 </td>
             </tr>
         </table>
     </div>
-    <div>
-        <button mat-flat-button class="edit-button"
+    <div *ngIf="!sidebarView">
+        <a mat-flat-button color="primary" *ngIf="sidebarView"
+            [routerLink]="['/boards', boardId, 'tasks', assignmentId]">
+            Details
+        </a>
+        <a mat-flat-button class="edit-button"
             [routerLink]="['/boards', boardId, 'tasks', assignmentId, 'edit']">
             Edit
-        </button>
-        <button mat-flat-button color="warn" (click)="deleteAssignment()">
+        </a>
+        <a mat-flat-button color="warn" (click)="deleteAssignment()">
             Delete
-        </button>
+        </a>
     </div>
 </div>

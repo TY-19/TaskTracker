@@ -12,6 +12,11 @@ export class AssignmentService {
 
   }
 
+  getAssignments(boardId: string) : Observable<Assignment[]> {
+    const url = "/api/boards/" + boardId + "/tasks/";
+    return this.http.get<Assignment[]>(url);
+  }
+
   getAssignment(boardId: string, assignmentId: string) : Observable<Assignment> {
     const url = "/api/boards/" + boardId + "/tasks/" + assignmentId;
     return this.http.get<Assignment>(url);

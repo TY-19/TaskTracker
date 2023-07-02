@@ -93,6 +93,16 @@ public class UserService : IUserService
         var user = await GetUserByIdOrNameInnerAsync(usernameOrId);
         if (user == null)
             return;
+        if (user.Employee != null)
+        {
+            var toDelete = await _context.Employees
+                .FirstOrDefaultAsync(e => e.Id == user.Employee.Id);
+            if(toDelete != null)
+            {
+                _context.Employees.Remove(toDelete);
+                await _context.SaveChangesAsync();
+            }
+        }
 
         await _userManager.DeleteAsync(user);
     }

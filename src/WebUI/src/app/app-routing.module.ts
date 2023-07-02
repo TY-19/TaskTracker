@@ -38,7 +38,7 @@ const routes: Routes = [
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
   { path: 'boards/:boardId/employees', component: EmployeesComponent, canActivate: [AuthGuard], 
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
-  { path: 'boards/:boardId/tasks/', component: AssignmentsComponent, canActivate: [AuthGuard] },
+  { path: 'boards/:boardId/tasks', component: AssignmentsComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/create', component: AssignmentEditComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/:taskId', component: AssignmentViewFullComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/:taskId/edit', component: AssignmentEditComponent, canActivate: [AuthGuard] },

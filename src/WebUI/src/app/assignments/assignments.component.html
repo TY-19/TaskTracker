@@ -1,1 +1,48 @@
-<p>assignments works!</p>
+<div class="content">
+    <button class="back-container" [routerLink]="['/boards', boardId]">
+        <mat-icon>
+            arrow_back
+        </mat-icon>
+        <p class="back-text">Back to the board</p>
+    </button>
+
+    <mat-form-field [hidden]="!assignmentsTable" class="filter" floatLabel="never">
+        <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
+            placeholder="Find user on the board" />
+        <button *ngIf="filter.value" matSuffix mat-icon-button aria-label="Clear" 
+            (click)="clearFilter()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field>
+
+    <table mat-table [dataSource]="assignmentsTable"
+        matSort
+        class="mat-elevation-z8 table"
+        [hidden]="!assignmentsTable"
+        aria-label="List of the stages">
+    
+        <ng-container matColumnDef="topic">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="topic"> Topic </th>
+            <td mat-cell *matCellDef="let assignment"> {{assignment.topic}} </td>
+        </ng-container>
+        <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef> Description </th>
+            <td mat-cell *matCellDef="let assignment"> {{assignment.description}} </td>
+        </ng-container>
+        <ng-container matColumnDef="deadline">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="deadline"> Deadline </th>
+            <td mat-cell *matCellDef="let assignment"> {{assignment.deadline | date: 'dd/MM/YYYY HH:mm'}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['topic', 'description', 'deadline']"></tr>
+        <tr mat-row *matRowDef="let row; let i = index;
+            columns: ['topic', 'description', 'deadline']">
+        </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]"
+                 showFirstLastButtons
+                 aria-label="Select page of assignments">
+    </mat-paginator>
+
+</div>
