@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AssignmentViewFullComponent } from './assignment-view-full.component';
+import { AssignmentViewFullComponent } from './assignment-view.component';
 
 describe('AssignmentViewFullComponent', () => {
   let component: AssignmentViewFullComponent;

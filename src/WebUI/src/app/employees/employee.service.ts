@@ -22,6 +22,11 @@ export class EmployeeService {
     return this.http.get<Employee[]>(url);
   }
 
+  getEmployee(boardId: string, employeeId: number): Observable<Employee> {
+    const url = "/api/boards/" + boardId + "/employees/" + employeeId;
+    return this.http.get<Employee>(url);
+  }
+
   addEmployeeToTheBoard(boardId: string, userName: string) {
     const url = "/api/boards/" + boardId + "/employees/" + userName;
     return this.http.post(url, null);

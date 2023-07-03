@@ -6,22 +6,26 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Assignment } from 'src/app/models/assignment';
 import { AssignmentService } from 'src/app/assignments/assignment.service';
 import { Stage } from 'src/app/models/stage';
-import { SidebarAnimations } from 'src/app/common/animations/sidebar-animation';
+import { BoardAnimations, SidebarAnimations } from 'src/app/common/animations/sidebar-animation';
 import { AssignmentEditComponent } from 'src/app/assignments/assignment-edit/assignment-edit.component';
+import { AssignmentViewComponent } from 'src/app/assignments/assignment-view/assignment-view.component';
 
 
 @Component({
   selector: 'tt-board-details',
   templateUrl: './board-details.component.html',
   styleUrls: ['./board-details.component.scss'],
-  animations: [ SidebarAnimations.animeTrigger ]
+  animations: [ 
+    SidebarAnimations.showHideSidebar,
+    BoardAnimations.moveBoard 
+  ]
 })
 export class BoardDetailsComponent implements OnInit {
+  @ViewChild(AssignmentViewComponent) assignmentView!: AssignmentViewComponent;
   @ViewChild(AssignmentEditComponent) assignmentEdit!: AssignmentEditComponent;
   board! : Board;
   showSidebar: boolean = false;
   sidebarContent: string = "details";
-
   currentTaskId?: number;
   
   constructor(private activatedRoute: ActivatedRoute,
@@ -56,19 +60,32 @@ export class BoardDetailsComponent implements OnInit {
       {
         (task as Assignment).stageId = Number(stageId);
         this.assignmentService.updateAssignment(this.board.id.toString(), task)
-          .subscribe(() => this.getBoard());
+          .subscribe(() => {
+            this.getBoard();
+            this.updateChildren(task as Assignment);
+          });
       }
     } 
   }
 
+  updateChildren(task: Assignment) {
+    if(this.showSidebar && this.currentTaskId == task.id) {
+      if(this.sidebarContent == "details")
+        this.assignmentView.getStage(task.stageId);
+      if(this.sidebarContent == "edit")
+        this.assignmentEdit.updateStage();
+    }
+  }
+
   getSidebarClass(): string {
     if (!this.showSidebar)
-      return "";
+      return "full-page";
+
     switch(this.sidebarContent) {
       case "details": return "sidebar-view-margin";
       case "create": return "sidebar-edit-margin";
       case "edit": return "sidebar-edit-margin";
-      default: return "";
+      default: return "full-page";
     }
   }
 

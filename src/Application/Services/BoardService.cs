@@ -22,7 +22,7 @@ public class BoardService : IBoardService
             .Include(b => b.Stages)
             .Include(b => b.Assignments).ThenInclude(a => a.Subparts)
             .Include(b => b.Assignments).ThenInclude(a => a.Stage)
-            .Include(b => b.Employees)
+            .Include(b => b.Employees).ThenInclude(e => e.User)
             .AsNoTracking()
             .ToListAsync();
         return _mapper.Map<List<BoardGetModel>>(boards);
@@ -40,7 +40,7 @@ public class BoardService : IBoardService
             .Include(b => b.Stages)
             .Include(b => b.Assignments).ThenInclude(a => a.Subparts)
             .Include(b => b.Assignments).ThenInclude(a => a.Stage)
-            .Include(b => b.Employees)
+            .Include(b => b.Employees).ThenInclude(e => e.User)
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 
@@ -50,7 +50,7 @@ public class BoardService : IBoardService
             .Include(b => b.Stages)
             .Include(b => b.Assignments).ThenInclude(a => a.Subparts)
             .Include(b => b.Assignments).ThenInclude(a => a.Stage)
-            .Include(b => b.Employees)
+            .Include(b => b.Employees).ThenInclude(e => e.User)
             .FirstOrDefaultAsync(e => e.Name == name);
         return _mapper.Map<BoardGetModel>(board);
     }

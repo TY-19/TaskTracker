@@ -7,6 +7,11 @@ export class MatTableHelper<T extends Record<string, any>> {
     private isSortInitiated: boolean = false;
     private isPaginationInitiated: boolean = false;
 
+    constructor(private SpecificSortingDataAccessor?: 
+      (data: T, sortHeaderId: string) => string | number) {
+
+    }
+
     initiateTable(dataSource?: MatTableDataSource<T>, sort?: MatSort, paginator?: MatPaginator) {
         if (dataSource) {
             this.initiateSort(dataSource, sort);
@@ -25,14 +30,16 @@ export class MatTableHelper<T extends Record<string, any>> {
         if (!this.isSortInitiated && sort) {
             sort.disableClear = true;
             dataSource!.sort = sort;
-            dataSource!.sortingDataAccessor = 
-               (data, sortHeaderId) => {
-                if (typeof(data[sortHeaderId]) === 'string')
-                  return data[sortHeaderId].toLowerCase()
-                else
-                  return data[sortHeaderId];
-              };
+            dataSource!.sortingDataAccessor = this.SpecificSortingDataAccessor 
+              ?? this.GeneralSortingDataAccessor;
             this.isSortInitiated = true;
         }
       }
+
+    private GeneralSortingDataAccessor(data: T, sortHeaderId: string): string | number {
+      if (typeof(data[sortHeaderId]) === 'string')
+        return data[sortHeaderId].toLowerCase()
+      else
+        return data[sortHeaderId];
+    }
 }

@@ -5,6 +5,9 @@ import { AssignmentService } from '../assignment.service';
 import { StageService } from 'src/app/stages/stage.service';
 import { Stage } from 'src/app/models/stage';
 import * as moment from 'moment';
+import { Employee } from 'src/app/models/employee';
+import { EmployeeService } from 'src/app/employees/employee.service';
+import { Assignment } from 'src/app/models/assignment';
 
 @Component({
   selector: 'tt-assignment-edit',
@@ -19,11 +22,13 @@ export class AssignmentEditComponent implements OnInit {
   form!: FormGroup;
 
   stages: Stage[] = [];
+  employees: Employee[] = []
   mode: string = "edit";
   
   constructor(private activatedRoute: ActivatedRoute,
     private router: Router,
     private assignmentService: AssignmentService,
+    private employeeService: EmployeeService,
     private stageService: StageService) { 
       
     }
@@ -54,15 +59,19 @@ export class AssignmentEditComponent implements OnInit {
       ]),
       deadlineDate: new FormControl(new Date()),
       deadlineTime: new FormControl("00:00"),
+      responsibleEmployeeId: new FormControl("", [
+        Validators.required
+      ]),
       isCompleted: new FormControl(false)
     });
   }
 
   private prepareData() {
-    if (this.mode === "edit")
+    this.getStages();
+    this.getEmployees();
+    if (this.mode === "edit") {
       this.loadAssignment();
-    else
-      this.getStages();
+    } 
   }
 
   private loadAssignment() {
@@ -71,12 +80,15 @@ export class AssignmentEditComponent implements OnInit {
         this.form.patchValue(result);
         this.form.patchValue({ 'deadlineDate': result.deadline });
         this.form.patchValue({ 'deadlineTime': this.getTimeFromDateTime(result.deadline) });
-        this.stageService.getStages(this.boardId!)
-          .subscribe(stages => {
-            this.stages = stages;
-            let selectedStageId = this.stages.find(s => s.id == result.stageId)?.id;
-            this.form.patchValue({'stage': selectedStageId});
-          });
+        this.form.patchValue({ 'stage': result.stageId });
+        this.form.patchValue({ 'responsibleEmployeeId': result.responsibleEmployeeId });
+      });
+  }
+
+  public updateStage() {
+    this.assignmentService.getAssignment(this.boardId!, this.assignmentId!)
+      .subscribe(result => {
+        this.form.patchValue({ 'stage': result.stageId });
       });
   }
 
@@ -87,19 +99,33 @@ export class AssignmentEditComponent implements OnInit {
       });
   }
 
+  private getEmployees() {
+    this.employeeService.getEmployees(this.boardId!)
+      .subscribe(result => {
+        this.employees = result;
+        this.employees.sort((a, b) => {
+          let compareResult = a.firstName?.localeCompare(b.firstName!);
+          if(compareResult) return compareResult;
+          else return 0;
+        });
+      })
+  }
+
   onSubmit() {
     if(this.form.valid)
     {    
-      let assignment = {
+      let assignment: Assignment = {
         id: this.form.controls['id'].value,
         topic: this.form.controls['topic'].value,
         description: this.form.controls['description'].value,
         boardId: Number(this.boardId),
         stageId: this.form.controls['stage'].value,
         deadline: this.getDeadline(),
+        responsibleEmployeeId: this.form.controls['responsibleEmployeeId'].value,
         isCompleted: this.form.controls['isCompleted'].value,
         subparts: []
       };
+      
       if (this.mode === "create")
         this.createAssignment(assignment);
       else if (this.mode === "edit")
@@ -107,21 +133,21 @@ export class AssignmentEditComponent implements OnInit {
     }
   }
 
-  private getDeadline() : string {
+  private getDeadline() : Date {
       let deadlineDate = this.form.controls['deadlineDate'].value;
       
       let deadline : moment.Moment = moment.isMoment(deadlineDate)
         ? moment(deadlineDate)
-        : moment(deadlineDate, 'YYYY-MM-DDTHH:mm:ss', true);
+        : moment(deadlineDate, 'YYYY-MM-DDTHH:mm:ss'); 
 
       let deadlineTime = this.form.controls['deadlineTime'].value;
       let timeMoment = moment(deadlineTime, 'HH:mm', true);
 
       deadline = moment(deadline).hour(0).minute(0)
-        .add(timeMoment.hours(), 'hours')
-        .add(timeMoment.minutes(), 'minutes');;
+        .add(timeMoment.hours() + deadline.utcOffset() / 60, 'hours')
+        .add(timeMoment.minutes(), 'minutes');
 
-      return deadline.format('YYYY-MM-DDTHH:mm:ss')
+      return deadline.toDate();
   }
 
   private getTimeFromDateTime(dateTime: Date | undefined) : string {
@@ -149,5 +175,4 @@ export class AssignmentEditComponent implements OnInit {
         }
       });
   }
-  
 }

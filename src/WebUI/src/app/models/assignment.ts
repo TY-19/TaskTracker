@@ -10,4 +10,5 @@ export interface Assignment {
     stageId: number;
     responsibleEmployeeId: number;
     subparts: Subpart[];
+    [key: string]: any;
 }

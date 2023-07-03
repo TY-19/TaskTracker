@@ -10,12 +10,14 @@
         <mat-form-field floatLabel="always">
             <mat-label>Topic:</mat-label>
             <p><input matInput formControlName="topic" required></p>
+            <p *ngIf="form.touched && form.controls['topic'].errors">
+                <span *ngIf="form.controls['topic'].errors?.['required']"
+                    class="small-warn-text">
+                    Username is required
+                </span>
+            </p>
         </mat-form-field>
-        <p *ngIf="form.touched && form.controls['topic'].errors">
-            <mat-error *ngIf="form.controls['topic'].errors?.['required']" class="form-error-message">
-                Topic is required.
-            </mat-error>
-        </p>
+        
         <br>
         <mat-form-field floatLabel="always">
             <mat-label>Description:</mat-label>
@@ -34,7 +36,7 @@
 
         <br>
         <mat-form-field floatLabel="always">
-            <mat-label>Deadline</mat-label>
+            <mat-label>Deadline:</mat-label>
             <div class="container">
                 <div class="row">
                   <div class="flex-container">
@@ -55,6 +57,16 @@
             </div>
         </mat-form-field>
         
+        <br>
+        <mat-form-field floatLabel="always">
+            <mat-label>Responsible employee:</mat-label>
+            <mat-select formControlName="responsibleEmployeeId" required>
+                <mat-option *ngFor="let employee of employees" [value]="employee.id">
+                    {{employee.firstName}} {{employee.lastName}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
         <br>
         <div class="flex-container">
             <mat-label class="right-margin">Completed:</mat-label>

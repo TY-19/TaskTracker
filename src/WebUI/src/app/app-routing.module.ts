@@ -8,7 +8,7 @@ import { DefaultRolesNames } from './config/default-roles-names';
 import { BoardCreateComponent } from './boards/board-create/board-create.component';
 import { BoardDetailsComponent } from './boards/board-details/board-details.component';
 import { StagesComponent } from './stages/stages.component';
-import { AssignmentViewFullComponent } from './assignments/assignment-view-full/assignment-view-full.component';
+import { AssignmentViewComponent } from './assignments/assignment-view/assignment-view.component';
 import { AssignmentsComponent } from './assignments/assignments.component';
 import { AssignmentEditComponent } from './assignments/assignment-edit/assignment-edit.component';
 import { RegistrationComponent } from './auth/registration/registration.component';
@@ -40,7 +40,7 @@ const routes: Routes = [
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
   { path: 'boards/:boardId/tasks', component: AssignmentsComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/create', component: AssignmentEditComponent, canActivate: [AuthGuard] },
-  { path: 'boards/:boardId/tasks/:taskId', component: AssignmentViewFullComponent, canActivate: [AuthGuard] },
+  { path: 'boards/:boardId/tasks/:taskId', component: AssignmentViewComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/:taskId/edit', component: AssignmentEditComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard],
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },

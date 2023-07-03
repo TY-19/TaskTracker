@@ -36,10 +36,14 @@
                 </td>
             </tr>
             <tr>
+                <td>Responsible<br>employee:</td>
+                <td>{{employee?.firstName}} {{employee?.lastName}}</td>
+            </tr>
+            <tr>
                 <td>Status:</td>
-                <td [class]="assignment?.isCompleted ? 'success-text' : 'warn-text'"
+                <td [class]="getAssignmentStatus('class')"
                     class="last-column">
-                    {{assignment?.isCompleted ? "Completed" : "Incompleted"}}
+                    {{getAssignmentStatus()}}
                 </td>
             </tr>
         </table>
