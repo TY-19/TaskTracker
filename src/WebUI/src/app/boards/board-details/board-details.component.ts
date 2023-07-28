@@ -49,7 +49,8 @@ export class BoardDetailsComponent implements OnInit {
   }
 
   filterAssignmentOfTheStage(stageId: number): Assignment[] {
-    return this.board.assignments?.filter(a => a.stageId == stageId) ?? [];
+    return this.board.assignments?.filter(a => a.stageId == stageId)
+      .sort((a, b) => a.topic.toLowerCase() > b.topic.toLowerCase() ? 1 : -1) ?? [];
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -99,6 +100,11 @@ export class BoardDetailsComponent implements OnInit {
     this.currentTaskId = undefined;
     this.showSidebar = true;
     this.sidebarContent = "create";
+    if (this.assignmentEdit) {
+      this.assignmentEdit.mode = "create";
+      this.assignmentEdit.assignmentId = "0";
+      this.assignmentEdit?.ngOnInit();
+    }
   }
 
   editTask(taskId: number) {

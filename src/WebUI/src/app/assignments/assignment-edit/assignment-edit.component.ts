@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from '../assignment.service';
@@ -8,6 +8,8 @@ import * as moment from 'moment';
 import { Employee } from 'src/app/models/employee';
 import { EmployeeService } from 'src/app/employees/employee.service';
 import { Assignment } from 'src/app/models/assignment';
+import { Subpart } from 'src/app/models/subpart';
+import { SubpartsComponent } from 'src/app/subparts/subparts.component';
 
 @Component({
   selector: 'tt-assignment-edit',
@@ -18,11 +20,13 @@ export class AssignmentEditComponent implements OnInit {
   @Input() boardId?: string;
   @Input() assignmentId?: string;
   @Input() sidebarView: boolean = false;
+  @ViewChild(SubpartsComponent) subpartsComponent!: SubpartsComponent;
 
   form!: FormGroup;
 
   stages: Stage[] = [];
-  employees: Employee[] = []
+  subparts: Subpart[] = [];
+  employees: Employee[] = [];
   mode: string = "edit";
   
   constructor(private activatedRoute: ActivatedRoute,
@@ -82,6 +86,8 @@ export class AssignmentEditComponent implements OnInit {
         this.form.patchValue({ 'deadlineTime': this.getTimeFromDateTime(result.deadline) });
         this.form.patchValue({ 'stage': result.stageId });
         this.form.patchValue({ 'responsibleEmployeeId': result.responsibleEmployeeId });
+
+        this.subparts = result.subparts;
       });
   }
 
@@ -112,8 +118,9 @@ export class AssignmentEditComponent implements OnInit {
   }
 
   onSubmit() {
+    this.subpartsComponent.onSubmit();
     if(this.form.valid)
-    {    
+    {
       let assignment: Assignment = {
         id: this.form.controls['id'].value,
         topic: this.form.controls['topic'].value,

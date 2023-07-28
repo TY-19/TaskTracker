@@ -1,0 +1,19 @@
+.subpart-table {
+    border: black 1px solid;
+    border-collapse: collapse;
+    width: 200px;
+}
+
+th {
+    border: black 1px solid;
+    font-weight: 500;
+}
+
+td {
+    border: black 1px solid;
+}
+
+.mat-flat-button.sign-button{
+    min-width: 0;
+    line-height: 18px;
+}

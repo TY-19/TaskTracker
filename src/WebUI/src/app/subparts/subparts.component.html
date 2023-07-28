@@ -1,0 +1,37 @@
+<table *ngIf="mode != 'details' || (subparts && subparts.length != 0)"
+    class="subpart-table" aria-labelledby="subparts">
+    <tr>
+        <th>Subpart</th>
+        <th>Value</th>
+        <th *ngIf="mode=='edit'"></th>
+    </tr>
+    <ng-container *ngIf="mode=='details'" >
+        <tr *ngFor="let subpart of subparts; let i = index">
+            <td>{{subpart.name}}</td>
+            <td>{{subpart.percentValue}}</td>
+        </tr>
+    </ng-container>
+    <ng-container *ngIf="mode=='edit'">
+        <ng-container *ngFor="let form of forms; let i = index">
+            <tr [formGroup]="form">
+                <td>
+                    <input matInput formControlName="name" />
+                </td>
+                <td>
+                    <input matInput formControlName="percentValue"  />
+                </td>
+                <td>
+                    <a mat-flat-button color="warn" class="sign-button"
+                        (click)="onRemoveSubpart(i)">-</a> 
+                </td>
+            </tr>
+        </ng-container>
+    </ng-container>
+    <tr *ngIf="mode=='edit'">
+        <td colspan="4">
+            <a mat-flat-button color="primary" class="sign-button"
+                (click)="onAddSubpart()">+</a> 
+        </td>
+    </tr>
+</table>
+

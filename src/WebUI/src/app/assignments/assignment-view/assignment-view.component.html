@@ -40,6 +40,11 @@
                 <td>{{employee?.firstName}} {{employee?.lastName}}</td>
             </tr>
             <tr>
+                <td colspan="2" class="last-column">
+                    <tt-subparts [subparts]="assignment?.subparts"></tt-subparts>
+                </td>
+            </tr>
+            <tr>
                 <td>Status:</td>
                 <td [class]="getAssignmentStatus('class')"
                     class="last-column">
@@ -47,6 +52,7 @@
                 </td>
             </tr>
         </table>
+        
     </div>
     <div *ngIf="!sidebarView">
         <a mat-flat-button color="primary" *ngIf="sidebarView"

@@ -129,8 +129,15 @@ public class StageService : IStageService
             throw new InvalidOperationException(
                 "Stage cannot be deleted because it contains assignments and there are no other stages on the board to transfer them");
 
+        int newStageId = (await _context.Stages.FirstOrDefaultAsync(
+            s => s.BoardId == stage.BoardId && s.Position == newPosition))?.Id ?? 0;
+        
+        if (newStageId == 0)
+            throw new InvalidOperationException(
+                "Stage cannot be deleted because it contains assignments and there are no other stages on the board to transfer them");
+
         await _context.Assignments
             .Where(a => a.BoardId == stage.BoardId && a.StageId == stage.Id)
-            .ForEachAsync(a => a.StageId = newPosition);
+            .ForEachAsync(a => a.StageId = newStageId);
     }
 }

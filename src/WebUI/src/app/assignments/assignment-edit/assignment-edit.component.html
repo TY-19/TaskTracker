@@ -66,12 +66,15 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-
+        
         <br>
-        <div class="flex-container">
+        <tt-subparts [subparts]="subparts" [mode]="'edit'"></tt-subparts>
+        
+        <div class="flex-container margin-5">
             <mat-label class="right-margin">Completed:</mat-label>
             <mat-checkbox class="vartical-center" color="primary" formControlName="isCompleted"></mat-checkbox>
         </div>
+        
 
         <div *ngIf="!sidebarView" class="buttons">
             <button mat-flat-button color="primary" type="submit">

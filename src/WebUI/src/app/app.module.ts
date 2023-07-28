@@ -33,6 +33,7 @@ import { UserBoardsComponent } from './users/user-boards/user-boards.component';
 import { UserBoardsAddComponent } from './users/user-boards-add/user-boards-add.component';
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UserChangePasswordComponent } from './users/user-change-password/user-change-password.component';
+import { SubpartsComponent } from './subparts/subparts.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { UserChangePasswordComponent } from './users/user-change-password/user-c
     UserBoardsComponent,
     UserBoardsAddComponent,
     UserEditComponent,
-    UserChangePasswordComponent
+    UserChangePasswordComponent,
+    SubpartsComponent
   ],
   imports: [
     BrowserModule,
