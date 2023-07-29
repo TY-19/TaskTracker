@@ -17,6 +17,11 @@ export class BoardService {
       return this.http.get<Board[]>(url);
   }
 
+  getBoardsOfTheEmployee() : Observable<Board[]> {
+    const url = "/api/boards/accessible";
+    return this.http.get<Board[]>(url);
+}
+
   getBoard(id: string) : Observable<Board> {
       const url = "/api/boards/" + id;
       return this.http.get<Board>(url);

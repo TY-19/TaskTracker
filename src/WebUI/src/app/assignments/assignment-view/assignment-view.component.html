@@ -55,16 +55,18 @@
         
     </div>
     <div *ngIf="!sidebarView">
-        <a mat-flat-button color="primary" *ngIf="sidebarView"
-            [routerLink]="['/boards', boardId, 'tasks', assignmentId]">
-            Details
-        </a>
-        <a mat-flat-button class="edit-button"
+        <a *ngIf="authService.isAdmin() || authService.isManager()"
+            mat-flat-button class="edit-button"
             [routerLink]="['/boards', boardId, 'tasks', assignmentId, 'edit']">
             Edit
         </a>
-        <a mat-flat-button color="warn" (click)="deleteAssignment()">
+        <a *ngIf="authService.isAdmin() || authService.isManager()"
+            mat-flat-button color="warn" (click)="deleteAssignment()">
             Delete
         </a>
+        <a *ngIf="isUserAuthorizeToChangeTaskStatus()"
+            mat-flat-button [color]="assignment!.isCompleted ? 'warn' : 'primary'"
+            (click)="changeTaskStatus(assignment!)">
+            {{assignment!.isCompleted ? 'Cancel task completion' : 'Complete task' }}</a>
     </div>
 </div>

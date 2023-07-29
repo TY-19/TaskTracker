@@ -9,7 +9,7 @@ import { Stage } from 'src/app/models/stage';
 import { BoardAnimations, SidebarAnimations } from 'src/app/common/animations/sidebar-animation';
 import { AssignmentEditComponent } from 'src/app/assignments/assignment-edit/assignment-edit.component';
 import { AssignmentViewComponent } from 'src/app/assignments/assignment-view/assignment-view.component';
-
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'tt-board-details',
@@ -30,7 +30,8 @@ export class BoardDetailsComponent implements OnInit {
   
   constructor(private activatedRoute: ActivatedRoute,
     private boardService: BoardService,
-    private assignmentService: AssignmentService) { 
+    private assignmentService: AssignmentService,
+    public authService: AuthService) { 
 
   }
 
@@ -54,19 +55,41 @@ export class BoardDetailsComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<string[]>) {
+    if (!this.isAuthorizedToMoveTask(event.item.data as Assignment)) {
+      return;
+    }
+
     if (event.previousContainer !== event.container) {
       let stageId = event.container.element.nativeElement.getAttribute('stage-id');
-      let task = event.item.data;
+      let task = event.item.data as Assignment;
       if (stageId && task)
       {
-        (task as Assignment).stageId = Number(stageId);
-        this.assignmentService.updateAssignment(this.board.id.toString(), task)
-          .subscribe(() => {
-            this.getBoard();
-            this.updateChildren(task as Assignment);
-          });
+        task.stageId = Number(stageId);
+        this.assignmentService
+          .moveAssignmentToTheStage(this.board.id, task.id, task.stageId)
+            .subscribe(() => {
+              this.getBoard();
+              this.updateChildren(task);
+            });
       }
     } 
+  }
+
+  isAuthorizedToMoveTask(task: Assignment): boolean {
+    if (this.authService.isAdmin() || this.authService.isManager()) {
+      return true;
+    }
+    let responsibleEmployeeId = task?.responsibleEmployeeId?.toString();
+    if(!this.authService.getEmployeeId() || !responsibleEmployeeId) {
+      return false;
+    }
+    return this.authService.getEmployeeId() === responsibleEmployeeId;
+  }
+
+  isUserAuthorizeToChangeTaskStatus(): boolean {
+    if (this.assignmentView)
+      return this.assignmentView.isUserAuthorizeToChangeTaskStatus();
+    return false;
   }
 
   updateChildren(task: Assignment) {
@@ -125,13 +148,32 @@ export class BoardDetailsComponent implements OnInit {
     this.getBoard();
   }
 
+  changeTaskStatus(assignment: Assignment) {
+    this.assignmentService
+      .changeAssignmentStatus(this.board.id, assignment.id, !assignment.isCompleted)
+        .subscribe(() => {
+          this.assignmentView.getAssignment(this.board.id.toString(), assignment.id.toString());
+        })
+  }
+
   deleteAssignment() {
-    this.assignmentService.deleteAssignment(this.board.id.toString(), this.currentTaskId!.toString())
-      .subscribe(() => {
-        this.getBoard();
-        this.currentTaskId = 0;
-        this.showSidebar = false;
-        this.sidebarContent = "details";
-      });
+    this.assignmentService
+      .deleteAssignment(this.board.id.toString(), this.currentTaskId!.toString())
+        .subscribe(() => {
+          this.getBoard();
+          this.currentTaskId = 0;
+          this.showSidebar = false;
+          this.sidebarContent = "details";
+        });
+  }
+
+  getTaskClass(taskId: number): string {
+    let responsibleEmployeeId = this.board.assignments
+      ?.find(a => a.id == taskId)?.responsibleEmployeeId.toString();
+    let currentUserEmployeeId = this.authService.getEmployeeId();
+    let doesTaskBelongsToEmployee = currentUserEmployeeId !== null 
+      && responsibleEmployeeId !== undefined
+      && currentUserEmployeeId === responsibleEmployeeId;
+    return doesTaskBelongsToEmployee ? 'employees-task' : 'non-employees-task';
   }
 }

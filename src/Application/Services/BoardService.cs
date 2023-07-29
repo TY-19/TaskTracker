@@ -28,6 +28,24 @@ public class BoardService : IBoardService
         return _mapper.Map<List<BoardGetModel>>(boards);
     }
 
+    public async Task<IEnumerable<BoardGetModel>> GetBoardOfTheEmployeeAsync(string userName)
+    {
+        var boards = await _context.Boards
+            .Include(b => b.Stages)
+            .Include(b => b.Assignments).ThenInclude(a => a.Subparts)
+            .Include(b => b.Assignments).ThenInclude(a => a.Stage)
+            .Include(b => b.Employees).ThenInclude(e => e.User)
+            .AsNoTracking()
+            .Where(b => b.Employees
+                .Select(e => e.User)
+                .Where(u => u != null)
+                .Select(u => u!.UserName)
+                .Contains(userName))
+            .ToListAsync();
+
+        return _mapper.Map<List<BoardGetModel>>(boards);
+    }
+
     public async Task<BoardGetModel?> GetBoardByIdAsync(int id)
     {
         var board = await GetBoardByIdInnerAsync(id);

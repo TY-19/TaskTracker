@@ -21,7 +21,7 @@
         <br>
         <mat-form-field floatLabel="always">
             <mat-label>Description:</mat-label>
-            <p><input matInput formControlName="description"></p>
+            <p><textarea matInput formControlName="description"></textarea></p>
         </mat-form-field>
         
         <br>
@@ -68,7 +68,8 @@
         </mat-form-field>
         
         <br>
-        <tt-subparts [subparts]="subparts" [mode]="'edit'"></tt-subparts>
+        <tt-subparts [subparts]="subparts" [mode]="'edit'">
+        </tt-subparts>
         
         <div class="flex-container margin-5">
             <mat-label class="right-margin">Completed:</mat-label>

@@ -5,6 +5,7 @@
 .sidebar-container {
     position: fixed;
     top: 80px;
+    width: 250px;
     height: calc(100% - 80px);
     left: 0;
     overflow-y: auto;
@@ -16,7 +17,7 @@
 }
 
 .sidebar-edit-margin {
-    margin-left: 190px;
+    margin-left: 200px;
 }
 
 .panel-container {
@@ -36,6 +37,9 @@
 h2 {
     text-align: center;
 }
+::ng-deep h2.title {
+    margin-bottom: 0px;
+}
 
 .mat-flat-button {
     margin: 1px 3px;
@@ -46,7 +50,7 @@ h2 {
 }
 
 .board {
-    margin-top: 20px;
+    margin-top: 10px;
     display: flex;
     overflow-x: auto;
 }
@@ -57,7 +61,7 @@ h2 {
     border-radius: 20px;
     padding: 3px 3px;
     text-align: center;
-    background-color: cornsilk;
+    background-color: #f5f5dc;
     min-width: 200px;
     width: 50%;
     height: 200px;
@@ -70,5 +74,22 @@ h2 {
 }
 
 .cdk-drag {
-    background-color: bisque;
+    text-align: center;
+}
+
+.task {
+    padding: 5px 2px;
+    margin: 5px 0px;
+    border: grey 1px solid;
+    border-collapse: collapse;
+    border-radius: 15px;
+    background-color: #98fb98;
+}
+
+.employees-task {
+    background-color: #98fb98;
+}
+
+.non-employees-task {
+    background-color: #99FFFF;
 }

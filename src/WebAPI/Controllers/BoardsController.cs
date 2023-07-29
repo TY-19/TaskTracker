@@ -30,6 +30,20 @@ public class BoardsController : ControllerBase
         var boards = await _boardService.GetAllBoardsAsync();
         return Ok(boards);
     }
+    
+    [Route("accessible")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<IEnumerable<BoardGetModel>>> GetBoardsOfTheEmployee()
+    {
+        string? userName = User.Identity?.Name;
+        if (userName == null)
+            return Unauthorized();
+
+        var boards = await _boardService.GetBoardOfTheEmployeeAsync(userName);
+        return Ok(boards);
+    }
 
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
     [HttpPost]

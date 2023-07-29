@@ -3,5 +3,6 @@ export interface LoginResult {
     message: string;
     token?: string;
     userName?: string;
+    employeeId?: number;
     roles: string[];
 }

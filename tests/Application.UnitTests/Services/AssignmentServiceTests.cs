@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Moq;
+using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.Application.Services;
 using TaskTracker.Application.UnitTests.Helpers;
@@ -165,7 +167,8 @@ public class AssignmentServiceTests
     private static AssignmentService GetAssignmentService(TestDbContext context)
     {
         var mapper = ServicesTestsHelper.GetMapper();
-        return new AssignmentService(context, mapper);
+        var userService = new Mock<IUserService>();
+        return new AssignmentService(context, mapper, userService.Object);
     }
 
 }

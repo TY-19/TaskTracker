@@ -21,11 +21,19 @@ export class BoardsComponent implements OnInit {
   }
 
   getData(): void {
-    this.boardService.getBoards()
-      .subscribe({
-        next: response => this.boards = response,
-        error: error => console.log(error)
-      });
+    if (this.auth.isAdmin() || this.auth.isManager()) {
+      this.boardService.getBoards()
+        .subscribe({
+          next: response => this.boards = response,
+          error: error => console.log(error)
+        });
+    } else {
+      this.boardService.getBoardsOfTheEmployee()
+        .subscribe({
+          next: response => this.boards = response,
+          error: error => console.log(error)
+        });
+    }
   }
 
   deleteBoard(id: number) {

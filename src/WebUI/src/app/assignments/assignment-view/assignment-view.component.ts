@@ -6,6 +6,7 @@ import { Stage } from 'src/app/models/stage';
 import { StageService } from 'src/app/stages/stage.service';
 import { Employee } from 'src/app/models/employee';
 import { EmployeeService } from 'src/app/employees/employee.service';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'tt-assignment-view',
@@ -24,7 +25,8 @@ export class AssignmentViewComponent implements OnInit {
     private router: Router,
     private assignmentService: AssignmentService,
     private employeeService: EmployeeService,
-    private stageService: StageService) { 
+    private stageService: StageService,
+    public authService: AuthService) { 
 
   }
 
@@ -64,6 +66,21 @@ export class AssignmentViewComponent implements OnInit {
           this.employee = result;
         })
     }
+  }
+
+  changeTaskStatus(assignment: Assignment) {
+    this.assignmentService
+      .changeAssignmentStatus(this.boardId!, assignment.id, !assignment.isCompleted)
+        .subscribe(() => {
+          this.getAssignment(this.boardId!.toString(), assignment.id.toString());
+        })
+  }
+
+  isUserAuthorizeToChangeTaskStatus(): boolean {
+    return this.authService.isEmployee() 
+      && this.authService.getEmployeeId() !== null
+      && this.assignment != undefined
+      && this.authService.getEmployeeId() === this.assignment.responsibleEmployeeId.toString();
   }
 
   deleteAssignment() {

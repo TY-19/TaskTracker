@@ -32,6 +32,23 @@ export class AssignmentService {
     return this.http.put(url, assignment);
   }
 
+  moveAssignmentToTheStage(boardId: number | string, 
+    assignmentId: number | string, stageId: number | string) {
+      const url = "/api/boards/" + boardId + "/tasks/" + assignmentId + "/move/" + stageId;
+      return this.http.put(url, null);
+  }
+
+  changeAssignmentStatus(boardId: number | string, 
+    assignmentId: number | string, isCompleted: boolean) {
+      let url = "/api/boards/" + boardId + "/tasks/" + assignmentId + "/";
+      if (isCompleted) {
+        url += "complete";
+      } else {
+        url += "uncomplete";
+      }
+      return this.http.put(url, null);
+  }
+
   deleteAssignment(boardId: string, assignmentId: string) {
     const url = "/api/boards/" + boardId + "/tasks/" + assignmentId;
     return this.http.delete(url);

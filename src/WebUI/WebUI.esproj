@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.45-alpha">
   <PropertyGroup>
+   <FrameworkPathOverride>/snap/dotnet-sdk/current/shared/Microsoft.NETCore.App/6.0.1/mscorlib.dll</FrameworkPathOverride>
     <StartupCommand>npm start</StartupCommand>
     <JavaScriptTestFramework>Jasmine</JavaScriptTestFramework>
     <!-- Command to run on project build -->

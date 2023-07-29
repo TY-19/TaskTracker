@@ -24,6 +24,9 @@ export class AuthService {
     private _userName = new Subject<string|null>();
     public userName = this._userName.asObservable();
 
+    private employeeIdKey: string = "EmployeeId";
+    private employeeId: number | null = null;
+
     constructor(
         protected http: HttpClient) {
             this.init();
@@ -63,6 +66,10 @@ export class AuthService {
         return localStorage.getItem(this.userNameKey);
     }
 
+    getEmployeeId() : string | null {
+        return localStorage.getItem(this.employeeIdKey);
+    }
+
     registration(registrationRequest: RegistrationRequest): Observable<RegistrationResult> {
         const url = "api/Account/registration";
         return this.http.post<RegistrationResult>(url, registrationRequest);
@@ -76,26 +83,34 @@ export class AuthService {
                     this.setAuthStatus(true);
                     this.setUserName(loginResult.userName);
                     this.userRoles = loginResult.roles;
+                    this.employeeId = loginResult.employeeId ?? null;
                     this.writeToLocalStorage(loginResult);
                 }
             }));
     }
 
-    writeToLocalStorage(loginResult: LoginResult) {
+    private writeToLocalStorage(loginResult: LoginResult) {
         localStorage.setItem(this.tokenKey, loginResult.token!);
         localStorage.setItem(this.rolesKey, JSON.stringify(loginResult.roles));
-        if (loginResult.userName)
+        if(loginResult.userName)
             localStorage.setItem(this.userNameKey, loginResult.userName);
+        if(loginResult.employeeId)
+            localStorage.setItem(this.employeeIdKey, loginResult.employeeId.toString());
     }
 
     logout() {
-        localStorage.removeItem(this.tokenKey);
-        localStorage.removeItem(this.rolesKey);
-        localStorage.removeItem(this.userNameKey);
+        this.clearLocalStorage();
         this.setAuthStatus(false);
         this.setUserName(null);
         this.userRoles = [];
       }
+
+    clearLocalStorage() {
+        localStorage.removeItem(this.tokenKey);
+        localStorage.removeItem(this.rolesKey);
+        localStorage.removeItem(this.userNameKey);
+        localStorage.removeItem(this.employeeIdKey);
+    }
 
     isAdmin() : boolean {
         return this.userRoles.includes(DefaultRolesNames.DEFAULT_ADMIN_ROLE);

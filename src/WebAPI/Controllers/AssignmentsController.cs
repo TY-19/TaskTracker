@@ -98,6 +98,63 @@ public class AssignmentsController : ControllerBase
         return NoContent();
     }
 
+    [Route("{taskId}/move/{stageId}")]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> MoveAssignmentToTheStage(int boardId, int taskId, int stageId)
+    {
+        string? userName = User.Identity?.Name;
+        if(userName == null)
+            return Unauthorized();
+        try
+        {
+            await _assignmentService.MoveAssignmentToTheStageAsync(boardId, taskId, stageId, userName);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        return NoContent();
+    }
+
+    [Route("{taskId}/complete")]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> CompleteAssignmentById(int boardId, int taskId)
+    {
+        return await ChangeAssignmentStatusAsync(boardId, taskId, true);
+    }
+
+    [Route("{taskId}/uncomplete")]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UncompleteAssignmentById(int boardId, int taskId)
+    {
+        return await ChangeAssignmentStatusAsync(boardId, taskId, false);
+    }
+
+    private async Task<IActionResult> ChangeAssignmentStatusAsync(int boardId, int taskId, bool isCompleted)
+    {
+        string? userName = User.Identity?.Name;
+        if(userName == null)
+            return Unauthorized();
+        try
+        {
+            await _assignmentService.ChangeAssignmentStatus(boardId, taskId, isCompleted, userName);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        return NoContent();
+    }
+
     [Route("{taskId}")]
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
     [HttpDelete]

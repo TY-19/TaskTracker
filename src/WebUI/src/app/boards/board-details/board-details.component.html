@@ -20,11 +20,18 @@
             [routerLink]="['/boards', board.id, 'tasks', currentTaskId]">
             Details
         </a>
-        <a mat-flat-button class="edit-button" (click)="editTask(currentTaskId!)">
+        <a *ngIf="authService.isAdmin() || authService.isManager()" 
+            mat-flat-button class="edit-button" (click)="editTask(currentTaskId!)">
             Edit
         </a>
-        <a mat-flat-button color="warn" (click)="deleteAssignment()">
+        <a *ngIf="authService.isAdmin() || authService.isManager()"
+            mat-flat-button color="warn" (click)="deleteAssignment()">
             Delete
+        </a>
+        <a *ngIf="isUserAuthorizeToChangeTaskStatus()"
+            mat-flat-button [color]="assignmentView.assignment!.isCompleted ? 'warn' : 'primary'"
+            (click)="changeTaskStatus(assignmentView.assignment!)">
+            {{assignmentView.assignment!.isCompleted ? 'Cancel completion' : 'Complete task' }}
         </a>
     </div>
     <div class="sidebar-buttons" *ngIf="sidebarContent == 'create' || sidebarContent == 'edit'">
@@ -39,8 +46,8 @@
 
 <div *ngIf="board" class="content no-right-padding board-container" 
     [@moveBoard]="getSidebarClass()">
-    <h2>{{board.name}}</h2>
-    <div>
+    <h2 class="title">{{board.name}}</h2>
+    <div *ngIf="authService.isAdmin() || authService.isManager()">
         <a mat-flat-button color="primary" 
             (click)="createTask()">
             Create Task
@@ -50,9 +57,13 @@
             Manage Tasks
         </a>
         <a mat-flat-button class="edit-button" 
-            [routerLink]="['/boards', board.id, 'stages']">Manage Stages</a>
+            [routerLink]="['/boards', board.id, 'stages']">
+            Manage Stages
+        </a>
         <a mat-flat-button class="edit-button"
-            [routerLink]="['/boards', board.id, 'employees']">Manage Employees</a>
+            [routerLink]="['/boards', board.id, 'employees']">
+            Manage Employees
+        </a>
     </div>
     <div>
         <div cdkDropListGroup class="board">
@@ -61,7 +72,7 @@
                 [attr.stage-id]="stage.id">
                     <div class="stage-name">{{stage.name}}</div>
                     <div *ngFor="let task of filterAssignmentOfTheStage(stage.id)">
-                        <div cdkDrag [cdkDragData]="task">
+                        <div cdkDrag [cdkDragData]="task" class="task" [class]="getTaskClass(task.id)">
                             <div (click)="viewTask(task.id)">
                                 {{task.topic}}
                             </div>

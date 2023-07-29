@@ -28,7 +28,7 @@ const routes: Routes = [
   { path: 'registration', component: RegistrationComponent },
   { path: 'profile', component: AccountComponent, canActivate: [AuthGuard] },
   { path: 'profile/changepassword', component: ChangePasswordComponent, canActivate: [AuthGuard] },
-  { path: 'boards', component: BoardsComponent, canActivate: [AuthGuard] },
+  { path: 'boards', component: BoardsComponent },
   { path: 'boards/create', component: BoardCreateComponent, canActivate: [AuthGuard],
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
   { path: 'boards/:id', component: BoardDetailsComponent, canActivate: [AuthGuard] },

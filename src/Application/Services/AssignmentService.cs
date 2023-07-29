@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
+using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Services;
@@ -10,10 +11,14 @@ public class AssignmentService : IAssignmentService
 {
     private readonly ITrackerDbContext _context;
     private readonly IMapper _mapper;
-    public AssignmentService(ITrackerDbContext context, IMapper mapper)
+    private readonly IUserService _userService;
+    public AssignmentService(ITrackerDbContext context,
+        IMapper mapper,
+        IUserService userService)
     {
         _context = context;
         _mapper = mapper;
+        _userService = userService;
     }
 
     public async Task<IEnumerable<AssignmentGetModel>> GetAllAssignmentsOfTheBoardAsync(int boardId)
@@ -76,6 +81,50 @@ public class AssignmentService : IAssignmentService
 
         _context.Assignments.Update(assignment);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task MoveAssignmentToTheStageAsync(int boardId, int taskId, int stageId, string userName)
+    {
+        var assignment = await GetAssignmentInnerAsync(taskId);
+        if (assignment == null || assignment.BoardId != boardId)
+            throw new ArgumentException("There is no assignment with the id on the board");
+
+        var user = await _userService.GetUserByNameOrIdAsync(userName);
+        if (!IsAdminOrManager(user) && !IsResponsibleForTheTask(user, assignment))
+            throw new ArgumentException("User has no permission to make this action");
+
+        assignment.StageId = stageId;
+        _context.Assignments.Update(assignment);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task ChangeAssignmentStatus(int boardId, int taskId, bool isCompleted, string userName)
+    {
+        var assignment = await GetAssignmentInnerAsync(taskId);
+        if (assignment == null || assignment.BoardId != boardId)
+            throw new ArgumentException("There is no assignment with the id on the board");
+
+        var user = await _userService.GetUserByNameOrIdAsync(userName);
+        if (!IsAdminOrManager(user) && !IsResponsibleForTheTask(user, assignment))
+            throw new ArgumentException("User has no permission to make this action");
+
+        assignment.IsCompleted = isCompleted;
+        _context.Assignments.Update(assignment);
+        await _context.SaveChangesAsync();
+    }
+
+    private static bool IsAdminOrManager(UserProfileModel? user)
+    {
+        return user != null &&
+            (user.Roles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE) ||
+            user.Roles.Contains(DefaultRolesNames.DEFAULT_MANAGER_ROLE));
+    }
+
+    private static bool IsResponsibleForTheTask(UserProfileModel? user,
+        Assignment? assignment)
+    {
+        return user?.EmployeeId != null && assignment?.ResponsibleEmployeeId != null &&
+            user.EmployeeId == assignment.ResponsibleEmployeeId;
     }
 
     public async Task DeleteAssignmentAsync(int boardId, int taskId)
