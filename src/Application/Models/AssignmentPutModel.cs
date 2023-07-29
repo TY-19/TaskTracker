@@ -8,4 +8,5 @@ public class AssignmentPutModel : IValidatableModel
     public int? StageId { get; set; }
     public int? ResponsibleEmployeeId { get; set; }
     public bool IsCompleted { get; set; } = false;
+    public IEnumerable<SubpartPutModel>? Subparts { get; set; }
 }

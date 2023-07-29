@@ -114,11 +114,13 @@ export class BoardDetailsComponent implements OnInit {
   }
 
   async onSubmit() {
-    this.showSidebar = false;
     await new Promise<void>(resolve => {
       this.assignmentEdit.onSubmit();
       resolve();
     });
+    if (this.assignmentEdit.isFormValid) {
+      this.showSidebar = false;
+    }
     await new Promise(f => setTimeout(f, 300));
     this.getBoard();
   }

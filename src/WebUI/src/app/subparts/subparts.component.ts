@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { Subpart } from '../models/subpart';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SubpartService } from './subpart.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -17,8 +16,7 @@ export class SubpartsComponent implements OnInit {
 
   forms: FormGroup[] = [];
   
-  constructor(private subpartService: SubpartService,
-    private activatedRoute: ActivatedRoute,
+  constructor(private activatedRoute: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder) { 
 
@@ -38,8 +36,6 @@ export class SubpartsComponent implements OnInit {
   private initForms(): void {
     if (this.subparts && this.subparts.length > 0) {
       this.forms = this.subparts.map((subpart) => this.createSubpartFormGroup(subpart));
-    } else {
-      this.forms.push(this.createSubpartFormGroup());
     }
   }
 
@@ -58,17 +54,11 @@ export class SubpartsComponent implements OnInit {
     });
   }
 
-  onSubmit() {
-    let allSubparts: Subpart[] = this.forms.map((subpartFormGroup) => subpartFormGroup.value);
-    for (let subpart of allSubparts) {
-      subpart.id = 0;
-      subpart.assignmentId = this.assignmentId ?? 0;
-    }
-    this.subpartService
-      .updateSubparts(this.boardId, this.assignmentId!, allSubparts)
-      .subscribe(() => {
-        this.router.navigate(['/boards', this.boardId]);
-      });
-
+  getSubparts(): Subpart[] {
+    return this.forms.map((subpartFormGroup) => ({
+      id: 0,
+      assignmentId: this.assignmentId ?? 0,
+      ...subpartFormGroup.value
+    }));
   }
 }

@@ -7,13 +7,25 @@
 th {
     border: black 1px solid;
     font-weight: 500;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 td {
     border: black 1px solid;
 }
 
-.mat-flat-button.sign-button{
+.mat-flat-button.sign-button {
     min-width: 0;
     line-height: 18px;
+}
+
+.padding-4 {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.value-column {
+    width: 0px;
+    text-align: center;
 }

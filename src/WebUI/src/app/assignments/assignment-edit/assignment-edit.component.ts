@@ -23,6 +23,7 @@ export class AssignmentEditComponent implements OnInit {
   @ViewChild(SubpartsComponent) subpartsComponent!: SubpartsComponent;
 
   form!: FormGroup;
+  isFormValid: boolean = false;
 
   stages: Stage[] = [];
   subparts: Subpart[] = [];
@@ -118,7 +119,7 @@ export class AssignmentEditComponent implements OnInit {
   }
 
   onSubmit() {
-    this.subpartsComponent.onSubmit();
+    this.isFormValid = this.form.valid;
     if(this.form.valid)
     {
       let assignment: Assignment = {
@@ -130,7 +131,7 @@ export class AssignmentEditComponent implements OnInit {
         deadline: this.getDeadline(),
         responsibleEmployeeId: this.form.controls['responsibleEmployeeId'].value,
         isCompleted: this.form.controls['isCompleted'].value,
-        subparts: []
+        subparts: this.subpartsComponent.getSubparts()
       };
       
       if (this.mode === "create")
@@ -174,6 +175,7 @@ export class AssignmentEditComponent implements OnInit {
   }
 
   private updateAssignment(assignment: any) {
+    
     this.assignmentService.updateAssignment(this.boardId!, assignment)
       .subscribe( () => { 
         if(!this.sidebarView) {

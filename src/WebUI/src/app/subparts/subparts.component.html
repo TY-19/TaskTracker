@@ -7,18 +7,18 @@
     </tr>
     <ng-container *ngIf="mode=='details'" >
         <tr *ngFor="let subpart of subparts; let i = index">
-            <td>{{subpart.name}}</td>
-            <td>{{subpart.percentValue}}</td>
+            <td class="padding-4">{{subpart.name}}</td>
+            <td class="value-column">{{subpart.percentValue}}</td>
         </tr>
     </ng-container>
     <ng-container *ngIf="mode=='edit'">
         <ng-container *ngFor="let form of forms; let i = index">
             <tr [formGroup]="form">
-                <td>
+                <td class="padding-4">
                     <input matInput formControlName="name" />
                 </td>
-                <td>
-                    <input matInput formControlName="percentValue"  />
+                <td class="value-column">
+                    <input matInput formControlName="percentValue" type="number" min="0" max="100" />
                 </td>
                 <td>
                     <a mat-flat-button color="warn" class="sign-button"
@@ -28,7 +28,7 @@
         </ng-container>
     </ng-container>
     <tr *ngIf="mode=='edit'">
-        <td colspan="4">
+        <td colspan="4" class="padding-4">
             <a mat-flat-button color="primary" class="sign-button"
                 (click)="onAddSubpart()">+</a> 
         </td>
