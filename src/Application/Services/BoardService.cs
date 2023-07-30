@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
+using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.Services;
@@ -10,10 +11,14 @@ public class BoardService : IBoardService
 {
     private readonly ITrackerDbContext _context;
     private readonly IMapper _mapper;
-    public BoardService(ITrackerDbContext context, IMapper mapper)
+    private readonly IUserService _userService;
+    public BoardService(ITrackerDbContext context,
+        IMapper mapper,
+        IUserService userService)
     {
         _context = context;
         _mapper = mapper;
+        _userService = userService;
     }
 
     public async Task<IEnumerable<BoardGetModel>> GetAllBoardsAsync()
@@ -30,6 +35,15 @@ public class BoardService : IBoardService
 
     public async Task<IEnumerable<BoardGetModel>> GetBoardOfTheEmployeeAsync(string userName)
     {
+        var user = await _userService.GetUserByNameOrIdAsync(userName);
+        if (user == null)
+            return new List<BoardGetModel>();
+        if (user.Roles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE) ||
+            user.Roles.Contains(DefaultRolesNames.DEFAULT_MANAGER_ROLE))
+        {
+            return await GetAllBoardsAsync();
+        }
+
         var boards = await _context.Boards
             .Include(b => b.Stages)
             .Include(b => b.Assignments).ThenInclude(a => a.Subparts)

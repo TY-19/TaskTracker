@@ -21,14 +21,16 @@ import { UserDetailsComponent } from './users/user-details/user-details.componen
 import { UserBoardsComponent } from './users/user-boards/user-boards.component';
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UserChangePasswordComponent } from './users/user-change-password/user-change-password.component';
+import { AssignmentsAllBoardsComponent } from './assignments/assignments-all-boards/assignments-all-boards.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  { path: '', component: BoardsComponent, pathMatch: 'full' },
+  { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'login', component: AuthComponent },
   { path: 'registration', component: RegistrationComponent },
   { path: 'profile', component: AccountComponent, canActivate: [AuthGuard] },
   { path: 'profile/changepassword', component: ChangePasswordComponent, canActivate: [AuthGuard] },
-  { path: 'boards', component: BoardsComponent },
+  { path: 'boards', component: BoardsComponent, canActivate: [AuthGuard] },
   { path: 'boards/create', component: BoardCreateComponent, canActivate: [AuthGuard],
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
   { path: 'boards/:id', component: BoardDetailsComponent, canActivate: [AuthGuard] },
@@ -42,6 +44,7 @@ const routes: Routes = [
   { path: 'boards/:boardId/tasks/create', component: AssignmentEditComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/:taskId', component: AssignmentViewComponent, canActivate: [AuthGuard] },
   { path: 'boards/:boardId/tasks/:taskId/edit', component: AssignmentEditComponent, canActivate: [AuthGuard] },
+  { path: 'tasks', component: AssignmentsAllBoardsComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard],
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },
   { path: 'users/create', component: UserCreateComponent, canActivate: [AuthGuard], 

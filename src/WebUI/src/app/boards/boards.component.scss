@@ -1,8 +1,17 @@
+.title {
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 10px 0px;
+    font-size: 28px;
+    font-weight: 500;
+    background-color: antiquewhite;
+}
+
 .canvas {
     flex-wrap: wrap;
     display: flex;
     justify-content: left;
-    padding: 0px 20px;   
+    margin: 0px -20px;
 }
 
 .card {
@@ -23,6 +32,5 @@
 }
 
 .button-wrapper {
-    margin-top: 20px;
-    margin-left: 40px;
+    margin-top: 10px;
 }

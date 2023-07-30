@@ -77,6 +77,7 @@ export class AssignmentsComponent implements OnInit {
     for (let assignment of this.board.assignments) {
       let detail: AssignmentDisplayModel = {
         id: assignment.id,
+        boardId: assignment.boardId,
         topic: assignment.topic,
         description: assignment.description,
         deadline: assignment.deadline,

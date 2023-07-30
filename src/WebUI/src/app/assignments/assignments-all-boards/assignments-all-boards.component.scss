@@ -1,0 +1,37 @@
+.title {
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 10px 0px;
+    font-size: 28px;
+    font-weight: 500;
+    background-color: antiquewhite;
+}
+
+.table {
+    width: 100%;
+}
+
+th {
+    color: black;
+    font-size: medium;
+}
+
+td {
+    font-size: 16px;
+}
+
+.description-column {
+    width: 20%;
+}
+
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+    padding: 0px 10px;
+}
+
+.mat-flat-button {
+    margin: 1px 3px;
+}
+
+.mat-flat-button.create-button {
+    margin: 0px 3px;
+}

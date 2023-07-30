@@ -36,6 +36,8 @@ export class SubpartsComponent implements OnInit {
   private initForms(): void {
     if (this.subparts && this.subparts.length > 0) {
       this.forms = this.subparts.map((subpart) => this.createSubpartFormGroup(subpart));
+    } else {
+      this.forms = [];
     }
   }
 

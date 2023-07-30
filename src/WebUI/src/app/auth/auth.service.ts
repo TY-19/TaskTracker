@@ -6,6 +6,7 @@ import { LoginResult } from "../models/login-result";
 import { DefaultRolesNames } from "../config/default-roles-names";
 import { RegistrationRequest } from "../models/registration-request";
 import { RegistrationResult } from "../models/registration-result";
+import { Router } from "@angular/router";
 
 @Injectable({
     providedIn: 'root',
@@ -27,7 +28,7 @@ export class AuthService {
     private employeeIdKey: string = "EmployeeId";
     private employeeId: number | null = null;
 
-    constructor(
+    constructor(private router: Router,
         protected http: HttpClient) {
             this.init();
     }

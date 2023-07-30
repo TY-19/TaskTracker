@@ -76,7 +76,10 @@ export class AssignmentEditComponent implements OnInit {
     this.getEmployees();
     if (this.mode === "edit") {
       this.loadAssignment();
-    } 
+    }
+    else {
+      this.subparts = [];
+    }
   }
 
   private loadAssignment() {
@@ -120,6 +123,7 @@ export class AssignmentEditComponent implements OnInit {
 
   onSubmit() {
     this.isFormValid = this.form.valid;
+    this.form.markAllAsTouched();
     if(this.form.valid)
     {
       let assignment: Assignment = {

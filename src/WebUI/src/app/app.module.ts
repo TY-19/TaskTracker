@@ -34,6 +34,8 @@ import { UserBoardsAddComponent } from './users/user-boards-add/user-boards-add.
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UserChangePasswordComponent } from './users/user-change-password/user-change-password.component';
 import { SubpartsComponent } from './subparts/subparts.component';
+import { AssignmentsAllBoardsComponent } from './assignments/assignments-all-boards/assignments-all-boards.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +63,9 @@ import { SubpartsComponent } from './subparts/subparts.component';
     UserBoardsAddComponent,
     UserEditComponent,
     UserChangePasswordComponent,
-    SubpartsComponent
+    SubpartsComponent,
+    AssignmentsAllBoardsComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

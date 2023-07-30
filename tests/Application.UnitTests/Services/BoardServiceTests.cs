@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Moq;
+using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Services;
 using TaskTracker.Application.UnitTests.Helpers;
 
@@ -233,6 +235,8 @@ public class BoardServiceTests
 
     private static BoardService GetBoardService(TestDbContext context)
     {
-        return new BoardService(context, ServicesTestsHelper.GetMapper());
+        var userService = new Mock<IUserService>();
+        return new BoardService(context, ServicesTestsHelper.GetMapper(),
+            userService.Object);
     }
 }

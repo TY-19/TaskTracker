@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
   }
 
   private doesRoleHaveAccess(route: ActivatedRouteSnapshot) : boolean {
-    let isAuthorizedRole: boolean = true;
+
     let roles = route.data['roles'] as Array<string>;
     
     if(!roles || roles.length === 0) 
