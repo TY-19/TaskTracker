@@ -47,25 +47,35 @@
 <div *ngIf="board" class="content no-right-padding board-container" 
     [@moveBoard]="getSidebarClass()">
     <h2 class="title">{{board.name}}</h2>
-    <div *ngIf="authService.isAdmin() || authService.isManager()">
-        <a mat-flat-button color="primary" 
-            (click)="createTask()">
-            Create Task
-        </a>
-        <a mat-flat-button class="edit-button"
-            [routerLink]="['/boards', board.id, 'tasks']">
-            Manage Tasks
-        </a>
-        <a mat-flat-button class="edit-button" 
-            [routerLink]="['/boards', board.id, 'stages']">
-            Manage Stages
-        </a>
-        <a mat-flat-button class="edit-button"
-            [routerLink]="['/boards', board.id, 'employees']">
-            Manage Employees
-        </a>
+    <div class="buttons-container">
+        <div *ngIf="authService.isAdmin() || authService.isManager()">
+            <a mat-flat-button color="primary" 
+                (click)="createTask()">
+                Create Task
+            </a>
+            <a mat-flat-button class="edit-button"
+                [routerLink]="['/boards', board.id, 'tasks']">
+                Manage Tasks
+            </a>
+            <a mat-flat-button class="edit-button" 
+                [routerLink]="['/boards', board.id, 'stages']">
+                Manage Stages
+            </a>
+            <a mat-flat-button class="edit-button"
+                [routerLink]="['/boards', board.id, 'employees']">
+                Manage Employees
+            </a>
+        </div>
+        <div class="right-button">
+            <a mat-flat-button [class]="showDisplayOption ? '' : 'edit-button'" 
+                [color]="showDisplayOption ? 'accent' : ''"
+                (click)="showDisplayOption = !showDisplayOption">
+                {{showDisplayOption ? 'Hide Options' : 'Display options' }}
+            </a>
+        </div>
     </div>
-    <div>
+    <tt-board-display-options *ngIf="showDisplayOption"></tt-board-display-options>
+    <div *ngIf="showBoard">
         <div cdkDropListGroup class="board">
             <div class="stage" cdkDropList (cdkDropListDropped)="drop($event)"
                 *ngFor="let stage of getSortedStages()"

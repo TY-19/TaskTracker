@@ -36,6 +36,7 @@ import { UserChangePasswordComponent } from './users/user-change-password/user-c
 import { SubpartsComponent } from './subparts/subparts.component';
 import { AssignmentsAllBoardsComponent } from './assignments/assignments-all-boards/assignments-all-boards.component';
 import { HomeComponent } from './home/home.component';
+import { BoardDisplayOptionsComponent } from './boards/board-details/board-display-options/board-display-options.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ import { HomeComponent } from './home/home.component';
     UserChangePasswordComponent,
     SubpartsComponent,
     AssignmentsAllBoardsComponent,
-    HomeComponent
+    HomeComponent,
+    BoardDisplayOptionsComponent
   ],
   imports: [
     BrowserModule,

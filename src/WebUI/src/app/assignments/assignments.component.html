@@ -15,7 +15,7 @@
 
     <mat-form-field [hidden]="!assignmentsTable" class="filter" floatLabel="never">
         <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
-            placeholder="Find task by topic" />
+            placeholder="Find task by topic or employee" />
         <button *ngIf="filter.value" matSuffix mat-icon-button aria-label="Clear" 
             (click)="clearFilter()">
             <mat-icon>close</mat-icon>

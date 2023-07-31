@@ -1,8 +1,8 @@
 # Task Tracker 
 ### Table of contents
-* [Introduction](#Introduction)
-* [Launch](#Launch)
-* [Functionality](#Functionality)
+* [Introduction](#introduction)
+* [Launch](#launch)
+* [Functionality](#application-functionality)
 
 ### Introduction
 Task Tracker is a simple and user-friendly solution designed to streamline task management for teams. It offers a versatile platform that simplifies the process of organizing and tracking tasks within an organization. Role-based access control and intuitive interface empowers administrators, managers, and employees to collaborate efficiently and achieve their project goals.
@@ -13,16 +13,16 @@ Task Tracker is a simple and user-friendly solution designed to streamline task 
 `dotnet restore`
 2. Install Angular dependencies by running:
 `npm install`
-3. Configure the **appsettings.json** file located in the **/src/WebAPI folder.**
-3.1. Set the connection string to your instance of MS SQL Server by editing **line 3** of the **appsettings.json** file.
-3.2. (*optional*) Change the default admin credentials (lines 8-10 of the appsettings.json file).
-3.3. Change the JWT secret by modifying line 14 of the appsettings.json file.
-3.4. (*optional*) Change launch settings in the /src/WebAPI/Properties/launchSettings.json file if you need to use another port for the backend server (default ports are 40080 for HTTP and 40443 for HTTPS).
+3. Configure the **appsettings.json** file located in the **/src/WebAPI folder.**  
+3.1. Set the connection string to your instance of MS SQL Server by editing **line 3** of the **appsettings.json** file.  
+3.2. (*optional*) Change the default admin credentials (lines 8-10 of the appsettings.json file).  
+3.3. Change the JWT secret by modifying line 14 of the appsettings.json file.  
+4. (*optional*) Change launch settings in the /src/WebAPI/Properties/launchSettings.json file if you need to use another port for the backend server (default ports are 40080 for HTTP and 40443 for HTTPS).
 
 #### Start application
-Launch the backend server by running the following command from the **/src/WebAPI** folder:
+1. Launch the backend server by running the following command from the **/src/WebAPI** folder:  
 `dotnet run`
-Launch the frontend dev server by running the following command from the **/src/WebUI** folder:
+2. Launch the frontend dev server by running the following command from the **/src/WebUI** folder:  
 `ng serve`
 
 ### Application functionality

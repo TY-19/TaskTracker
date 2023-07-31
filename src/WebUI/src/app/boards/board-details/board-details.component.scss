@@ -41,8 +41,17 @@ h2 {
     margin-bottom: 0px;
 }
 
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .mat-flat-button {
     margin: 1px 3px;
+}
+
+.right-button {
+    margin-right: 20px;
 }
 
 .board-container {

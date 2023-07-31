@@ -1,0 +1,23 @@
+<div class="options-container">
+    <div class="form-field">
+        <mat-label>Sort tasks inside of stage by...</mat-label>
+        <mat-select [(value)]="sortingFieldSelected" (selectionChange)="sortBy($event.value)">
+            <mat-option value="name">Name</mat-option>
+            <mat-option value="deadline">Deadline</mat-option>
+        </mat-select>
+    </div>
+    <div class="form-field">
+        <mat-label>Sorting order</mat-label>
+        <mat-select [(value)]="sortingOrderSelected" (selectionChange)="sortInOrder($event.value)">
+            <mat-option value="asc">Ascending</mat-option>
+            <mat-option value="desc">Descending</mat-option>
+        </mat-select>
+    </div>
+    <mat-label>Show only my tasks</mat-label>
+    <mat-checkbox [checked]="showOnlyMyTasksSelected" (change)="changeShowOnlyMyTasks($event.checked)">
+    </mat-checkbox>
+    <br>
+    <mat-label>Show completed tasks</mat-label>
+    <mat-checkbox [checked]="showCompletedTasksSelected" (change)="changeShowCompletedTasks($event.checked)">
+    </mat-checkbox>
+</div>

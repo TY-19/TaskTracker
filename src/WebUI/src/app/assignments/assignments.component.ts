@@ -100,7 +100,16 @@ export class AssignmentsComponent implements OnInit {
 
   onFilterTextChanged(filterText: string) {
     this.assignmentsTable.data = this.assignmentsModels
-      .filter(a => a.topic.toLowerCase().includes(filterText.toLowerCase()));
+      .filter(a => a.topic.toLowerCase().includes(filterText.toLowerCase())
+        || this.filterByEmployeeName(a.responsibleEmployee, filterText));
+  }
+
+  filterByEmployeeName(employee: Employee | undefined, filterText: string): boolean {
+    if (employee === undefined) return false;
+    let firstName = employee.firstName?.toLowerCase() ?? '';
+    let lastName = employee.lastName?.toLowerCase() ?? '';
+    let fullName = firstName + ' ' + lastName;
+    return fullName.includes(filterText.toLowerCase());
   }
 
   clearFilter() {

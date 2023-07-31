@@ -10,6 +10,7 @@ import { BoardAnimations, SidebarAnimations } from 'src/app/common/animations/si
 import { AssignmentEditComponent } from 'src/app/assignments/assignment-edit/assignment-edit.component';
 import { AssignmentViewComponent } from 'src/app/assignments/assignment-view/assignment-view.component';
 import { AuthService } from 'src/app/auth/auth.service';
+import { AssignmentComparator, AssignmentFilter, BoardDisplayService } from './board-display-options/board-display.service';
 
 @Component({
   selector: 'tt-board-details',
@@ -27,16 +28,44 @@ export class BoardDetailsComponent implements OnInit {
   showSidebar: boolean = false;
   sidebarContent: string = "details";
   currentTaskId?: number;
-  
+  showDisplayOption: boolean = false;
+
+
   constructor(private activatedRoute: ActivatedRoute,
     private boardService: BoardService,
+    private boardDisplayService: BoardDisplayService,
     private assignmentService: AssignmentService,
     public authService: AuthService) { 
 
   }
 
+  showBoard: boolean = true;
+  private sortingFunction?: AssignmentComparator;
+  private filterPredicate?: AssignmentFilter;
+
   ngOnInit(): void {
+    this.setDisplayOptions();
+    this.boardDisplayService.doSorting();
+    this.boardDisplayService.doFiltration();
     this.getBoard();
+  }
+
+  setDisplayOptions() {
+    this.boardDisplayService.sortingFunction
+      .subscribe(func => {
+        this.sortingFunction = func;
+        this.refreshBoard();
+      });
+    this.boardDisplayService.filterFunction
+      .subscribe(filter => {
+        this.filterPredicate = filter;
+        this.refreshBoard();
+      });
+  }
+
+  refreshBoard() {
+    this.showBoard = false;
+    this.showBoard = true;
   }
 
   getBoard() {
@@ -48,10 +77,15 @@ export class BoardDetailsComponent implements OnInit {
   getSortedStages() : Stage[] {
     return this.board.stages?.sort((a, b) => a.position - b.position) ?? [];
   }
-
+  
   filterAssignmentOfTheStage(stageId: number): Assignment[] {
-    return this.board.assignments?.filter(a => a.stageId == stageId)
-      .sort((a, b) => a.topic.toLowerCase() > b.topic.toLowerCase() ? 1 : -1) ?? [];
+    let sortingOption = this.sortingFunction;
+    sortingOption ??= (a, b) => a.topic.toLowerCase() > b.topic.toLowerCase() ? 1 : -1;
+    let filterOption = this.filterPredicate ?? ((a) => true);
+    let employeeId = Number(this.authService.getEmployeeId());
+
+    return this.board.assignments?.filter(a => a.stageId == stageId && filterOption(a, employeeId))
+      .sort(sortingOption) ?? [];
   }
 
   drop(event: CdkDragDrop<string[]>) {
