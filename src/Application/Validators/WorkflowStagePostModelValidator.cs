@@ -8,5 +8,7 @@ public class WorkflowStagePostModelValidator : AbstractValidator<WorkflowStagePo
     {
         RuleFor(x => x.Name).NotEmpty()
             .WithMessage("Name is required");
+        RuleFor(x => x.Name).MaximumLength(50)
+            .WithMessage("Name length must be less than 50 characters");
     }
 }

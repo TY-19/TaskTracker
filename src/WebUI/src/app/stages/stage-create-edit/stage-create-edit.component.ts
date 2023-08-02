@@ -38,7 +38,7 @@ export class StageCreateEditComponent implements OnInit {
       id: new FormControl(0),
       name: new FormControl("", [
         Validators.required,
-        Validators.minLength(3),
+        Validators.maxLength(50),
       ])
     });
   }
@@ -52,6 +52,8 @@ export class StageCreateEditComponent implements OnInit {
         this.editStage(this.stageId);
 
       this.form?.reset({id: 0});
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 

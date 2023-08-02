@@ -34,6 +34,7 @@ export class BoardEditComponent implements OnInit {
       name: new FormControl("", [
         Validators.required,
         Validators.minLength(3),
+        Validators.maxLength(50),
         CustomValidators.boardNameValidator()
       ])
     });
@@ -45,6 +46,8 @@ export class BoardEditComponent implements OnInit {
       let toUpdate: Board = this.board;
       toUpdate.name = this.form.controls['name'].value;
       this.updateBoard(toUpdate);
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 

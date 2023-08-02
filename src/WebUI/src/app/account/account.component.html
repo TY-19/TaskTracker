@@ -16,9 +16,27 @@
                 <div class="cell-content">Username:</div>
             </div>
             <div class="cell">
-              <mat-form-field>
-                  <input matInput formControlName="userName" readonly required>
-              </mat-form-field>
+                <mat-form-field>
+                    <input matInput formControlName="userName" readonly required>
+                    <p *ngIf="form.controls['userName'].touched && form.controls['userName'].errors">
+                        <span *ngIf="form.controls['userName'].errors?.['required']"
+                            class="small-warn-text">
+                            Username is required
+                        </span>
+                        <span *ngIf="form.controls['userName'].errors?.['minlength']"
+                            class="small-warn-text">
+                            Username must be at least 3 characters long.
+                        </span>
+                        <span *ngIf="form.controls['userName'].errors?.['maxlength']"
+                            class="small-warn-text">
+                            Username can be at most 25 characters long.
+                        </span>
+                        <span *ngIf="form.controls['userName'].errors?.['pattern']"
+                            class="small-warn-text">
+                            Username may contain only letters, digits or undescore.
+                        </span>
+                    </p>
+                </mat-form-field>
             </div>
         </div>
         <div class="row">
@@ -28,6 +46,16 @@
             <div class="cell">
               <mat-form-field>
                   <input matInput formControlName="email" required>
+                  <p *ngIf="form.controls['email'].touched && form.controls['email'].errors">
+                    <span *ngIf="form.controls['email'].errors?.['required']"
+                        class="small-warn-text">
+                        Email is required
+                    </span>
+                    <span *ngIf="form.controls['email'].errors?.['email']"
+                        class="small-warn-text">
+                        Provide a valid email
+                    </span>
+                  </p>
               </mat-form-field>
             </div>
         </div>
@@ -51,6 +79,16 @@
             <div class="cell">
                 <mat-form-field>
                     <input matInput formControlName="firstName">
+                    <p *ngIf="form.controls['firstName'].touched && form.controls['firstName'].errors">
+                        <span *ngIf="form.controls['firstName'].errors?.['required']"
+                            class="small-warn-text">
+                            First name is required
+                        </span>
+                        <span *ngIf="form.controls['firstName'].errors?.['maxlength']"
+                            class="small-warn-text">
+                            First name length must not be more than 50 characters.
+                        </span>
+                    </p>
                 </mat-form-field>
             </div>
         </div>
@@ -61,6 +99,16 @@
             <div class="cell">
                 <mat-form-field>
                     <input matInput formControlName="lastName">
+                    <p *ngIf="form.controls['lastName'].touched && form.controls['lastName'].errors">
+                        <span *ngIf="form.controls['lastName'].errors?.['required']"
+                            class="small-warn-text">
+                            Last name is required
+                        </span>
+                        <span *ngIf="form.controls['lastName'].errors?.['maxlength']"
+                            class="small-warn-text">
+                            Last name length must not be more than 50 characters.
+                        </span>
+                    </p>
                 </mat-form-field>
             </div>
         </div>

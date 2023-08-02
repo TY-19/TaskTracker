@@ -6,7 +6,7 @@ public class AssignmentPostModel : IValidatableModel
     public string? Description { get; set; }
     public DateTime? Deadline { get; set; }
     public int StageId { get; set; }
-    public int? ResponsibleEmployeeId { get; set; }
+    public int ResponsibleEmployeeId { get; set; }
     public bool IsCompleted { get; set; } = false;
     public IEnumerable<SubpartPostModel>? Subparts { get; set; }
 }

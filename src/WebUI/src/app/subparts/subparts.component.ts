@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { Subpart } from '../models/subpart';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'tt-subparts',
@@ -17,7 +17,6 @@ export class SubpartsComponent implements OnInit {
   forms: FormGroup[] = [];
   
   constructor(private activatedRoute: ActivatedRoute,
-    private router: Router,
     private formBuilder: FormBuilder) { 
 
   }
@@ -51,7 +50,11 @@ export class SubpartsComponent implements OnInit {
 
   createSubpartFormGroup(subpart?: Subpart): FormGroup {
     return this.formBuilder.group({
-      name: [subpart?.name ?? '', Validators.required],
+      name: [subpart?.name ?? '',
+        [
+          Validators.required,
+          Validators.maxLength(50)
+        ]],
       percentValue: [subpart?.percentValue ?? '']
     });
   }
@@ -62,5 +65,15 @@ export class SubpartsComponent implements OnInit {
       assignmentId: this.assignmentId ?? 0,
       ...subpartFormGroup.value
     }));
+  }
+
+  areAllSubpartsValid(): boolean {
+    for (let form of this.forms) {
+      if(!form.valid) {
+        form.markAllAsTouched();
+        return false;
+      }
+    }
+    return true;
   }
 }

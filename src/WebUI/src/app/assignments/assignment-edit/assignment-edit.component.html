@@ -10,10 +10,15 @@
         <mat-form-field floatLabel="always">
             <mat-label>Topic:</mat-label>
             <p><input matInput formControlName="topic" required></p>
-            <p *ngIf="form.touched && form.controls['topic'].errors">
+            <p *ngIf="form.touched && form.controls['topic'].touched
+                && form.controls['topic'].errors">
                 <span *ngIf="form.controls['topic'].errors?.['required']"
                     class="small-warn-text">
-                    Topic is required
+                    Topic is required.
+                </span>
+                <span *ngIf="form.controls['topic'].errors?.['maxlength']"
+                    class="small-warn-text">
+                    Length of the topic can't be over 50 characters.
                 </span>
             </p>
         </mat-form-field>
@@ -32,6 +37,13 @@
                     {{stage.name}}
                 </mat-option>
             </mat-select>
+            <p *ngIf="form.touched && form.controls['stage'].touched
+                && form.controls['stage'].errors">
+                <span *ngIf="form.controls['stage'].errors?.['required']"
+                    class="small-warn-text">
+                    Select the stage
+                </span>
+            </p>
         </mat-form-field>
 
         <br>
@@ -55,6 +67,13 @@
                   <div class="hint right-hint">HH:MM</div>
                 </div>
             </div>
+            <p *ngIf="form.touched && form.errors
+                && (form.controls['deadlineDate'].touched || form.controls['deadlineTime'].touched) ">
+                <span *ngIf="form.errors['dateNotInTheFuture']"
+                    class="small-warn-text">
+                    Deadline must be in the future
+                </span>
+            </p>
         </mat-form-field>
         
         <br>
@@ -65,6 +84,13 @@
                     {{employee.firstName}} {{employee.lastName}}
                 </mat-option>
             </mat-select>
+            <p *ngIf="form.touched && form.controls['responsibleEmployeeId'].touched
+                && form.controls['responsibleEmployeeId'].errors">
+                <span *ngIf="form.controls['responsibleEmployeeId'].errors?.['required']"
+                    class="small-warn-text">
+                    Select the employee
+                </span>
+            </p>
         </mat-form-field>
         
         <br>

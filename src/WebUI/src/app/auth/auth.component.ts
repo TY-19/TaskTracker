@@ -32,25 +32,30 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit(): void {
-    let loginRequest = <LoginRequest>{};
-    loginRequest.nameOrEmail = this.form?.controls['nameOrEmail'].value;
-    loginRequest.password = this.form?.controls['password'].value;
+    if (this.form.valid) {
+      let loginRequest: LoginRequest = {
+        nameOrEmail: this.form?.controls['nameOrEmail'].value,
+        password: this.form?.controls['password'].value
+      }
 
-    this.authService
-      .login(loginRequest)
-      .subscribe({
-        next: result => {
-          this.loginResult = result;
-          if (result.success && result.token) {
-            this.router.navigate(["/"]).catch(error => console.log(error));
-          }},
-        error: error => {
-          console.log(error);
-          if (error.status == 401) {
-            this.loginResult = error.error;
+      this.authService
+        .login(loginRequest)
+        .subscribe({
+          next: result => {
+            this.loginResult = result;
+            if (result.success && result.token) {
+              this.router.navigate(["/"]).catch(error => console.log(error));
+            }},
+          error: error => {
+            console.log(error);
+            if (error.status == 401) {
+              this.loginResult = error.error;
+            }
           }
-        }
-    });
+      });
+    } else {
+      this.form.markAllAsTouched();
+    }
   }
 
 }

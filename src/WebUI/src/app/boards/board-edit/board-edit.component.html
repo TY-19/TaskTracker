@@ -11,18 +11,26 @@
             <mat-label>Name:</mat-label>
             <input matInput formControlName="name" required
                 placeholder="Type a name">
+            <p *ngIf="form.touched && form.controls['name'].touched
+                && form.controls['name'].errors">
+                <span *ngIf="form.controls['name'].errors?.['required']"
+                    class="small-warn-text">
+                    Name is required.
+                </span>
+                <span *ngIf="form.controls['name'].errors?.['minlength']"
+                    class="small-warn-text">
+                    Name must be at least 3 characters long.
+                </span>
+                <span *ngIf="form.controls['name'].errors?.['maxlength']"
+                    class="small-warn-text">
+                    Name of the board can't be over 50 characters.
+                </span>
+                <span *ngIf="form.controls['name'].errors?.['nameIsNumber']"
+                    class="small-warn-text">
+                    Name cannot consist from the digits only.
+                </span>
+            </p>
         </mat-form-field>
-        <p>
-            <mat-error *ngIf="form.controls['name'].errors?.['required']" class="form-error-message">
-                Name is required.
-            </mat-error>
-            <mat-error *ngIf="form.controls['name'].errors?.['minlength']" class="form-error-message" >
-                Name must be at least 3 characters long.
-            </mat-error>
-            <mat-error *ngIf="form.controls['name'].errors?.['nameIsNumber']" class="form-error-message" >
-                Name cannot consist from the digits only.
-            </mat-error>
-        </p>
         <div>
             <button mat-flat-button color="primary" type="submit">
                 Save

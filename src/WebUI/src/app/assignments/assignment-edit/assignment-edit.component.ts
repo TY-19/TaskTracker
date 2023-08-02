@@ -10,6 +10,7 @@ import { EmployeeService } from 'src/app/employees/employee.service';
 import { Assignment } from 'src/app/models/assignment';
 import { Subpart } from 'src/app/models/subpart';
 import { SubpartsComponent } from 'src/app/subparts/subparts.component';
+import { CustomValidators } from 'src/app/common/custom-validators';
 
 @Component({
   selector: 'tt-assignment-edit',
@@ -56,19 +57,25 @@ export class AssignmentEditComponent implements OnInit {
         Validators.required
       ]),
       topic: new FormControl("", [
-        Validators.required
+        Validators.required,
+        Validators.maxLength(50)
       ]),
       description: new FormControl(),
       stage: new FormControl(null, [
         Validators.required
       ]),
-      deadlineDate: new FormControl(new Date()),
-      deadlineTime: new FormControl("00:00"),
+      deadlineDate: new FormControl(new Date(), [
+        Validators.required
+      ]),
+      deadlineTime: new FormControl("23:00"),
       responsibleEmployeeId: new FormControl("", [
         Validators.required
       ]),
       isCompleted: new FormControl(false)
-    });
+    }, {
+      validators: CustomValidators.dateInTheFutureValidator()
+    }
+    );
   }
 
   private prepareData() {
@@ -122,9 +129,8 @@ export class AssignmentEditComponent implements OnInit {
   }
 
   onSubmit() {
-    this.isFormValid = this.form.valid;
-    this.form.markAllAsTouched();
-    if(this.form.valid)
+    this.isFormValid = this.subpartsComponent.areAllSubpartsValid() && this.form.valid;
+    if(this.isFormValid)
     {
       let assignment: Assignment = {
         id: this.form.controls['id'].value,
@@ -142,6 +148,8 @@ export class AssignmentEditComponent implements OnInit {
         this.createAssignment(assignment);
       else if (this.mode === "edit")
         this.updateAssignment(assignment);
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 
@@ -153,7 +161,7 @@ export class AssignmentEditComponent implements OnInit {
         : moment(deadlineDate, 'YYYY-MM-DDTHH:mm:ss'); 
 
       let deadlineTime = this.form.controls['deadlineTime'].value;
-      let timeMoment = moment(deadlineTime, 'HH:mm', true);
+      let timeMoment = moment(deadlineTime, 'HH:mm');
 
       deadline = moment(deadline).hour(0).minute(0)
         .add(timeMoment.hours() + deadline.utcOffset() / 60, 'hours')

@@ -21,5 +21,7 @@ public class RegistrationRequestModelValidator : AbstractValidator<RegistrationR
             .WithMessage("Password is required");
         RuleFor(x => x.Password).MinimumLength(8)
             .WithMessage("Password length must be at least 8 characters");
+        RuleFor(x => x.Password).MaximumLength(20)
+            .WithMessage("Password length must be less than 20 characters");
     }
 }

@@ -28,8 +28,8 @@ export class UserChangePasswordComponent implements OnInit {
     this.form = new FormGroup({
       password: new FormControl("", [
         Validators.required,
-        Validators.minLength(8)
-
+        Validators.minLength(8),
+        Validators.maxLength(20)
       ]),
       passwordConfirm: new FormControl("", [
         Validators.required
@@ -47,6 +47,8 @@ export class UserChangePasswordComponent implements OnInit {
         .subscribe(() => {
           this.router.navigate(['/users', this.userName]);
         });
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 }

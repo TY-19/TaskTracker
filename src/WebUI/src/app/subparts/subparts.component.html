@@ -16,6 +16,17 @@
             <tr [formGroup]="form">
                 <td class="padding-4">
                     <input matInput formControlName="name" />
+                    <p *ngIf="form.touched && form.controls['name'].touched
+                        && form.controls['name'].errors">
+                        <span *ngIf="form.controls['name'].errors?.['required']"
+                            class="small-warn-text">
+                            Subpart name is required.
+                        </span>
+                        <span *ngIf="form.controls['name'].errors?.['maxlength']"
+                            class="small-warn-text">
+                            Length of the subpart's name can't be over 50 characters.
+                        </span>
+                    </p>
                 </td>
                 <td class="value-column">
                     <input matInput formControlName="percentValue" type="number" min="0" max="100" />

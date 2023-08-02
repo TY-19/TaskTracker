@@ -1,6 +1,6 @@
 <mat-form-field [hidden]="!boardsTable" class="filter" floatLabel="never">
     <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
-        placeholder="Find user to add" />
+        placeholder="Find board to add the user to" />
     <button *ngIf="filter.value" matSuffix mat-icon-button aria-label="Clear" 
         (click)="clearFilter()">
         <mat-icon>close</mat-icon>

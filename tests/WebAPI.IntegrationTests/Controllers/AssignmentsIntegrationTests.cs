@@ -38,7 +38,11 @@ public class AssignmentsIntegrationTests
     {
         await PrepareTestFixture();
         const string TOPIC = "Test";
-        var assignment = new AssignmentPostModel() { Topic = TOPIC, StageId = 1 };
+
+        await _seedHelper.CreateEmployeeAsync(new Employee() { Id = 1000 });
+
+        var assignment = new AssignmentPostModel() { Topic = TOPIC,
+            Deadline = DateTime.MaxValue, StageId = 1, ResponsibleEmployeeId = 1000 };
         const string RequestURI = $"api/boards/1/tasks";
         var content = new StringContent(JsonSerializer.Serialize(assignment),
             Encoding.UTF8, "application/json");

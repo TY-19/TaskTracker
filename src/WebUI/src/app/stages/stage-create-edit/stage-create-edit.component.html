@@ -4,15 +4,17 @@
         <mat-label>Name:</mat-label>
         <input matInput formControlName="name" required
             placeholder="Type a name">
+        <p *ngIf="form.controls['name'].touched && form.controls['name'].errors">
+            <span *ngIf="form.controls['name'].errors?.['required']"
+                class="small-warn-text">
+                Stage name is required.
+            </span>
+            <span *ngIf="form.controls['name'].errors?.['maxlength']"
+                class="small-warn-text">
+                Stage name has to be no longer than 50 characters.
+            </span>
+        </p>
     </mat-form-field>
-    <p *ngIf="form.touched">
-        <mat-error *ngIf="form.controls['name'].errors?.['required']" class="form-error-message">
-            Name is required.
-        </mat-error>
-        <mat-error *ngIf="form.controls['name'].errors?.['minlength']" class="form-error-message" >
-            Name must be at least 3 characters long.
-        </mat-error>
-    </p>
     <div>
         <button mat-flat-button color="primary" type="submit">
             {{mode == "edit" ? 'Save' : 'Add'}}

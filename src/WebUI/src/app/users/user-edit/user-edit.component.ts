@@ -43,12 +43,18 @@ export class UserEditComponent implements OnInit {
         Validators.pattern("^[a-zA-Z0-9_]*$")
       ]),
       email: new FormControl('', [
-        Validators.required, 
+        Validators.required,
         Validators.email
       ]),
       roles: new FormControl(''),
-      firstName: new FormControl(''),
-      lastName: new FormControl('')
+      firstName: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(50)
+      ]),
+      lastName: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(50)
+      ])
     });
   }
 
@@ -73,6 +79,8 @@ export class UserEditComponent implements OnInit {
         .subscribe(() => {
           this.router.navigate(['/users', userName]);
         });
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 

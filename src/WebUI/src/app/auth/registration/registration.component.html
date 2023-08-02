@@ -10,7 +10,7 @@
         <mat-form-field>
             <mat-label>Username:</mat-label>
             <input matInput formControlName="userName" required>
-            <p *ngIf="form.controls['userName'].touched">
+            <p *ngIf="form.controls['userName'].touched && form.controls['userName'].errors">
                 <span *ngIf="form.controls['userName'].errors?.['required']"
                     class="small-warn-text">
                     Username is required
@@ -32,29 +32,49 @@
         <mat-form-field>
             <mat-label>Email:</mat-label>
             <input matInput formControlName="email" required>
-            <mat-error *ngIf="form.controls['email'].errors?.['required']">
-                Email is required
-            </mat-error>
-            <p *ngIf="form.controls['email'].touched">
-                <mat-error *ngIf="form.controls['email'].errors?.['email']"
+            <p *ngIf="form.controls['email'].touched && form.controls['email'].errors">
+                <span *ngIf="form.controls['email'].errors?.['required']"
+                    class="small-warn-text">
+                    Email is required
+                </span>
+                <span *ngIf="form.controls['email'].errors?.['email']"
                     class="small-warn-text">
                     Provide a valid email
-                </mat-error>
+                </span>
             </p>
         </mat-form-field>
 
         <mat-form-field>
             <mat-label>Password:</mat-label>
             <input matInput type="password" formControlName="password" required>
-            <mat-error>Password have to be at least 8 characters long</mat-error>
+            <p *ngIf="form.controls['password'].touched && form.controls['password'].errors">
+                <span *ngIf="form.controls['password'].errors?.['required']"
+                    class="small-warn-text">
+                    Password is required.
+                </span>
+                <span *ngIf="form.controls['password'].errors?.['minlength']"
+                    class="small-warn-text">
+                    Password have to be at least 8 characters long.
+                </span>
+                <span *ngIf="form.controls['password'].errors?.['maxlength']"
+                    class="small-warn-text">
+                    Password have to be no longer than 20 characters.
+                </span>
+            </p>
         </mat-form-field>
         <mat-form-field>
             <mat-label>Confirm password:</mat-label>
             <input matInput type="password" formControlName="passwordConfirm" required>
-            <mat-error>Confirm the password</mat-error>
-            <p *ngIf="form.errors && form.errors['passwordMatchError']" 
-                class="small-warn-text">
-                Passwords doesn't match
+            <p *ngIf="(form.errors && form.touched) ||
+                (form.controls['passwordConfirm'].touched && form.controls['passwordConfirm'].errors)">
+                <span *ngIf="form.controls['passwordConfirm'].errors?.['required']"
+                    class="small-warn-text">
+                    Confirm the password.
+                </span>
+                <span *ngIf="form.errors && form.errors['passwordMatchError']"
+                    class="small-warn-text">
+                    Password and confirm password doesn't match.
+                </span>
             </p>
         </mat-form-field>
         

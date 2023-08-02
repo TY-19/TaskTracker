@@ -51,7 +51,9 @@
         <ng-container matColumnDef="responsibleEmployee">
             <th mat-header-cell *matHeaderCellDef mat-sort-header="responsibleEmployee"> Responsible Employee </th>
             <td mat-cell *matCellDef="let assignment">                 
-                {{assignment.responsibleEmployee?.firstName}} {{assignment.responsibleEmployee?.lastName}}
+                <p (click)="selectEmployeesTasks(assignment.responsibleEmployee?.firstName + ' ' + assignment.responsibleEmployee?.lastName)">
+                    {{assignment.responsibleEmployee?.firstName}} {{assignment.responsibleEmployee?.lastName}}
+                </p>
             </td>
         </ng-container>
         <ng-container matColumnDef="buttons">

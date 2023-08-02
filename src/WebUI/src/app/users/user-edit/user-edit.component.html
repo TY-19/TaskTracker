@@ -10,7 +10,7 @@
         <mat-form-field>
             <mat-label>Username:</mat-label>
             <input matInput formControlName="userName" required>
-            <p *ngIf="form.controls['userName'].touched">
+            <p *ngIf="form.controls['userName'].touched && form.controls['userName'].errors">
                 <span *ngIf="form.controls['userName'].errors?.['required']"
                     class="small-warn-text">
                     Username is required
@@ -33,14 +33,15 @@
         <mat-form-field>
             <mat-label>Email:</mat-label>
             <input matInput formControlName="email" required>
-            <mat-error *ngIf="form.controls['email'].errors?.['required']">
-                Email is required
-            </mat-error>
-            <p *ngIf="form.controls['email'].touched">
-                <mat-error *ngIf="form.controls['email'].errors?.['email']"
+            <p *ngIf="form.controls['email'].touched && form.controls['email'].errors">
+                <span *ngIf="form.controls['email'].errors?.['required']"
+                    class="small-warn-text">
+                    Email is required
+                </span>
+                <span *ngIf="form.controls['email'].errors?.['email']"
                     class="small-warn-text">
                     Provide a valid email
-                </mat-error>
+                </span>
             </p>
         </mat-form-field>
 
@@ -56,11 +57,31 @@
         <mat-form-field>
             <mat-label>First name:</mat-label>
             <input matInput formControlName="firstName" required>
+            <p *ngIf="form.controls['firstName'].touched && form.controls['firstName'].errors">
+                <span *ngIf="form.controls['firstName'].errors?.['required']"
+                    class="small-warn-text">
+                    First name is required
+                </span>
+                <span *ngIf="form.controls['firstName'].errors?.['maxlength']"
+                    class="small-warn-text">
+                    First name length must not be more than 50 characters.
+                </span>
+            </p>
         </mat-form-field>
         <br>
         <mat-form-field>
             <mat-label>Last name:</mat-label>
             <input matInput formControlName="lastName" required>
+            <p *ngIf="form.controls['lastName'].touched && form.controls['lastName'].errors">
+                <span *ngIf="form.controls['lastName'].errors?.['required']"
+                    class="small-warn-text">
+                    Last name is required
+                </span>
+                <span *ngIf="form.controls['lastName'].errors?.['maxlength']"
+                    class="small-warn-text">
+                    Last name length must not be more than 50 characters.
+                </span>
+            </p>
         </mat-form-field>
 
         

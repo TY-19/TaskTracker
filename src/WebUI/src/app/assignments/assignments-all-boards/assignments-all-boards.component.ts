@@ -124,6 +124,11 @@ export class AssignmentsAllBoardsComponent implements OnInit {
         || this.filterByEmployeeName(a.responsibleEmployee, filterText));
   }
 
+  selectEmployeesTasks(employeeName: string) {
+    this.filter.nativeElement['value'] = employeeName;
+    this.onFilterTextChanged(employeeName);
+  }
+
   filterByEmployeeName(employee: Employee | undefined, filterText: string): boolean {
     if (employee === undefined) return false;
     let firstName = employee.firstName?.toLowerCase() ?? '';

@@ -32,8 +32,8 @@ export class ChangePasswordComponent implements OnInit {
       ]),
       password: new FormControl("", [
         Validators.required,
-        Validators.minLength(8)
-
+        Validators.minLength(8),
+        Validators.maxLength(20)
       ]),
       passwordConfirm: new FormControl("", [
         Validators.required
@@ -70,6 +70,8 @@ export class ChangePasswordComponent implements OnInit {
               this.errors = "Make sure that you use the correct old password!";
             }
           }});
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 }

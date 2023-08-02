@@ -39,7 +39,8 @@ export class UserCreateComponent implements OnInit {
       ]),
       password: new FormControl('', [
         Validators.required,
-        Validators.minLength(8)
+        Validators.minLength(8),
+        Validators.maxLength(20)
       ]),
       passwordConfirm: new FormControl('', Validators.required),
     },
@@ -66,6 +67,8 @@ export class UserCreateComponent implements OnInit {
             this.registrationResult = result;
           }
         });
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 }

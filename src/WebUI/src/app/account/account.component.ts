@@ -36,13 +36,23 @@ export class AccountComponent implements OnInit {
         Validators.required
       ]),
       userName: new FormControl("", [
-        Validators.required
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(25),
+        Validators.pattern("^[a-zA-Z0-9_]*$")
       ]),
       email: new FormControl("", [
-        Validators.required
+        Validators.required,
+        Validators.email
       ]),
-      firstName: new FormControl(),
-      lastName: new FormControl()
+      firstName: new FormControl("", [
+        Validators.required,
+        Validators.maxLength(50)
+      ]),
+      lastName: new FormControl("", [
+        Validators.required,
+        Validators.maxLength(50)
+      ])
     });
   }
 
@@ -69,6 +79,8 @@ export class AccountComponent implements OnInit {
         lastName: this.form.controls['lastName'].value
       }
       this.updateProfile(profile)
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 

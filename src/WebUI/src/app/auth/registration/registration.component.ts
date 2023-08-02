@@ -40,7 +40,8 @@ export class RegistrationComponent implements OnInit {
       ]),
       password: new FormControl('', [
         Validators.required,
-        Validators.minLength(8)
+        Validators.minLength(8),
+        Validators.maxLength(20)
       ]),
       passwordConfirm: new FormControl('', Validators.required),
     },
@@ -51,21 +52,25 @@ export class RegistrationComponent implements OnInit {
   }
 
   onSubmit(): void {
-    let registrationRequest: RegistrationRequest = {
-      userName: this.form.controls['userName'].value,
-      email: this.form.controls['email'].value,
-      password: this.form.controls['password'].value
-    }
+    if(this.form.valid) {
+      let registrationRequest: RegistrationRequest = {
+        userName: this.form.controls['userName'].value,
+        email: this.form.controls['email'].value,
+        password: this.form.controls['password'].value
+      }
 
-    this.authService.registration(registrationRequest)
-      .subscribe((result) => {
-        if(result.success) {
-          this.router.navigate(["/"])
-            .catch(error => console.log(error));
-        } else {
-          this.registrationResult = result;
-        }
+      this.authService.registration(registrationRequest)
+        .subscribe((result) => {
+          if(result.success) {
+            this.router.navigate(["/"])
+              .catch(error => console.log(error));
+          } else {
+            this.registrationResult = result;
+          }
       });
+    } else {
+      this.form.markAllAsTouched();
+    }
   }
 
 }

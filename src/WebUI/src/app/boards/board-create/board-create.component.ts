@@ -32,6 +32,7 @@ export class BoardCreateComponent implements OnInit {
       name: new FormControl("", [
         Validators.required,
         Validators.minLength(3),
+        Validators.maxLength(50),
         CustomValidators.boardNameValidator()
       ])
     });
@@ -43,6 +44,8 @@ export class BoardCreateComponent implements OnInit {
       let toCreate: Board = { id: 0, 
         name: this.form.controls['name'].value };
       this.createBoard(toCreate);
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 
