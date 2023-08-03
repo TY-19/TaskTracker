@@ -119,7 +119,7 @@ public class AccountControllerTests
     public async Task UpdateProfile_ReturnsNoContentResult()
     {
         _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(),
-            It.IsAny<UserProfileUpdateModel>())).ReturnsAsync(true);
+            It.IsAny<UserProfileUpdateModel>())).Callback(() => {});
         AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new UserProfileUpdateModel() { Email = "test@example.com" };
 
@@ -131,7 +131,7 @@ public class AccountControllerTests
     public async Task UpdateProfile_ReturnsNotFoundResult_IfCalledByUnauthicatedUser()
     {
         _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(),
-            It.IsAny<UserProfileUpdateModel>())).ReturnsAsync(true);
+            It.IsAny<UserProfileUpdateModel>())).Callback(() => {});
         var model = new UserProfileUpdateModel() { Email = "test@example.com" };
 
         var result = await _controller.UpdateProfile(model);
@@ -139,23 +139,24 @@ public class AccountControllerTests
         Assert.IsType<NotFoundResult>(result);
     }
     [Fact]
-    public async Task UpdateProfile_ReturnsBadRequestResult_IfUpdatingWasNotSuccessful()
+    public async Task UpdateProfile_ReturnsBadRequestObjectResult_IfUpdatingWasNotSuccessful()
     {
         _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(),
-            It.IsAny<UserProfileUpdateModel>())).ReturnsAsync(false);
+            It.IsAny<UserProfileUpdateModel>()))
+            .ThrowsAsync(new ArgumentException("TestException"));
         AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new UserProfileUpdateModel() { Email = "test@example.com" };
 
         var result = await _controller.UpdateProfile(model);
 
-        Assert.IsType<BadRequestResult>(result);
+        Assert.IsType<BadRequestObjectResult>(result);
 
     }
     [Fact]
     public async Task ChangePassword_ReturnsNoContentResult()
     {
         _serviceMock.Setup(s => s.ChangePasswordAsync(It.IsAny<string>(),
-            It.IsAny<ChangePasswordModel>())).ReturnsAsync(true);
+            It.IsAny<ChangePasswordModel>())).Callback(() => {});
         AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new ChangePasswordModel() { OldPassword = "oldPassword", NewPassword = "newPassword" };
 
@@ -167,7 +168,7 @@ public class AccountControllerTests
     public async Task ChangePassword_ReturnsNotFoundResult_IfCalledByUnauthicatedUser()
     {
         _serviceMock.Setup(s => s.ChangePasswordAsync(It.IsAny<string>(),
-            It.IsAny<ChangePasswordModel>())).ReturnsAsync(true);
+            It.IsAny<ChangePasswordModel>())).Callback(() => {});
         var model = new ChangePasswordModel() { OldPassword = "oldPassword", NewPassword = "newPassword" };
 
         var result = await _controller.ChangePassword(model);
@@ -176,16 +177,17 @@ public class AccountControllerTests
 
     }
     [Fact]
-    public async Task ChangePassword_ReturnsBadRequestResult_IfOperationWasNotSuccessful()
+    public async Task ChangePassword_ReturnsBadRequestObjectResult_IfOperationWasNotSuccessful()
     {
         _serviceMock.Setup(s => s.ChangePasswordAsync(It.IsAny<string>(),
-            It.IsAny<ChangePasswordModel>())).ReturnsAsync(false);
+            It.IsAny<ChangePasswordModel>()))
+            .ThrowsAsync(new ArgumentException("TestException"));
         AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new ChangePasswordModel() { OldPassword = "oldPassword", NewPassword = "newPassword" };
 
         var result = await _controller.ChangePassword(model);
 
-        Assert.IsType<BadRequestResult>(result);
+        Assert.IsType<BadRequestObjectResult>(result);
     }
 
     private void AddAuthorizedIdentityUserToControllerContext(ControllerBase controller)

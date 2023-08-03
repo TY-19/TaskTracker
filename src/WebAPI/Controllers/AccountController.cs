@@ -87,14 +87,15 @@ public class AccountController : ControllerBase
         if (userName == null)
             return NotFound();
 
-        if (await _accountService.UpdateUserProfileAsync(userName, updatedUser))
+        try
         {
-            return NoContent();
+            await _accountService.UpdateUserProfileAsync(userName, updatedUser);
         }
-        else
+        catch(Exception ex)
         {
-            return BadRequest();
+            return BadRequest(ex.Message);
         }
+        return NoContent();
     }
 
     [Authorize]
@@ -114,13 +115,14 @@ public class AccountController : ControllerBase
         if (userName == null)
             return NotFound();
 
-        if (await _accountService.ChangePasswordAsync(userName, model))
+        try
         {
-            return NoContent();
+            await _accountService.ChangePasswordAsync(userName, model);
         }
-        else
+        catch (Exception ex)
         {
-            return BadRequest();
+            return BadRequest(ex.Message);
         }
+        return NoContent();
     }
 }

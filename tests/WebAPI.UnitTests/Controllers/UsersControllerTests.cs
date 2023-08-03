@@ -86,7 +86,7 @@ public class UsersControllerTests
         _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
             .ReturnsAsync(new UserProfileModel());
         _accountServiceMock.Setup(a => a.UpdateUserProfileAsync(It.IsAny<string>(), It.IsAny<UserProfileUpdateModel>()))
-            .ReturnsAsync(true);
+            .Callback(() => {});
 
         var result = await _controller.UpdateUserProfile("newName", new UserProfileUpdateModel());
 
@@ -100,19 +100,19 @@ public class UsersControllerTests
         _userServiceMock.Setup(u => u.UpdateUserNameAsync(It.IsAny<string>(), It.IsAny<string>()))
             .Callback(() => { });
         _accountServiceMock.Setup(a => a.UpdateUserProfileAsync(It.IsAny<string>(), It.IsAny<UserProfileUpdateModel>()))
-            .ReturnsAsync(true);
+            .Callback(() => {});
 
         var result = await _controller.UpdateUserProfile("oldName", new UserProfileUpdateModel() { UserName = "newName" });
 
         Assert.IsType<NoContentResult>(result);
     }
     [Fact]
-    public async Task UpdateUserProfile_ReturnsBadRequestResult_IfTheUserProfileWasNotUpdated()
+    public async Task UpdateUserProfile_ReturnsBadRequestObjectResult_IfTheUserProfileWasNotUpdated()
     {
         _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
             .ReturnsAsync(new UserProfileModel());
         _accountServiceMock.Setup(a => a.UpdateUserProfileAsync(It.IsAny<string>(), It.IsAny<UserProfileUpdateModel>()))
-            .ReturnsAsync(false);
+            .ThrowsAsync(new ArgumentException("TestException"));
 
         var result = await _controller.UpdateUserProfile("newName", new UserProfileUpdateModel());
 

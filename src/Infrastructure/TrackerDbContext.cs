@@ -37,5 +37,4 @@ public class TrackerDbContext : IdentityDbContext<User>, ITrackerDbContext
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<WorkflowStage> Stages => Set<WorkflowStage>();
     public DbSet<Board> Boards => Set<Board>();
-
 }

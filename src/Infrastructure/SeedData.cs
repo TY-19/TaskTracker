@@ -67,7 +67,7 @@ public class SeedData
 
     private async Task SeedDefaultAdministratorAsync()
     {
-        if (!_context.Users.Any() || (_configuration["SetNewAdmin"] ?? "false") == "true")
+        if (!_context.Users.Any() || _configuration?["SetNewAdmin"] == "true")
         {
             string defaultAdminName = _configuration["DefaultCredentials:Admin:Name"]
                 ?? "admin";
@@ -75,7 +75,6 @@ public class SeedData
                 ?? "email@example.com";
             string defaultAdminPassword = _configuration["DefaultCredentials:Admin:Password"]
                 ?? "Pa$$w0rd";
-            string defaultAdminRole = DefaultRolesNames.DEFAULT_ADMIN_ROLE;
 
             var admin = new User
             {
@@ -85,7 +84,7 @@ public class SeedData
             };
 
             await _userManager.CreateAsync(admin, defaultAdminPassword);
-            await _userManager.AddToRoleAsync(admin, defaultAdminRole);
+            await _userManager.AddToRoleAsync(admin, DefaultRolesNames.DEFAULT_ADMIN_ROLE);
         }
     }
 }

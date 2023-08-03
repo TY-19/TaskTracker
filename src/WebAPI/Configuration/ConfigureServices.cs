@@ -53,6 +53,5 @@ public static class ConfigureServices
         services.AddSingleton(new MapperConfiguration(cfg =>
             cfg.AddProfile<AutomapperProfile>()).CreateMapper());
 
-        services.AddScoped<IValidator<RegistrationRequestModel>, RegistrationRequestModelValidator>();
     }
 }

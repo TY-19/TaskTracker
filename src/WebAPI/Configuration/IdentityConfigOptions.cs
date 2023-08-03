@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-
 namespace TaskTracker.WebAPI.Configuration
 {
     public class IdentityConfigOptions : IConfigureOptions<IdentityOptions>

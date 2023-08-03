@@ -35,13 +35,14 @@ public class AssignmentService : IAssignmentService
 
     public async Task<AssignmentGetModel> CreateAssignmentAsync(int boardId, AssignmentPostModel assignmentModel)
     {
-        if ((await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId)) == null)
-            throw new ArgumentException($"Incorrect board to create assignment", nameof(boardId));
+        if ((await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId)) == null || assignmentModel == null)
+            throw new ArgumentException("Incorrect board to create assignment", nameof(boardId));
 
         return await CreateAssignmentInternalAsync(boardId, assignmentModel);
     }
 
-    private async Task<AssignmentGetModel> CreateAssignmentInternalAsync(int boardId, AssignmentPostModel assignmentModel)
+    private async Task<AssignmentGetModel> CreateAssignmentInternalAsync(
+        int boardId, AssignmentPostModel assignmentModel)
     {
         var assignment = _mapper.Map<Assignment>(assignmentModel);
         assignment.BoardId = boardId;
@@ -52,7 +53,7 @@ public class AssignmentService : IAssignmentService
 
     public async Task<AssignmentGetModel?> GetAssignmentAsync(int boardId, int taskId)
     {
-        var assignment = await GetAssignmentInnerAsync(taskId);
+        Assignment? assignment = await GetAssignmentInnerAsync(taskId);
 
         if (assignment == null || assignment.BoardId != boardId)
             return null;
@@ -72,45 +73,48 @@ public class AssignmentService : IAssignmentService
 
     public async Task UpdateAssignmentAsync(int boardId, int taskId, AssignmentPutModel model)
     {
-        var assignment = await GetAssignmentInnerAsync(taskId);
-
-        if (assignment == null || assignment.BoardId != boardId)
-            throw new ArgumentException("There is no assignment with the id on the board");
+        Assignment? assignment = await GetAssignmentInnerAsync(taskId);
+        EnsureAssignmentExistOnTheBoard(boardId, assignment);
 
         _mapper.Map(model, assignment);
 
-        _context.Assignments.Update(assignment);
+        _context.Assignments.Update(assignment!);
         await _context.SaveChangesAsync();
     }
 
     public async Task MoveAssignmentToTheStageAsync(int boardId, int taskId, int stageId, string userName)
     {
-        var assignment = await GetAssignmentInnerAsync(taskId);
-        if (assignment == null || assignment.BoardId != boardId)
-            throw new ArgumentException("There is no assignment with the id on the board");
+        Assignment? assignment = await GetAssignmentInnerAsync(taskId);
+        EnsureAssignmentExistOnTheBoard(boardId, assignment);
+        await EnsureUserHasPermissionToModifyTaskAsync(userName, assignment!);
 
-        var user = await _userService.GetUserByNameOrIdAsync(userName);
-        if (!IsAdminOrManager(user) && !IsResponsibleForTheTask(user, assignment))
-            throw new ArgumentException("User has no permission to make this action");
-
-        assignment.StageId = stageId;
+        assignment!.StageId = stageId;
         _context.Assignments.Update(assignment);
         await _context.SaveChangesAsync();
     }
 
     public async Task ChangeAssignmentStatus(int boardId, int taskId, bool isCompleted, string userName)
     {
-        var assignment = await GetAssignmentInnerAsync(taskId);
-        if (assignment == null || assignment.BoardId != boardId)
-            throw new ArgumentException("There is no assignment with the id on the board");
+        Assignment? assignment = await GetAssignmentInnerAsync(taskId);
+        EnsureAssignmentExistOnTheBoard(boardId, assignment);
+        await EnsureUserHasPermissionToModifyTaskAsync(userName, assignment!);
 
-        var user = await _userService.GetUserByNameOrIdAsync(userName);
-        if (!IsAdminOrManager(user) && !IsResponsibleForTheTask(user, assignment))
-            throw new ArgumentException("User has no permission to make this action");
-
-        assignment.IsCompleted = isCompleted;
+        assignment!.IsCompleted = isCompleted;
         _context.Assignments.Update(assignment);
         await _context.SaveChangesAsync();
+    }
+
+    private static void EnsureAssignmentExistOnTheBoard(int boardId, Assignment? assignment)
+    {
+        if (assignment == null || assignment.BoardId != boardId)
+            throw new ArgumentException("There is no assignment with the id on the board");
+    }
+
+    private async Task EnsureUserHasPermissionToModifyTaskAsync(string userName, Assignment assignment)
+    {
+        UserProfileModel? user = await _userService.GetUserByNameOrIdAsync(userName);
+        if (!IsAdminOrManager(user) && !IsResponsibleForTheTask(user, assignment))
+            throw new ArgumentException("User has no permission to make this action");
     }
 
     private static bool IsAdminOrManager(UserProfileModel? user)
@@ -120,8 +124,7 @@ public class AssignmentService : IAssignmentService
             user.Roles.Contains(DefaultRolesNames.DEFAULT_MANAGER_ROLE));
     }
 
-    private static bool IsResponsibleForTheTask(UserProfileModel? user,
-        Assignment? assignment)
+    private static bool IsResponsibleForTheTask(UserProfileModel? user, Assignment? assignment)
     {
         return user?.EmployeeId != null && assignment?.ResponsibleEmployeeId != null &&
             user.EmployeeId == assignment.ResponsibleEmployeeId;
@@ -129,7 +132,7 @@ public class AssignmentService : IAssignmentService
 
     public async Task DeleteAssignmentAsync(int boardId, int taskId)
     {
-        var toDelete = await GetAssignmentInnerAsync(taskId);
+        Assignment? toDelete = await GetAssignmentInnerAsync(taskId);
         if (toDelete == null || toDelete.BoardId != boardId)
             return;
         _context.Assignments.Remove(toDelete);

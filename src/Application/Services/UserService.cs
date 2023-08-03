@@ -35,78 +35,16 @@ public class UserService : IUserService
 
     public async Task<UserProfileModel?> GetUserByNameOrIdAsync(string userNameOrId)
     {
-        var user = await GetUserByIdOrNameInnerAsync(userNameOrId);
-
-        if (user == null)
-            return null;
-
-        return await GetUserProfileModelWithRolesAsync(user);
+        User? user = await GetUserByIdOrNameFromDBAsync(userNameOrId);
+        return user == null
+            ? null
+            : await GetUserProfileModelWithRolesAsync(user);
     }
-
-    private async Task<User?> GetUserByIdOrNameInnerAsync(string userNameOrId)
+    private async Task<User?> GetUserByIdOrNameFromDBAsync(string userNameOrId)
     {
-        return await GetUserByIdInnerAsync(userNameOrId) ??
-            await GetUserByNameInnerAsync(userNameOrId);
+        return await GetUserByIdAsync(userNameOrId) ??
+            await GetUserByNameAsync(userNameOrId);
     }
-
-    private async Task<User?> GetUserByIdInnerAsync(string userId)
-    {
-        return await _context.Users
-            .Include(u => u.Employee)
-            .ThenInclude(e => e!.Boards)
-            .ThenInclude(e => e.Assignments)
-            .FirstOrDefaultAsync(u => u.Id == userId);
-    }
-    private async Task<User?> GetUserByNameInnerAsync(string userName)
-    {
-        return await _context.Users
-            .Include(u => u.Employee)
-            .ThenInclude(e => e!.Boards)
-            .ThenInclude(e => e.Assignments)
-            .FirstOrDefaultAsync(u => u.UserName == userName);
-    }
-
-    public async Task UpdateUserNameAsync(string oldName, string newName)
-    {
-        var user = await _userManager.FindByNameAsync(oldName);
-        if (user == null)
-            throw new ArgumentException(
-                "User with such a Name does not exist", nameof(oldName));
-
-        user.UserName = newName;
-        await _userManager.UpdateAsync(user);
-    }
-
-    public async Task ChangeUserPasswordAsync(string usernameOrId, string newPassword)
-    {
-        var user = await GetUserByIdOrNameInnerAsync(usernameOrId);
-        if (user == null)
-            throw new ArgumentException(
-                "User with such an Id or Name does not exist", nameof(usernameOrId));
-
-        await _userManager.RemovePasswordAsync(user);
-        await _userManager.AddPasswordAsync(user, newPassword);
-    }
-
-    public async Task DeleteUserAsync(string usernameOrId)
-    {
-        var user = await GetUserByIdOrNameInnerAsync(usernameOrId);
-        if (user == null)
-            return;
-        if (user.Employee != null)
-        {
-            var toDelete = await _context.Employees
-                .FirstOrDefaultAsync(e => e.Id == user.Employee.Id);
-            if(toDelete != null)
-            {
-                _context.Employees.Remove(toDelete);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        await _userManager.DeleteAsync(user);
-    }
-
     private async Task<IEnumerable<UserProfileModel>> GetUserProfileModelsWithRolesAsync(IEnumerable<User> users)
     {
         var models = new List<UserProfileModel>();
@@ -123,6 +61,64 @@ public class UserService : IUserService
         return model;
     }
 
+    private async Task<User?> GetUserByIdAsync(string userId)
+    {
+        return await _context.Users
+            .Include(u => u.Employee)
+            .ThenInclude(e => e!.Boards)
+            .ThenInclude(e => e.Assignments)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+    }
+    private async Task<User?> GetUserByNameAsync(string userName)
+    {
+        return await _context.Users
+            .Include(u => u.Employee)
+            .ThenInclude(e => e!.Boards)
+            .ThenInclude(e => e.Assignments)
+            .FirstOrDefaultAsync(u => u.UserName == userName);
+    }
+
+    public async Task UpdateUserNameAsync(string oldName, string newName)
+    {
+        User user = await _userManager.FindByNameAsync(oldName)
+            ?? throw new ArgumentException("User with such a Name does not exist", nameof(oldName));
+        user.UserName = newName;
+        await _userManager.UpdateAsync(user);
+    }
+
+    public async Task ChangeUserPasswordAsync(string usernameOrId, string newPassword)
+    {
+        User user = await GetUserByIdOrNameFromDBAsync(usernameOrId)
+            ?? throw new ArgumentException("User with such an Id or Name does not exist", nameof(usernameOrId));
+        await _userManager.RemovePasswordAsync(user);
+        await _userManager.AddPasswordAsync(user, newPassword);
+    }
+
+    public async Task DeleteUserAsync(string usernameOrId)
+    {
+        User? user = await GetUserByIdOrNameFromDBAsync(usernameOrId);
+        if (user == null)
+            return;
+
+        await DeleteEmployeeAsync(user.Employee);
+        await _userManager.DeleteAsync(user);
+    }
+
+    private async Task DeleteEmployeeAsync(Employee? employee)
+    {
+        if (employee == null)
+            return;
+
+        Employee? toDelete = await _context.Employees
+                .FirstOrDefaultAsync(e => e.Id == employee.Id);
+
+        if (toDelete == null)
+            return;
+
+        _context.Employees.Remove(toDelete);
+        await _context.SaveChangesAsync();
+    }
+
     public IEnumerable<string> GetAllRoles()
     {
         return _roleManager.Roles.Select(r => r.Name);
@@ -130,16 +126,32 @@ public class UserService : IUserService
 
     public async Task UpdateUserRoles(string userName, IEnumerable<string> roles)
     {
-        var user = await GetUserByNameInnerAsync(userName);
+        User? user = await GetUserByNameAsync(userName);
         if (user == null)
             return;
 
         IEnumerable<string> oldRoles = await _userManager.GetRolesAsync(user);
-        if (!await IsLastAdmin(oldRoles) || roles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
-        {
-            await _userManager.RemoveFromRolesAsync(user, oldRoles);
-            await _userManager.AddToRolesAsync(user, roles);
-        }
+        if(!await AreToBeUpdated(oldRoles, roles))
+            return;
+
+        await _userManager.RemoveFromRolesAsync(user, oldRoles);
+        await _userManager.AddToRolesAsync(user, roles);
+    }
+
+    private async Task<bool> AreToBeUpdated(IEnumerable<string> oldRoles, IEnumerable<string> newRoles)
+    {
+        return !AreOldAndNewRolesTheSame(oldRoles, newRoles)
+            && (!await IsLastAdmin(oldRoles)
+                || newRoles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE));
+    }
+
+    private static bool AreOldAndNewRolesTheSame(
+        IEnumerable<string> oldRoles, IEnumerable<string> newRoles)
+    {
+        HashSet<string> oldRolesHashSet = new (oldRoles);
+        HashSet<string> newRolesHashSet = new (newRoles);
+        return oldRolesHashSet.Count == newRolesHashSet.Count
+            && oldRolesHashSet.SetEquals(newRolesHashSet);
     }
 
     private async Task<bool> IsLastAdmin(IEnumerable<string> roles)
@@ -147,18 +159,9 @@ public class UserService : IUserService
         if (!roles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
             return false;
 
-        int adminCount = 0;
-        foreach (var user in _context.Users)
-        {
-            if ((await _userManager.GetRolesAsync(user)).Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
-            {
-                adminCount++;
-                if (adminCount > 1)
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
+        int adminsCount = (await _userManager.GetUsersInRoleAsync(
+            DefaultRolesNames.DEFAULT_ADMIN_ROLE)).Count;
+
+        return adminsCount == 1;
     }
 }

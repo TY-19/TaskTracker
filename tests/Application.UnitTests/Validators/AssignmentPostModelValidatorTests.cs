@@ -15,7 +15,8 @@ public class AssignmentPostModelValidatorTests
     [Fact]
     public void ShouldBeValid_IfProvidedWithCorrectData()
     {
-        var model = new AssignmentPostModel() { Topic = "New topic", StageId = 1 };
+        var model = new AssignmentPostModel() { Topic = "New topic",
+            Deadline = DateTime.MaxValue, StageId = 1, ResponsibleEmployeeId = 1 };
 
         var result = _validator.TestValidate(model);
 

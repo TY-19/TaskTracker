@@ -24,35 +24,32 @@ public class JwtHandlerService
     {
         EnsureUserIsNotNull(user);
 
-        var jwtToken = new JwtSecurityToken(
-            issuer: _configuration["JwtSettings:Issuer"],
-            audience: _configuration["JwtSettings:Audience"],
+        return new JwtSecurityToken(
+            issuer: _configuration["JwtSettings:Issuer"] ?? "TaskTracker",
+            audience: _configuration["JwtSettings:Audience"] ?? "*",
             claims: await GetClaimsAsync(user),
             expires: DateTime.Now.AddMinutes(Convert.ToDouble(
-                _configuration["JwtSettings:ExpirationTimeInMinutes"])),
+                _configuration["JwtSettings:ExpirationTimeInMinutes"] ?? "60")),
             signingCredentials: GetSigningCredentials());
-        return jwtToken;
     }
 
     private SigningCredentials GetSigningCredentials()
     {
         var key = Encoding.UTF8.GetBytes(
-            _configuration["JwtSettings:SecurityKey"]);
+            _configuration["JwtSettings:SecurityKey"] ?? "12345678");
         var secret = new SymmetricSecurityKey(key);
-        var signingCredentials = new SigningCredentials(secret,
-            SecurityAlgorithms.HmacSha256);
-        return signingCredentials;
+        return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 
     private async Task<List<Claim>> GetClaimsAsync(User user)
     {
         var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
+        {
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
 
-        foreach (var role in await _userManager.GetRolesAsync(user))
+        foreach (string role in await _userManager.GetRolesAsync(user))
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
@@ -64,5 +61,4 @@ public class JwtHandlerService
         if (user == null)
             throw new ArgumentNullException(nameof(user));
     }
-
 }

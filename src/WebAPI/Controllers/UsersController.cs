@@ -87,14 +87,30 @@ public class UsersController : ControllerBase
         if (userName == null || updatedUser == null)
             return BadRequest("User cannot be updated");
 
-        if (!await _accountService.UpdateUserProfileAsync(userName, updatedUser))
-            return BadRequest("User was not updated");
+        try
+        {
+            await _accountService.UpdateUserProfileAsync(userName, updatedUser);
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
 
         if (updatedUser.UserName != null && updatedUser.UserName != userName)
             await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
 
         if(updatedUser.Roles?.Any() == true)
-            await _userService.UpdateUserRoles(userName, updatedUser.Roles);
+        {
+            try
+            {
+                await _userService.UpdateUserRoles(userName, updatedUser.Roles);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+            
 
         return NoContent();
     }

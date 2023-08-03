@@ -23,34 +23,28 @@ public class BoardService : IBoardService
 
     public async Task<IEnumerable<BoardGetModel>> GetAllBoardsAsync()
     {
-        var boards = await _context.Boards
-            .Include(b => b.Stages)
-            .Include(b => b.Assignments).ThenInclude(a => a.Subparts)
-            .Include(b => b.Assignments).ThenInclude(a => a.Stage)
-            .Include(b => b.Employees).ThenInclude(e => e.User)
-            .AsNoTracking()
-            .ToListAsync();
+        List<Board?> boards = await GetAllBoardsFromTheDB().ToListAsync();
         return _mapper.Map<List<BoardGetModel>>(boards);
     }
 
     public async Task<IEnumerable<BoardGetModel>> GetBoardOfTheEmployeeAsync(string userName)
     {
-        var user = await _userService.GetUserByNameOrIdAsync(userName);
+        UserProfileModel? user = await _userService.GetUserByNameOrIdAsync(userName);
         if (user == null)
             return new List<BoardGetModel>();
-        if (user.Roles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE) ||
-            user.Roles.Contains(DefaultRolesNames.DEFAULT_MANAGER_ROLE))
-        {
-            return await GetAllBoardsAsync();
-        }
 
-        var boards = await _context.Boards
-            .Include(b => b.Stages)
-            .Include(b => b.Assignments).ThenInclude(a => a.Subparts)
-            .Include(b => b.Assignments).ThenInclude(a => a.Stage)
-            .Include(b => b.Employees).ThenInclude(e => e.User)
-            .AsNoTracking()
-            .Where(b => b.Employees
+        bool hasAccessToAllBoards = user.Roles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE) ||
+            user.Roles.Contains(DefaultRolesNames.DEFAULT_MANAGER_ROLE);
+
+        return hasAccessToAllBoards
+            ? await GetAllBoardsAsync()
+            : await GetBoardAccessibleToTheEmployeeAsync(userName);
+    }
+
+    private async Task<IEnumerable<BoardGetModel>> GetBoardAccessibleToTheEmployeeAsync(string userName)
+    {
+        List<Board?> boards = await GetAllBoardsFromTheDB()
+            .Where(b => b!.Employees
                 .Select(e => e.User)
                 .Where(u => u != null)
                 .Select(u => u!.UserName)
@@ -60,13 +54,22 @@ public class BoardService : IBoardService
         return _mapper.Map<List<BoardGetModel>>(boards);
     }
 
+    private IQueryable<Board?> GetAllBoardsFromTheDB()
+    {
+        return _context.Boards
+            .Include(b => b.Stages)
+            .Include(b => b.Assignments).ThenInclude(a => a.Subparts)
+            .Include(b => b.Assignments).ThenInclude(a => a.Stage)
+            .Include(b => b.Employees).ThenInclude(e => e.User)
+            .AsNoTracking();
+    }
+
     public async Task<BoardGetModel?> GetBoardByIdAsync(int id)
     {
-        var board = await GetBoardByIdInnerAsync(id);
-
+        Board? board = await GetBoardFromDbByIdAsync(id);
         return _mapper.Map<BoardGetModel>(board);
     }
-    private async Task<Board?> GetBoardByIdInnerAsync(int id)
+    private async Task<Board?> GetBoardFromDbByIdAsync(int id)
     {
         return await _context.Boards
             .Include(b => b.Stages)
@@ -75,10 +78,9 @@ public class BoardService : IBoardService
             .Include(b => b.Employees).ThenInclude(e => e.User)
             .FirstOrDefaultAsync(e => e.Id == id);
     }
-
     public async Task<BoardGetModel?> GetBoardByNameAsync(string name)
     {
-        var board = await _context.Boards
+        Board? board = await _context.Boards
             .Include(b => b.Stages)
             .Include(b => b.Assignments).ThenInclude(a => a.Subparts)
             .Include(b => b.Assignments).ThenInclude(a => a.Stage)
@@ -89,34 +91,37 @@ public class BoardService : IBoardService
 
     public async Task<BoardGetModel?> AddBoardAsync(string name)
     {
-        if (string.IsNullOrEmpty(name) || int.TryParse(name, out _))
-            throw new ArgumentException(
-                "BoardName can't be empty or contains only digits", nameof(name));
-
-        if (await GetBoardByNameAsync(name) != null)
-            throw new ArgumentException(
-                $"Board with the name {name} has already exist", nameof(name));
-
+        await EnsureTheNameIsAllowed(name);
         await _context.Boards.AddAsync(new Board() { Name = name });
         await _context.SaveChangesAsync();
         return await GetBoardByNameAsync(name);
     }
 
+    private async Task EnsureTheNameIsAllowed(string name)
+    {
+        if (string.IsNullOrEmpty(name) || int.TryParse(name, out _))
+            throw new ArgumentException("BoardName can't be empty or contains only digits", nameof(name));
+
+        if (await GetBoardByNameAsync(name) != null)
+            throw new ArgumentException($"Board with the name {name} has already exist", nameof(name));
+    }
+
     public async Task UpdateBoardNameAsync(int id, string? newName)
     {
-        var board = await GetBoardByIdInnerAsync(id);
-        if (string.IsNullOrEmpty(newName) || int.TryParse(newName, out _) || board == null)
-            throw new ArgumentException(
-                $"The board name cannot be updated", nameof(newName));
-
-        board.Name = newName;
-        _context.Boards.Update(board);
-        await _context.SaveChangesAsync();
+        if (newName != null)
+        {
+            await EnsureTheNameIsAllowed(newName);
+            Board board = await GetBoardFromDbByIdAsync(id)
+                ?? throw new ArgumentException("Board does not exist");
+            board.Name = newName;
+            _context.Boards.Update(board);
+            await _context.SaveChangesAsync();
+        }
     }
 
     public async Task DeleteBoardAsync(int id)
     {
-        var board = await _context.Boards.FindAsync(id);
+        Board? board = await _context.Boards.FindAsync(id);
         if (board != null)
         {
             _context.Boards.Remove(board);

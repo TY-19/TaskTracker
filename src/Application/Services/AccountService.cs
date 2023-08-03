@@ -28,131 +28,14 @@ public class AccountService : IAccountService
 
     public async Task<LoginResponseModel> LoginAsync(LoginRequestModel loginRequest)
     {
-        var user = await FindUserAsync(loginRequest.NameOrEmail);
+        User? user = await FindUserAsync(loginRequest.NameOrEmail);
 
-        if (user is null || !await CheckPasswordAsync(user, loginRequest.Password))
+        if (user is null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password))
             return GetLoginFailedResult();
 
-        var token = await _jwtHandlerService.GetTokenAsync(user);
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+        JwtSecurityToken token = await _jwtHandlerService.GetTokenAsync(user);
+        string jwt = new JwtSecurityTokenHandler().WriteToken(token);
         return await GetLoginSucceedResult(jwt, user);
-    }
-
-    public async Task<RegistrationResponseModel> RegistrationAsync(
-        RegistrationRequestModel registrationRequest)
-    {
-        if (await _userManager.FindByNameAsync(registrationRequest.UserName) != null)
-            return GetRegistrationResult(false, "User with this name already exists");
-
-        var user = new User()
-        {
-            UserName = registrationRequest.UserName,
-            Email = registrationRequest.Email,
-            Employee = new Employee()
-        };
-        try
-        {
-            await _userManager.CreateAsync(user, registrationRequest.Password);
-            await _userManager.AddToRoleAsync(user, DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE);
-        }
-        catch
-        {
-            return GetRegistrationResult(false, "Name or password is not valid");
-        }
-        return GetRegistrationResult(true, "Registration was successfull");
-    }
-
-    private static RegistrationResponseModel GetRegistrationResult(bool success, string message)
-    {
-        return new RegistrationResponseModel()
-        {
-            Success = success,
-            Message = message
-        };
-    }
-
-    public async Task<UserProfileModel?> GetUserProfileAsync(string userName)
-    {
-        var user = await _context.Users
-            .Include(u => u.Employee)
-            .FirstOrDefaultAsync(u => u.UserName == userName);
-
-        return user == null
-            ? null
-            : _mapper.Map<UserProfileModel>(user);
-    }
-
-    public async Task<bool> UpdateUserProfileAsync(string userName,
-        UserProfileUpdateModel updatedUser)
-    {
-        var user = await _context.Users
-            .Include(u => u.Employee)
-            .FirstOrDefaultAsync(u => u.UserName == userName);
-
-        if (user == null)
-            return false;
-
-        await UpdateUserInfo(user, updatedUser);
-        return true;
-    }
-
-    private async Task UpdateUserInfo(User user, UserProfileUpdateModel updatedUser)
-    {
-        if (updatedUser?.Email != null)
-        {
-            user.Email = updatedUser.Email;
-        }
-        if (user.Employee == null)
-        {
-            var employee = new Employee();
-            await _context.Employees.AddAsync(employee);
-            user.Employee = employee;
-        }
-        if (updatedUser?.FirstName != null)
-        {
-            user.Employee.FirstName = updatedUser.FirstName;
-        }
-        if (updatedUser?.LastName != null)
-        {
-            user.Employee.LastName = updatedUser.LastName;
-        }
-        await _userManager.UpdateAsync(user);
-    }
-
-    public async Task<bool> ChangePasswordAsync(string userName,
-        ChangePasswordModel model)
-    {
-        User user = await _userManager.FindByNameAsync(userName);
-        if (user == null)
-        {
-            return false;
-        }
-        try
-        {
-            var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-            return result.Succeeded;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    private async Task<User?> FindUserAsync(string nameOrEmail)
-    {
-        if (nameOrEmail.Contains('@'))
-        {
-            return await _userManager.FindByEmailAsync(nameOrEmail);
-        }
-        else
-        {
-            return await _userManager.FindByNameAsync(nameOrEmail);
-        }
-    }
-
-    private async Task<bool> CheckPasswordAsync(User user, string password)
-    {
-        return await _userManager.CheckPasswordAsync(user, password);
     }
 
     private static LoginResponseModel GetLoginFailedResult()
@@ -174,14 +57,106 @@ public class AccountService : IAccountService
             Token = token,
             UserName = user.UserName,
             EmployeeId = user.EmployeeId,
-            Roles = await GetUserRoles(user)
+            Roles = await _userManager.GetRolesAsync(user)
         };
     }
 
-    private async Task<IEnumerable<string>> GetUserRoles(User user)
+    public async Task<RegistrationResponseModel> RegistrationAsync(
+        RegistrationRequestModel registrationRequest)
     {
-        List<string> roles = new();
-        roles.AddRange(await _userManager.GetRolesAsync(user));
-        return roles;
+        if (await _userManager.FindByNameAsync(registrationRequest.UserName) != null)
+            return GetRegistrationResult(false, "User with this name already exists");
+
+        User user = GetUserFromRegistrationRequest(registrationRequest);
+        try
+        {
+            await _userManager.CreateAsync(user, registrationRequest.Password);
+            await _userManager.AddToRoleAsync(user, DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE);
+        }
+        catch
+        {
+            return GetRegistrationResult(false, "Name or password is not valid");
+        }
+        return GetRegistrationResult(true, "Registration was successfull");
+    }
+
+    private static RegistrationResponseModel GetRegistrationResult(bool success, string message)
+    {
+        return new RegistrationResponseModel()
+        {
+            Success = success,
+            Message = message
+        };
+    }
+
+    private static User GetUserFromRegistrationRequest(
+        RegistrationRequestModel registrationRequest)
+    {
+        return new User()
+        {
+            UserName = registrationRequest.UserName,
+            Email = registrationRequest.Email,
+            Employee = new Employee()
+        };
+    }
+
+    public async Task<UserProfileModel?> GetUserProfileAsync(string userName)
+    {
+        User? user = await _context.Users
+            .Include(u => u.Employee)
+            .FirstOrDefaultAsync(u => u.UserName == userName);
+
+        return _mapper.Map<UserProfileModel>(user);
+    }
+
+    public async Task UpdateUserProfileAsync(string userName,
+        UserProfileUpdateModel updatedUser)
+    {
+        User user = await _context.Users
+            .Include(u => u.Employee)
+            .FirstOrDefaultAsync(u => u.UserName == userName)
+            ?? throw new ArgumentException("User does not exist");
+
+        await UpdateUserInfo(user, updatedUser);
+    }
+
+    private async Task UpdateUserInfo(User user, UserProfileUpdateModel updatedUser)
+    {
+        if (updatedUser == null)
+            return;
+
+        user.Email = updatedUser.Email ?? user.Email;
+        user.Employee ??= await CreateNewEmployeeAsync();
+        user.Employee.FirstName = updatedUser.FirstName ?? user.Employee.FirstName;
+        user.Employee.LastName = updatedUser.LastName ?? user.Employee.LastName;
+
+        await _userManager.UpdateAsync(user);
+    }
+
+    private async Task<Employee> CreateNewEmployeeAsync()
+    {
+        var employee = new Employee();
+        await _context.Employees.AddAsync(employee);
+        return employee;
+    }
+
+    public async Task ChangePasswordAsync(string userName,
+        ChangePasswordModel model)
+    {
+        User user = await _userManager.FindByNameAsync(userName)
+            ?? throw new ArgumentException("User does not exist");
+
+        IdentityResult result = await _userManager
+            .ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+        if (!result.Succeeded)
+            throw new ArgumentException("Password has not been changed");
+    }
+
+    private async Task<User?> FindUserAsync(string nameOrEmail)
+    {
+        return nameOrEmail.Contains('@')
+            ? await _userManager.FindByEmailAsync(nameOrEmail)
+            : await _userManager.FindByNameAsync(nameOrEmail);
     }
 }

@@ -22,16 +22,15 @@ public class EmployeeService : IEmployeeService
 
     public async Task<IEnumerable<EmployeeGetBoardModel>> GetAllAsync()
     {
-        var employees = await _context.Employees
+        IQueryable<Employee> employees = _context.Employees
                 .Include(e => e.User)
-                .AsNoTracking()
-                .ToListAsync();
+                .AsNoTracking();
         return await GetEmployeeModelsWithRolesAsync(employees);
     }
 
     public async Task<IEnumerable<EmployeeGetBoardModel>> GetAllEmployeeFromTheBoardAsync(int boardId)
     {
-        var employees = _context.Employees
+        IQueryable<Employee> employees = _context.Employees
                 .Include(e => e.User)
                 .Where(s => s.Boards.Select(b => b.Id).Contains(boardId))
                 .AsNoTracking();
@@ -40,37 +39,48 @@ public class EmployeeService : IEmployeeService
 
     public async Task<EmployeeGetBoardModel?> GetEmployeeByIdAsync(int id)
     {
-        var employee = await _context.Employees
+        Employee? employee = await _context.Employees
             .Include(e => e.User)
             .FirstOrDefaultAsync(e => e.Id == id);
 
         if (employee == null)
             return null;
 
-        if(employee.User != null)
-        {
-            return await GetEmployeeModelWithRolesAsync(employee);
-        }
-        else
-        {
-            return _mapper.Map<EmployeeGetBoardModel>(employee);
-        }
+        return employee.User != null
+            ? await GetEmployeeModelWithRolesAsync(employee)
+            : _mapper.Map<EmployeeGetBoardModel>(employee);
+    }
+
+    private async Task<IEnumerable<EmployeeGetBoardModel>> GetEmployeeModelsWithRolesAsync(
+        IEnumerable<Employee> employees)
+    {
+        var models = new List<EmployeeGetBoardModel>();
+        foreach (var employee in employees)
+            models.Add(await GetEmployeeModelWithRolesAsync(employee));
+
+        return models;
+    }
+    private async Task<EmployeeGetBoardModel> GetEmployeeModelWithRolesAsync(Employee employee)
+    {
+        var model = _mapper.Map<EmployeeGetBoardModel>(employee);
+        model.Roles = employee.User != null
+            ? await _userManager.GetRolesAsync(employee.User)
+            : new List<string>();
+        return model;
     }
 
     public async Task AddEmployeeToTheBoardAsync(int boardId, string userNameOrId)
     {
-        var user = await _context.Users
+        User user = await _context.Users
             .Include(u => u.Employee)
-            .FirstOrDefaultAsync(u => u.Id == userNameOrId || u.UserName == userNameOrId);
-        if (user == null)
-            throw new ArgumentException("User with a such id or name does not exist", nameof(userNameOrId));
+            .FirstOrDefaultAsync(u => u.Id == userNameOrId || u.UserName == userNameOrId)
+            ?? throw new ArgumentException("User with a such id or name does not exist", nameof(userNameOrId));
 
         user.Employee ??= new Employee();
 
-        var board = await _context.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
-
-        if (board == null)
-            throw new ArgumentException("Board with a such id does not exist", nameof(boardId));
+        Board board = await _context.Boards
+            .FirstOrDefaultAsync(b => b.Id == boardId)
+            ?? throw new ArgumentException("Board with a such id does not exist", nameof(boardId));
 
         board.Employees.Add(user.Employee);
         await _context.SaveChangesAsync();
@@ -78,8 +88,8 @@ public class EmployeeService : IEmployeeService
 
     public async Task RemoveEmployeeFromTheBoardAsync(int boardId, int employeeId)
     {
-        var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
-        var board = await _context.Boards
+        Employee? employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
+        Board? board = await _context.Boards
             .Include(b => b.Employees)
             .FirstOrDefaultAsync(b => b.Id == boardId);
 
@@ -88,26 +98,5 @@ public class EmployeeService : IEmployeeService
 
         board.Employees.Remove(employee);
         await _context.SaveChangesAsync();
-    }
-
-    private async Task<IEnumerable<EmployeeGetBoardModel>> GetEmployeeModelsWithRolesAsync(IEnumerable<Employee> employees)
-    {
-        var models = new List<EmployeeGetBoardModel>();
-        foreach (var employee in employees)
-        {
-            models.Add(await GetEmployeeModelWithRolesAsync(employee));
-        }
-        return models;
-    }
-    private async Task<EmployeeGetBoardModel> GetEmployeeModelWithRolesAsync(Employee employee)
-    {
-        IList<string> roles = new List<string>();
-        if (employee.User != null)
-        {
-            roles = await _userManager.GetRolesAsync(employee.User);
-        }
-        var model = _mapper.Map<EmployeeGetBoardModel>(employee);
-        model.Roles = roles;
-        return model;
     }
 }
