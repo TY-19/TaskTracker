@@ -42,7 +42,7 @@ public class EmployeesIntegrationTests
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
 
-        var result = JsonSerializer.Deserialize<IEnumerable<EmployeeGetBoardModel>>(httpResponse.Content.ReadAsStream(),
+        var result = JsonSerializer.Deserialize<IEnumerable<EmployeeGetModel>>(httpResponse.Content.ReadAsStream(),
             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
         Assert.NotNull(result);
@@ -78,7 +78,7 @@ public class EmployeesIntegrationTests
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
 
-        var result = JsonSerializer.Deserialize<EmployeeGetBoardModel>(httpResponse.Content.ReadAsStream(),
+        var result = JsonSerializer.Deserialize<EmployeeGetModel>(httpResponse.Content.ReadAsStream(),
             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
         Assert.NotNull(result);

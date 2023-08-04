@@ -21,7 +21,7 @@ public class EmployeesController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<IEnumerable<EmployeeGetBoardModel>>> GetAllEmployees()
+    public async Task<ActionResult<IEnumerable<EmployeeGetModel>>> GetAllEmployees()
     {
         return Ok(await _employeeService.GetAllAsync());
     }
@@ -29,7 +29,7 @@ public class EmployeesController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<IEnumerable<EmployeeGetBoardModel>>> GetAllEmployeesOfTheBoard(int boardId)
+    public async Task<ActionResult<IEnumerable<EmployeeGetModel>>> GetAllEmployeesOfTheBoard(int boardId)
     {
         return Ok(await _employeeService.GetAllEmployeeFromTheBoardAsync(boardId));
     }
@@ -39,9 +39,9 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<EmployeeGetBoardModel>> GetEmployeeById(int employeeId)
+    public async Task<ActionResult<EmployeeGetModel>> GetEmployeeById(int employeeId)
     {
-        EmployeeGetBoardModel? employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
+        EmployeeGetModel? employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
         if (employee == null)
             return NotFound();
 

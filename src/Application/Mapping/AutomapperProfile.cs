@@ -33,7 +33,7 @@ public class AutomapperProfile : Profile
             .ForMember(am => am.StageId, x => x.MapFrom((src, dest) => src.StageId ?? dest.StageId))
             .ForAllMembers(opt => opt.Condition((_, _, sourceMember) => sourceMember != null));
 
-        CreateMap<Employee, EmployeeGetBoardModel>()
+        CreateMap<Employee, EmployeeGetModel>()
             .ForMember(egbm => egbm.UserName, x => x.MapFrom((src, _) => src.User?.UserName));
         CreateMap<EmployeePostModel, Employee>();
         CreateMap<EmployeePutModel, Employee>();

@@ -20,7 +20,7 @@ public class EmployeeService : IEmployeeService
         _userManager = userManager;
     }
 
-    public async Task<IEnumerable<EmployeeGetBoardModel>> GetAllAsync()
+    public async Task<IEnumerable<EmployeeGetModel>> GetAllAsync()
     {
         IQueryable<Employee> employees = _context.Employees
                 .Include(e => e.User)
@@ -28,7 +28,7 @@ public class EmployeeService : IEmployeeService
         return await GetEmployeeModelsWithRolesAsync(employees);
     }
 
-    public async Task<IEnumerable<EmployeeGetBoardModel>> GetAllEmployeeFromTheBoardAsync(int boardId)
+    public async Task<IEnumerable<EmployeeGetModel>> GetAllEmployeeFromTheBoardAsync(int boardId)
     {
         IQueryable<Employee> employees = _context.Employees
                 .Include(e => e.User)
@@ -37,7 +37,7 @@ public class EmployeeService : IEmployeeService
         return await GetEmployeeModelsWithRolesAsync(employees);
     }
 
-    public async Task<EmployeeGetBoardModel?> GetEmployeeByIdAsync(int id)
+    public async Task<EmployeeGetModel?> GetEmployeeByIdAsync(int id)
     {
         Employee? employee = await _context.Employees
             .Include(e => e.User)
@@ -48,21 +48,21 @@ public class EmployeeService : IEmployeeService
 
         return employee.User != null
             ? await GetEmployeeModelWithRolesAsync(employee)
-            : _mapper.Map<EmployeeGetBoardModel>(employee);
+            : _mapper.Map<EmployeeGetModel>(employee);
     }
 
-    private async Task<IEnumerable<EmployeeGetBoardModel>> GetEmployeeModelsWithRolesAsync(
+    private async Task<IEnumerable<EmployeeGetModel>> GetEmployeeModelsWithRolesAsync(
         IEnumerable<Employee> employees)
     {
-        var models = new List<EmployeeGetBoardModel>();
+        var models = new List<EmployeeGetModel>();
         foreach (var employee in employees)
             models.Add(await GetEmployeeModelWithRolesAsync(employee));
 
         return models;
     }
-    private async Task<EmployeeGetBoardModel> GetEmployeeModelWithRolesAsync(Employee employee)
+    private async Task<EmployeeGetModel> GetEmployeeModelWithRolesAsync(Employee employee)
     {
-        var model = _mapper.Map<EmployeeGetBoardModel>(employee);
+        var model = _mapper.Map<EmployeeGetModel>(employee);
         model.Roles = employee.User != null
             ? await _userManager.GetRolesAsync(employee.User)
             : new List<string>();

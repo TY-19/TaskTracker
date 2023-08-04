@@ -64,14 +64,14 @@ public class UsersController : ControllerBase
 
         return Ok(await _accountService.RegistrationAsync(model));
     }
-    private RegistrationResponseModel GetResponseToInvalidCreateUserRequest(
+    private static RegistrationResponseModel GetResponseToInvalidCreateUserRequest(
         ValidationResult validationResult)
     {
         return new RegistrationResponseModel()
-            {
-                Success = false,
-                Message = $"Validation errors:{Environment.NewLine}{validationResult}"
-            };
+        {
+            Success = false,
+            Message = $"Validation errors:{Environment.NewLine}{validationResult}"
+        };
     }
 
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
@@ -99,10 +99,10 @@ public class UsersController : ControllerBase
             if (updatedUser.UserName != null && updatedUser.UserName != userName)
                 await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
 
-            if(updatedUser.Roles?.Any() == true)
+            if (updatedUser.Roles?.Any() == true)
                 await _userService.UpdateUserRoles(userName, updatedUser.Roles);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }

@@ -1,6 +1,6 @@
 ﻿namespace TaskTracker.Application.Models;
 
-public class EmployeeGetBoardModel
+public class EmployeeGetModel
 {
     public int Id { get; set; }
     public string UserName { get; set; } = string.Empty;

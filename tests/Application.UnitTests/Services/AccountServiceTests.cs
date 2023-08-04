@@ -231,8 +231,10 @@ public class AccountServiceTests
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
             await service.ChangePasswordAsync("Test",
-                new ChangePasswordModel() {
-                    OldPassword = "password", NewPassword = "new12345"
+                new ChangePasswordModel()
+                {
+                    OldPassword = "password",
+                    NewPassword = "new12345"
                 })
         );
     }

@@ -30,13 +30,13 @@ public class AccountController : ControllerBase
 
         return Ok(await _accountService.LoginAsync(loginRequest));
     }
-    private LoginResponseModel GetResponseToInvalidLoginRequest(ValidationResult validationResult)
+    private static LoginResponseModel GetResponseToInvalidLoginRequest(ValidationResult validationResult)
     {
         return new LoginResponseModel()
-            {
-                Success = false,
-                Message = $"Validation errors:{Environment.NewLine}{validationResult}"
-            };
+        {
+            Success = false,
+            Message = $"Validation errors:{Environment.NewLine}{validationResult}"
+        };
     }
 
     [Route("registration")]
@@ -51,13 +51,13 @@ public class AccountController : ControllerBase
 
         return Ok(await _accountService.RegistrationAsync(registrationRequest));
     }
-    private RegistrationResponseModel GetResponseToInvalidRegistrationRequest(ValidationResult validationResult)
+    private static RegistrationResponseModel GetResponseToInvalidRegistrationRequest(ValidationResult validationResult)
     {
         return new RegistrationResponseModel()
-            {
-                Success = false,
-                Message = $"Validation errors:{Environment.NewLine}{validationResult}"
-            };
+        {
+            Success = false,
+            Message = $"Validation errors:{Environment.NewLine}{validationResult}"
+        };
     }
 
     [Authorize]
@@ -100,7 +100,7 @@ public class AccountController : ControllerBase
         {
             await _accountService.UpdateUserProfileAsync(userName, updatedUser);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }

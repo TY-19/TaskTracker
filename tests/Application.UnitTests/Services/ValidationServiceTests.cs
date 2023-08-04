@@ -15,8 +15,13 @@ public class ValidationServiceTests
     [Fact]
     public void Validate_ReturnsValidResult_IfAssignmentPostModelIsValid()
     {
-        var model = new AssignmentPostModel() { Topic = "New topic", Deadline = DateTime.MaxValue,
-            StageId = 1, ResponsibleEmployeeId = 1 };
+        var model = new AssignmentPostModel()
+        {
+            Topic = "New topic",
+            Deadline = DateTime.MaxValue,
+            StageId = 1,
+            ResponsibleEmployeeId = 1
+        };
 
         var result = _validationService.Validate(model);
 

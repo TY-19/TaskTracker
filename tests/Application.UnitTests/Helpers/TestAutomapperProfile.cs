@@ -33,7 +33,7 @@ internal class TestAutomapperProfile : Profile
             .ForMember(am => am.StageId, x => x.MapFrom((src, dest) => src.StageId ?? dest.StageId))
             .ForAllMembers(opt => opt.Condition((_, _, sourceMember) => sourceMember != null));
 
-        CreateMap<Employee, EmployeeGetBoardModel>();
+        CreateMap<Employee, EmployeeGetModel>();
         CreateMap<EmployeePostModel, Employee>();
         CreateMap<EmployeePutModel, Employee>();
 

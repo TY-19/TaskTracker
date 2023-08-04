@@ -56,7 +56,7 @@ public class AssignmentsController : ControllerBase
         }
 
         return CreatedAtAction(nameof(GetAssignmentById),
-            new { boardId = assignment.BoardId, taskId = assignment.Id}, 
+            new { boardId = assignment.BoardId, taskId = assignment.Id },
             assignment);
     }
 
@@ -108,7 +108,7 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> MoveAssignmentToTheStage(int boardId, int taskId, int stageId)
     {
         string? userName = User.Identity?.Name;
-        if(userName == null)
+        if (userName == null)
             return Unauthorized();
         try
         {
@@ -144,7 +144,7 @@ public class AssignmentsController : ControllerBase
     private async Task<IActionResult> ChangeAssignmentStatusAsync(int boardId, int taskId, bool isCompleted)
     {
         string? userName = User.Identity?.Name;
-        if(userName == null)
+        if (userName == null)
             return Unauthorized();
         try
         {

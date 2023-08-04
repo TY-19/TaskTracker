@@ -30,7 +30,7 @@ public class BoardsController : ControllerBase
     {
         return Ok(await _boardService.GetAllBoardsAsync());
     }
-    
+
     [Route("accessible")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]

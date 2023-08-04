@@ -119,7 +119,7 @@ public class AccountControllerTests
     public async Task UpdateProfile_ReturnsNoContentResult()
     {
         _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(),
-            It.IsAny<UserProfileUpdateModel>())).Callback(() => {});
+            It.IsAny<UserProfileUpdateModel>())).Callback(() => { });
         AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new UserProfileUpdateModel() { Email = "test@example.com" };
 
@@ -131,7 +131,7 @@ public class AccountControllerTests
     public async Task UpdateProfile_ReturnsNotFoundResult_IfCalledByUnauthicatedUser()
     {
         _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(),
-            It.IsAny<UserProfileUpdateModel>())).Callback(() => {});
+            It.IsAny<UserProfileUpdateModel>())).Callback(() => { });
         var model = new UserProfileUpdateModel() { Email = "test@example.com" };
 
         var result = await _controller.UpdateProfile(model);
@@ -156,7 +156,7 @@ public class AccountControllerTests
     public async Task ChangePassword_ReturnsNoContentResult()
     {
         _serviceMock.Setup(s => s.ChangePasswordAsync(It.IsAny<string>(),
-            It.IsAny<ChangePasswordModel>())).Callback(() => {});
+            It.IsAny<ChangePasswordModel>())).Callback(() => { });
         AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new ChangePasswordModel() { OldPassword = "oldPassword", NewPassword = "newPassword" };
 
@@ -168,7 +168,7 @@ public class AccountControllerTests
     public async Task ChangePassword_ReturnsNotFoundResult_IfCalledByUnauthicatedUser()
     {
         _serviceMock.Setup(s => s.ChangePasswordAsync(It.IsAny<string>(),
-            It.IsAny<ChangePasswordModel>())).Callback(() => {});
+            It.IsAny<ChangePasswordModel>())).Callback(() => { });
         var model = new ChangePasswordModel() { OldPassword = "oldPassword", NewPassword = "newPassword" };
 
         var result = await _controller.ChangePassword(model);
@@ -190,7 +190,7 @@ public class AccountControllerTests
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    private void AddAuthorizedIdentityUserToControllerContext(ControllerBase controller)
+    private static void AddAuthorizedIdentityUserToControllerContext(ControllerBase controller)
     {
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {

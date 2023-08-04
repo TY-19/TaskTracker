@@ -18,7 +18,7 @@ public class EmployeesControllerTests
     public async Task GetAllEmployeesOfTheBoard_ReturnsOkObjectResult()
     {
         _serviceMock.Setup(s => s.GetAllEmployeeFromTheBoardAsync(It.IsAny<int>()))
-            .ReturnsAsync(new List<EmployeeGetBoardModel>());
+            .ReturnsAsync(new List<EmployeeGetModel>());
 
         var result = (await _controller.GetAllEmployeesOfTheBoard(1)).Result;
 
@@ -28,18 +28,18 @@ public class EmployeesControllerTests
     public async Task GetAllEmployeesOfTheBoard_ReturnsEnumerableOfEmployeeGetBoardModels()
     {
         _serviceMock.Setup(s => s.GetAllEmployeeFromTheBoardAsync(It.IsAny<int>()))
-            .ReturnsAsync(new List<EmployeeGetBoardModel>());
+            .ReturnsAsync(new List<EmployeeGetModel>());
 
         var result = ((await _controller.GetAllEmployeesOfTheBoard(1)).Result as OkObjectResult)?.Value;
 
         Assert.NotNull(result);
-        Assert.IsAssignableFrom<IEnumerable<EmployeeGetBoardModel>>(result);
+        Assert.IsAssignableFrom<IEnumerable<EmployeeGetModel>>(result);
     }
     [Fact]
     public async Task GetEmployeeById_ReturnsOkObjectResult()
     {
         _serviceMock.Setup(s => s.GetEmployeeByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync(new EmployeeGetBoardModel());
+            .ReturnsAsync(new EmployeeGetModel());
 
         var result = (await _controller.GetEmployeeById(1)).Result;
 
@@ -49,18 +49,18 @@ public class EmployeesControllerTests
     public async Task GetEmployeeById_ReturnsEmployeeGetBoardModel()
     {
         _serviceMock.Setup(s => s.GetEmployeeByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync(new EmployeeGetBoardModel());
+            .ReturnsAsync(new EmployeeGetModel());
 
         var result = ((await _controller.GetEmployeeById(1)).Result as OkObjectResult)?.Value;
 
         Assert.NotNull(result);
-        Assert.IsType<EmployeeGetBoardModel>(result);
+        Assert.IsType<EmployeeGetModel>(result);
     }
     [Fact]
     public async Task GetEmployeeById_ReturnsNotFoundResult()
     {
         _serviceMock.Setup(s => s.GetEmployeeByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync((EmployeeGetBoardModel?)null);
+            .ReturnsAsync((EmployeeGetModel?)null);
 
         var result = (await _controller.GetEmployeeById(1)).Result;
 

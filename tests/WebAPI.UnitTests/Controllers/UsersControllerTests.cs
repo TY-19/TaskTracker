@@ -86,7 +86,7 @@ public class UsersControllerTests
         _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
             .ReturnsAsync(new UserProfileModel());
         _accountServiceMock.Setup(a => a.UpdateUserProfileAsync(It.IsAny<string>(), It.IsAny<UserProfileUpdateModel>()))
-            .Callback(() => {});
+            .Callback(() => { });
 
         var result = await _controller.UpdateUserProfile("newName", new UserProfileUpdateModel());
 
@@ -100,7 +100,7 @@ public class UsersControllerTests
         _userServiceMock.Setup(u => u.UpdateUserNameAsync(It.IsAny<string>(), It.IsAny<string>()))
             .Callback(() => { });
         _accountServiceMock.Setup(a => a.UpdateUserProfileAsync(It.IsAny<string>(), It.IsAny<UserProfileUpdateModel>()))
-            .Callback(() => {});
+            .Callback(() => { });
 
         var result = await _controller.UpdateUserProfile("oldName", new UserProfileUpdateModel() { UserName = "newName" });
 

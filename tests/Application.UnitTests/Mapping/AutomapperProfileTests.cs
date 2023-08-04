@@ -135,7 +135,7 @@ public class AutomapperProfileTests
         {
             Topic = "Topic 1",
             Description = "Description",
-            Deadline = new DateTime(2023, 4, 1),
+            Deadline = new DateTime(2023, 4, 1, 0, 0, 0, DateTimeKind.Local),
             StageId = 1,
             ResponsibleEmployeeId = 1
         };
@@ -159,7 +159,7 @@ public class AutomapperProfileTests
         {
             Topic = "Topic 1",
             Description = "Description",
-            Deadline = new DateTime(2023, 4, 1),
+            Deadline = new DateTime(2023, 4, 1, 0, 0, 0, DateTimeKind.Local),
             StageId = 1,
             ResponsibleEmployeeId = 1
         };
@@ -204,7 +204,7 @@ public class AutomapperProfileTests
         IMapper mapper = GetMapper();
         Employee employye = employee1;
 
-        var result = mapper.Map<EmployeeGetBoardModel>(employye);
+        var result = mapper.Map<EmployeeGetModel>(employye);
 
         Assert.Multiple(
             () => Assert.Equal(employye.Id, result.Id),
@@ -508,7 +508,7 @@ public class AutomapperProfileTests
         Id = 1,
         Topic = "First Assignment",
         Description = "Awesome description",
-        Deadline = new DateTime(2023, 04, 01),
+        Deadline = new DateTime(2023, 04, 01, 0, 0, 0, DateTimeKind.Local),
         StageId = 1,
         Stage = stage1,
         BoardId = 1,
@@ -521,7 +521,7 @@ public class AutomapperProfileTests
         Id = 2,
         Topic = "Second Assignment",
         Description = "Other description",
-        Deadline = new DateTime(2023, 04, 02),
+        Deadline = new DateTime(2023, 04, 02, 0, 0, 0, DateTimeKind.Local),
         StageId = 2,
         Stage = stage2,
         BoardId = 1,

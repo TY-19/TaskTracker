@@ -131,7 +131,7 @@ public class UserService : IUserService
             return;
 
         IEnumerable<string> oldRoles = await _userManager.GetRolesAsync(user);
-        if(!await AreToBeUpdated(oldRoles, roles))
+        if (!await AreToBeUpdated(oldRoles, roles))
             return;
 
         await _userManager.RemoveFromRolesAsync(user, oldRoles);
@@ -148,8 +148,8 @@ public class UserService : IUserService
     private static bool AreOldAndNewRolesTheSame(
         IEnumerable<string> oldRoles, IEnumerable<string> newRoles)
     {
-        HashSet<string> oldRolesHashSet = new (oldRoles);
-        HashSet<string> newRolesHashSet = new (newRoles);
+        HashSet<string> oldRolesHashSet = new(oldRoles);
+        HashSet<string> newRolesHashSet = new(newRoles);
         return oldRolesHashSet.Count == newRolesHashSet.Count
             && oldRolesHashSet.SetEquals(newRolesHashSet);
     }

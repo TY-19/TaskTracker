@@ -95,9 +95,9 @@ public class StageService : IStageService
         WorkflowStage stageToMove, int displaceFromPosition)
     {
         WorkflowStage? stageToDisplace = await _context.Stages
-            .FirstOrDefaultAsync(s=> s.BoardId == boardId && s.Position == displaceFromPosition);
+            .FirstOrDefaultAsync(s => s.BoardId == boardId && s.Position == displaceFromPosition);
 
-        if(stageToDisplace != null)
+        if (stageToDisplace != null)
         {
             stageToDisplace.Position = stageToMove.Position;
             _context.Stages.Update(stageToDisplace);
