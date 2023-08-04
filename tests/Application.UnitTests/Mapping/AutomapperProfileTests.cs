@@ -45,38 +45,38 @@ public class AutomapperProfileTests
     public void Mapper_MapsSubpartPostModelToSubpart()
     {
         IMapper mapper = GetMapper();
-        SubpartPostModel subpartmodel = new()
+        SubpartPostModel subpartModel = new()
         {
             Name = "Test",
-            Description = "Description",
+            IsCompleted = false,
             PercentValue = 50
         };
 
-        var result = mapper.Map<Subpart>(subpartmodel);
+        var result = mapper.Map<Subpart>(subpartModel);
 
         Assert.Multiple(
-            () => Assert.Equal(subpartmodel.Name, result.Name),
-            () => Assert.Equal(subpartmodel.Description, result.Description),
-            () => Assert.Equal(subpartmodel.PercentValue, result.PercentValue)
+            () => Assert.Equal(subpartModel.Name, result.Name),
+            () => Assert.Equal(subpartModel.PercentValue, result.PercentValue),
+            () => Assert.Equal(subpartModel.IsCompleted, result.IsCompleted)
         );
     }
     [Fact]
     public void Mapper_MapsSubpartPutModelToSubpart()
     {
         IMapper mapper = GetMapper();
-        SubpartPutModel subpartmodel = new()
+        SubpartPutModel subpartModel = new()
         {
             Name = "Test",
-            Description = "Description",
+            IsCompleted = false,
             PercentValue = 50
         };
 
-        var result = mapper.Map<Subpart>(subpartmodel);
+        var result = mapper.Map<Subpart>(subpartModel);
 
         Assert.Multiple(
-            () => Assert.Equal(subpartmodel.Name, result.Name),
-            () => Assert.Equal(subpartmodel.Description, result.Description),
-            () => Assert.Equal(subpartmodel.PercentValue, result.PercentValue)
+            () => Assert.Equal(subpartModel.Name, result.Name),
+            () => Assert.Equal(subpartModel.PercentValue, result.PercentValue),
+            () => Assert.Equal(subpartModel.IsCompleted, result.IsCompleted)
         );
     }
     [Fact]
@@ -86,22 +86,19 @@ public class AutomapperProfileTests
         Subpart subpart = new()
         {
             Name = "OldName",
-            Description = "CorrectDescription",
             PercentValue = 25
         };
 
         SubpartPutModel subpartModel = new()
         {
-            Name = "Test",
-            PercentValue = 50
+            Name = "Test"
         };
 
         var result = mapper.Map(subpartModel, subpart);
 
         Assert.Multiple(
             () => Assert.Equal(subpartModel.Name, result.Name),
-            () => Assert.Equal(subpart.Description, result.Description),
-            () => Assert.Equal(subpartModel.PercentValue, result.PercentValue)
+            () => Assert.Equal(subpart.PercentValue, result.PercentValue)
         );
     }
 
@@ -480,28 +477,28 @@ public class AutomapperProfileTests
         Id = 1,
         AssignmentId = 1,
         Name = "Part 1",
-        Description = "The first part of the first task"
+        IsCompleted = false
     };
     private readonly static Subpart subpart2 = new()
     {
         Id = 2,
         AssignmentId = 1,
         Name = "Part 2",
-        Description = "The second part of the first task"
+        IsCompleted = false
     };
     private readonly static Subpart subpart3 = new()
     {
         Id = 3,
         AssignmentId = 2,
         Name = "Part 1",
-        Description = "The first part of the second task"
+        IsCompleted = false
     };
     private readonly static Subpart subpart4 = new()
     {
         Id = 4,
         AssignmentId = 2,
         Name = "Part 2",
-        Description = "The second part of the second task"
+        IsCompleted = false
     };
     private readonly static Assignment assignment1 = new()
     {

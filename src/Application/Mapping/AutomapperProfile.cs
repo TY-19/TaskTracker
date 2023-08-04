@@ -21,8 +21,10 @@ public class AutomapperProfile : Profile
                 x.MapFrom((src, _) => src.Employee?.Assignments.Select(b => b.Id)));
 
         CreateMap<Subpart, SubpartGetModel>();
-        CreateMap<SubpartPostModel, Subpart>();
-        CreateMap<SubpartPutModel, Subpart>();
+        CreateMap<SubpartPostModel, Subpart>()
+            .ForAllMembers(opt => opt.Condition((_, _, sourceMember) => sourceMember != null));
+        CreateMap<SubpartPutModel, Subpart>()
+            .ForAllMembers(opt => opt.Condition((_, _, sourceMember) => sourceMember != null));
 
         CreateMap<Assignment, AssignmentGetModel>()
             .ForMember(bgm => bgm.Subparts, x => x.MapFrom(b => b.Subparts));

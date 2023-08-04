@@ -142,12 +142,12 @@ public class SubpartServiceTests
         await DefaultData.SeedAsync(context);
 
         await service.UpdateSubpartAsync(1, 1,
-            new SubpartPutModel() { Name = "Updated", Description = "New description" });
+            new SubpartPutModel() { Name = "Updated", IsCompleted = false });
         var subpart = await context.Subparts.FirstOrDefaultAsync(s => s.Id == 1);
 
         Assert.NotNull(subpart);
         Assert.Equal("Updated", subpart.Name);
-        Assert.Equal("New description", subpart.Description);
+        Assert.False(subpart.IsCompleted);
     }
     [Fact]
     public async Task UpdateSubpartAsync_ThrowsAnException_IfTheSubpartDoesNotExistInTheProvidedAssignment()
@@ -158,7 +158,7 @@ public class SubpartServiceTests
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
             await service.UpdateSubpartAsync(1, 3,
-                new SubpartPutModel() { Name = "Updated", Description = "New description" }));
+                new SubpartPutModel() { Name = "Updated", IsCompleted = false }));
     }
 
     private static SubpartService GetSubpartService(TestDbContext context)

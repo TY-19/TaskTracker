@@ -1,7 +1,7 @@
 export interface Subpart {
     id: number;
     name: string;
-    description?: string;
     percentValue: number;
+    isCompleted: boolean;
     assignmentId: number;
 }

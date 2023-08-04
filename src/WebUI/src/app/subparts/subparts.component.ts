@@ -55,7 +55,10 @@ export class SubpartsComponent implements OnInit {
           Validators.required,
           Validators.maxLength(50)
         ]],
-      percentValue: [subpart?.percentValue ?? '']
+      percentValue: [subpart?.percentValue ?? 0,
+        [
+          Validators.required
+        ]]
     });
   }
 

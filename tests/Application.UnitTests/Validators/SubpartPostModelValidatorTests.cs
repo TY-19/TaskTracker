@@ -29,13 +29,4 @@ public class SubpartPostModelValidatorTests
 
         Assert.False(result.IsValid);
     }
-    [Fact]
-    public void ShouldBeInvalid_WhenAssignmentIdIsNotProvided()
-    {
-        var model = new SubpartPostModel() { Name = "Subpart" };
-
-        var result = _validator.TestValidate(model);
-
-        Assert.False(result.IsValid);
-    }
 }

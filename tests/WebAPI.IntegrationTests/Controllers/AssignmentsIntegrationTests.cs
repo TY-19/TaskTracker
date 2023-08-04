@@ -134,8 +134,9 @@ public class AssignmentsIntegrationTests
     public async Task AssignmentController_GetAllAssignmentsOfTheBoard_ReturnsCorrectNumbersOfAssignments()
     {
         await PrepareTestFixture();
-        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = "Test assignment 1", BoardId = 1, StageId = 1 });
-        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 2, Topic = "Test assignment 2", BoardId = 1, StageId = 1 });
+        await _seedHelper.CreateEmployeeAsync(new Employee() { Id = 1000 });
+        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = "Test assignment 1", BoardId = 1, StageId = 1, ResponsibleEmployeeId = 1000 });
+        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 2, Topic = "Test assignment 2", BoardId = 1, StageId = 1, ResponsibleEmployeeId = 1000 });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/tasks";
@@ -167,7 +168,8 @@ public class AssignmentsIntegrationTests
     {
         await PrepareTestFixture();
         const string TOPIC = "Test assignment 1";
-        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1 });
+        await _seedHelper.CreateEmployeeAsync(new Employee() { Id = 1000 });
+        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1, ResponsibleEmployeeId = 1000 });
         const string RequestURI = $"api/boards/1/tasks/1";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -228,7 +230,8 @@ public class AssignmentsIntegrationTests
         await PrepareTestFixture();
         const string OLD_TOPIC = "Old topic";
         const string NEW_TOPIC = "New topic";
-        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = OLD_TOPIC, BoardId = 1, StageId = 1 });
+        await _seedHelper.CreateEmployeeAsync(new Employee() { Id = 1000 });
+        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = OLD_TOPIC, BoardId = 1, StageId = 1, ResponsibleEmployeeId = 1000 });
         const string RequestURI = $"api/boards/1/tasks/1";
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -318,7 +321,8 @@ public class AssignmentsIntegrationTests
     {
         await PrepareTestFixture();
         const string TOPIC = "Test assignment 1";
-        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1 });
+        await _seedHelper.CreateEmployeeAsync(new Employee() { Id = 1000 });
+        await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, Topic = TOPIC, BoardId = 1, StageId = 1, ResponsibleEmployeeId = 1000 });
         const string RequestURI = $"api/boards/1/tasks/1";
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

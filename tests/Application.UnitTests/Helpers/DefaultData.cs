@@ -60,28 +60,28 @@ internal static class DefaultData
         Id = 1,
         AssignmentId = 1,
         Name = "Part 1",
-        Description = "The first part of the first task"
+        IsCompleted = false
     };
     private static Subpart Subpart2 => new()
     {
         Id = 2,
         AssignmentId = 1,
         Name = "Part 2",
-        Description = "The second part of the first task"
+        IsCompleted = false
     };
     private static Subpart Subpart3 => new()
     {
         Id = 3,
         AssignmentId = 2,
         Name = "Part 1",
-        Description = "The first part of the second task"
+        IsCompleted = false
     };
     private static Subpart Subpart4 => new()
     {
         Id = 4,
         AssignmentId = 2,
         Name = "Part 2",
-        Description = "The second part of the second task"
+        IsCompleted = false
     };
     private static Assignment Assignment1 => new()
     {

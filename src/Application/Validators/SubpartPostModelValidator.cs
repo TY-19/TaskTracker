@@ -10,7 +10,5 @@ public class SubpartPostModelValidator : AbstractValidator<SubpartPostModel>
             .WithMessage("Name is required");
         RuleFor(x => x.Name).MaximumLength(50)
             .WithMessage("Name length must be less than 50 characters");
-        RuleFor(x => x.AssignmentId).NotEmpty()
-            .WithMessage("Id of the assignment is required");
     }
 }
