@@ -236,23 +236,25 @@ public class AccountServiceTests
                 })
         );
     }
-    // [Fact]
-    // public async Task ChangePasswordAsync_DoesNotChangePassword_IfProvidedPreviousPasswordIsNotCorrect()
-    // {
-    //     var context = ServicesTestsHelper.GetTestDbContext();
-    //     var service = await GetAccountServiceAsync(context, seedDefaultUser: true);
-    //     var oldHash = (await context.Users.FirstOrDefaultAsync(u => u.UserName == "Test"))?.PasswordHash;
+    [Fact]
+    public async Task ChangePasswordAsync_ThrowsExceptionAndDoesNotChangePassword_IfProvidedPreviousPasswordIsNotCorrect()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = await GetAccountServiceAsync(context, seedDefaultUser: true);
+        var oldHash = (await context.Users.FirstOrDefaultAsync(u => u.UserName == "Test"))?.PasswordHash;
 
-    //     await service.ChangePasswordAsync("Test",
-    //         new ChangePasswordModel() { OldPassword = "IncorrectOldPassword", NewPassword = "new12345" });
-    //     var newHash = (await context.Users.FirstOrDefaultAsync(u => u.UserName == "Test"))?.PasswordHash;
+        await Assert.ThrowsAnyAsync<Exception>(async () =>
+            await service.ChangePasswordAsync("Test",
+                new ChangePasswordModel() { OldPassword = "IncorrectOldPassword", NewPassword = "new12345" }));
 
-    //     Assert.Multiple(
-    //         () => Assert.NotNull(oldHash),
-    //         () => Assert.NotNull(newHash),
-    //         () => Assert.Equal(oldHash, newHash)
-    //     );
-    // }
+        var newHash = (await context.Users.FirstOrDefaultAsync(u => u.UserName == "Test"))?.PasswordHash;
+
+        Assert.Multiple(
+            () => Assert.NotNull(oldHash),
+            () => Assert.NotNull(newHash),
+            () => Assert.Equal(oldHash, newHash)
+        );
+    }
 
     private static async Task<AccountService> GetAccountServiceAsync(
         TestDbContext context,

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
@@ -28,8 +29,7 @@ public class AssignmentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<AssignmentGetModel>>> GetAllAssignmentsOfTheBoard(int boardId)
     {
-        var assignments = await _assignmentService.GetAllAssignmentsOfTheBoardAsync(boardId);
-        return Ok(assignments);
+        return Ok(await _assignmentService.GetAllAssignmentsOfTheBoardAsync(boardId));
     }
 
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
@@ -41,7 +41,7 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> CreateANewAssignment(int boardId,
         AssignmentPostModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 
@@ -55,7 +55,9 @@ public class AssignmentsController : ControllerBase
             return BadRequest(ex.Message);
         }
 
-        return CreatedAtAction(nameof(CreateANewAssignment), assignment);
+        return CreatedAtAction(nameof(GetAssignmentById),
+            new { boardId = assignment.BoardId, taskId = assignment.Id}, 
+            assignment);
     }
 
     [Route("{taskId}")]
@@ -65,7 +67,7 @@ public class AssignmentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AssignmentGetModel>> GetAssignmentById(int boardId, int taskId)
     {
-        var assignment = await _assignmentService.GetAssignmentAsync(boardId, taskId);
+        AssignmentGetModel? assignment = await _assignmentService.GetAssignmentAsync(boardId, taskId);
 
         if (assignment is null)
             return NotFound();
@@ -83,7 +85,7 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> UpdateAssignmentById(int boardId, int taskId,
         AssignmentPutModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 
@@ -183,7 +185,7 @@ public class AssignmentsController : ControllerBase
     public async Task<ActionResult<IEnumerable<SubpartGetModel>>> GetSubpartById(
         int boardId, int taskId, int subpartId)
     {
-        var subpart = await _subpartService.GetSubpartByIdAsync(taskId, subpartId);
+        SubpartGetModel? subpart = await _subpartService.GetSubpartByIdAsync(taskId, subpartId);
         if (subpart == null)
             return NotFound();
 
@@ -198,7 +200,7 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> AddSubpartToTheAssignment(int boardId, int taskId,
         SubpartPostModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 
@@ -214,12 +216,9 @@ public class AssignmentsController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        return CreatedAtAction(nameof(GetSubpartById), new
-        {
-            boardId = boardId,
-            taskId = subpart?.AssignmentId,
-            subpartId = subpart?.Id
-        }, subpart);
+        return CreatedAtAction(nameof(GetSubpartById),
+            new { boardId, taskId = subpart?.AssignmentId, subpartId = subpart?.Id },
+            subpart);
     }
 
     [Route("{taskId}/subparts/{subpartId}")]
@@ -230,7 +229,7 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> UpdateSubpart(int boardId, int taskId,
         int subpartId, SubpartPutModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 

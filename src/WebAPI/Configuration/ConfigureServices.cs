@@ -5,9 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Mapping;
-using TaskTracker.Application.Models;
 using TaskTracker.Application.Services;
-using TaskTracker.Application.Validators;
 using TaskTracker.Domain.Entities;
 using TaskTracker.Infrastructure;
 
@@ -48,7 +46,7 @@ public static class ConfigureServices
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<IStageService, StageService>();
         services.AddScoped<ISubpartService, SubpartService>();
-        services.AddScoped<IValidationService, ValidationService>();
+        services.AddSingleton<IValidationService, ValidationService>();
 
         services.AddSingleton(new MapperConfiguration(cfg =>
             cfg.AddProfile<AutomapperProfile>()).CreateMapper());

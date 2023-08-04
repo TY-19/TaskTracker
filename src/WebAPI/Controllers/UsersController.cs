@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
@@ -30,8 +31,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<IEnumerable<UserProfileModel>>> GetAllUsers()
     {
-        var users = await _userService.GetAllUsersAsync();
-        return Ok(users);
+        return Ok(await _userService.GetAllUsersAsync());
     }
 
     [Route("{userNameOrId}")]
@@ -43,7 +43,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserProfileModel>> GetUserProfile(string userNameOrId)
     {
-        var user = await _userService.GetUserByNameOrIdAsync(userNameOrId);
+        UserProfileModel? user = await _userService.GetUserByNameOrIdAsync(userNameOrId);
         if (user == null)
             return NotFound();
 
@@ -58,15 +58,20 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<RegistrationResponseModel>> CreateUserProfile(
         RegistrationRequestModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
-            return new RegistrationResponseModel()
+            return Ok(GetResponseToInvalidCreateUserRequest(validationResult));
+
+        return Ok(await _accountService.RegistrationAsync(model));
+    }
+    private RegistrationResponseModel GetResponseToInvalidCreateUserRequest(
+        ValidationResult validationResult)
+    {
+        return new RegistrationResponseModel()
             {
                 Success = false,
                 Message = $"Validation errors:{Environment.NewLine}{validationResult}"
             };
-
-        return Ok(await _accountService.RegistrationAsync(model));
     }
 
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
@@ -79,38 +84,28 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> UpdateUserProfile(string userNameOrId,
         UserProfileUpdateModel updatedUser)
     {
-        var validationResult = _validationService.Validate(updatedUser);
+        ValidationResult validationResult = _validationService.Validate(updatedUser);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 
-        var userName = (await _userService.GetUserByNameOrIdAsync(userNameOrId))?.UserName;
+        string? userName = (await _userService.GetUserByNameOrIdAsync(userNameOrId))?.UserName;
         if (userName == null || updatedUser == null)
             return BadRequest("User cannot be updated");
 
         try
         {
             await _accountService.UpdateUserProfileAsync(userName, updatedUser);
+
+            if (updatedUser.UserName != null && updatedUser.UserName != userName)
+                await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
+
+            if(updatedUser.Roles?.Any() == true)
+                await _userService.UpdateUserRoles(userName, updatedUser.Roles);
         }
         catch(Exception ex)
         {
             return BadRequest(ex.Message);
         }
-
-        if (updatedUser.UserName != null && updatedUser.UserName != userName)
-            await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
-
-        if(updatedUser.Roles?.Any() == true)
-        {
-            try
-            {
-                await _userService.UpdateUserRoles(userName, updatedUser.Roles);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-            
 
         return NoContent();
     }
@@ -124,7 +119,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ChangeUserPassword(string userNameOrId, SetPasswordModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 

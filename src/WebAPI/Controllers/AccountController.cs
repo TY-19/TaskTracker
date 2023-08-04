@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
@@ -23,32 +24,40 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<LoginResponseModel>> Login(LoginRequestModel loginRequest)
     {
-        var validationResult = _validationService.Validate(loginRequest);
+        ValidationResult validationResult = _validationService.Validate(loginRequest);
         if (!validationResult.IsValid)
-            return new LoginResponseModel()
+            return Ok(GetResponseToInvalidLoginRequest(validationResult));
+
+        return Ok(await _accountService.LoginAsync(loginRequest));
+    }
+    private LoginResponseModel GetResponseToInvalidLoginRequest(ValidationResult validationResult)
+    {
+        return new LoginResponseModel()
             {
                 Success = false,
                 Message = $"Validation errors:{Environment.NewLine}{validationResult}"
             };
-
-        LoginResponseModel loginResult = await _accountService.LoginAsync(loginRequest);
-        return Ok(loginResult);
     }
 
     [Route("registration")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<RegistrationResponseModel>> Registration(RegistrationRequestModel registrationRequest)
+    public async Task<ActionResult<RegistrationResponseModel>> Registration(
+        RegistrationRequestModel registrationRequest)
     {
-        var validationResult = _validationService.Validate(registrationRequest);
+        ValidationResult validationResult = _validationService.Validate(registrationRequest);
         if (!validationResult.IsValid)
-            return new RegistrationResponseModel()
+            return Ok(GetResponseToInvalidRegistrationRequest(validationResult));
+
+        return Ok(await _accountService.RegistrationAsync(registrationRequest));
+    }
+    private RegistrationResponseModel GetResponseToInvalidRegistrationRequest(ValidationResult validationResult)
+    {
+        return new RegistrationResponseModel()
             {
                 Success = false,
                 Message = $"Validation errors:{Environment.NewLine}{validationResult}"
             };
-
-        return Ok(await _accountService.RegistrationAsync(registrationRequest));
     }
 
     [Authorize]
@@ -59,11 +68,11 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserProfileModel>> ViewProfile()
     {
-        var userName = User?.Identity?.Name;
+        string? userName = User?.Identity?.Name;
         if (userName == null)
             return NotFound();
 
-        var userProfile = await _accountService.GetUserProfileAsync(userName);
+        UserProfileModel? userProfile = await _accountService.GetUserProfileAsync(userName);
         if (userProfile == null)
             return NotFound();
 
@@ -79,11 +88,11 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateProfile(UserProfileUpdateModel updatedUser)
     {
-        var validationResult = _validationService.Validate(updatedUser);
+        ValidationResult validationResult = _validationService.Validate(updatedUser);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 
-        var userName = User?.Identity?.Name;
+        string? userName = User?.Identity?.Name;
         if (userName == null)
             return NotFound();
 
@@ -107,11 +116,11 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 
-        var userName = User?.Identity?.Name;
+        string? userName = User?.Identity?.Name;
         if (userName == null)
             return NotFound();
 

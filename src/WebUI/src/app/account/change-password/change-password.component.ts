@@ -45,7 +45,6 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.form);
     if (this.form.valid)
     {
       let passwordModel = {

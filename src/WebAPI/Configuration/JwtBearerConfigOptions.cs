@@ -26,8 +26,8 @@ namespace TaskTracker.WebAPI.Configuration
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = _configuration["JwtSettings:Issuer"],
-                ValidAudience = _configuration["JwtSettings:Audience"],
+                ValidIssuer = _configuration["JwtSettings:Issuer"] ?? "TaskTracker",
+                ValidAudience = _configuration["JwtSettings:Audience"] ?? "*",
                 IssuerSigningKey = new SymmetricSecurityKey(
                         System.Text.Encoding.UTF8.GetBytes(
                             _configuration["JwtSettings:SecurityKey"] ?? "defaultKey"))

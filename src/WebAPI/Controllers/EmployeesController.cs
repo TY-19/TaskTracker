@@ -41,7 +41,7 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<EmployeeGetBoardModel>> GetEmployeeById(int employeeId)
     {
-        var employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
+        EmployeeGetBoardModel? employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
         if (employee == null)
             return NotFound();
 

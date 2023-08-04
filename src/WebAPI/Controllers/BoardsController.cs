@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
@@ -27,8 +28,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<IEnumerable<BoardGetModel>>> GetAllBoards()
     {
-        var boards = await _boardService.GetAllBoardsAsync();
-        return Ok(boards);
+        return Ok(await _boardService.GetAllBoardsAsync());
     }
     
     [Route("accessible")]
@@ -41,8 +41,7 @@ public class BoardsController : ControllerBase
         if (userName == null)
             return Unauthorized();
 
-        var boards = await _boardService.GetBoardOfTheEmployeeAsync(userName);
-        return Ok(boards);
+        return Ok(await _boardService.GetBoardOfTheEmployeeAsync(userName));
     }
 
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
@@ -53,7 +52,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateNewBoard(BoardPostModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 
@@ -69,7 +68,7 @@ public class BoardsController : ControllerBase
         if (board == null)
             return BadRequest("Not created");
 
-        return CreatedAtAction(nameof(CreateNewBoard), board);
+        return CreatedAtAction(nameof(GetBoard), new { id = board.Id }, board);
     }
 
     [Route("{id}")]
@@ -79,7 +78,7 @@ public class BoardsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BoardGetModel>> GetBoard(int id)
     {
-        var board = await _boardService.GetBoardByIdAsync(id);
+        BoardGetModel? board = await _boardService.GetBoardByIdAsync(id);
         if (board == null)
             return NotFound();
 
@@ -95,7 +94,7 @@ public class BoardsController : ControllerBase
     public async Task<IActionResult> UpdateBoardName(int id,
         BoardPutModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
@@ -25,8 +26,7 @@ public class StagesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<WorkflowStageGetModel>>> GetAllStagesOfTheBoard(int boardId)
     {
-        var stages = await _stageService.GetAllStagesOfTheBoardAsync(boardId);
-        return Ok(stages);
+        return Ok(await _stageService.GetAllStagesOfTheBoardAsync(boardId));
     }
 
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE},{DefaultRolesNames.DEFAULT_MANAGER_ROLE}")]
@@ -38,7 +38,7 @@ public class StagesController : ControllerBase
     public async Task<ActionResult<WorkflowStageGetModel>> CreateANewStageOnTheBoard(
         int boardId, WorkflowStagePostModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 
@@ -63,7 +63,7 @@ public class StagesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<WorkflowStageGetModel>> GetStageById(int boardId, int stageId)
     {
-        var result = await _stageService.GetStageByIdAsync(boardId, stageId);
+        WorkflowStageGetModel? result = await _stageService.GetStageByIdAsync(boardId, stageId);
         if (result == null)
             return NotFound();
 
@@ -80,7 +80,7 @@ public class StagesController : ControllerBase
     public async Task<IActionResult> UpdateStageById(int boardId, int stageId,
         WorkflowStagePutModel model)
     {
-        var validationResult = _validationService.Validate(model);
+        ValidationResult validationResult = _validationService.Validate(model);
         if (!validationResult.IsValid)
             return BadRequest($"Validation errors:{Environment.NewLine}{validationResult}");
 
@@ -104,15 +104,7 @@ public class StagesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> MoveStageForward(int boardId, int stageId)
     {
-        try
-        {
-            await _stageService.MoveStage(boardId, stageId, true);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        return NoContent();
+        return await MoveStageAsync(boardId, stageId, true);
     }
 
     [Route("{stageId}/moveback")]
@@ -124,9 +116,14 @@ public class StagesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> MoveStageBack(int boardId, int stageId)
     {
+        return await MoveStageAsync(boardId, stageId, false);
+    }
+
+    private async Task<IActionResult> MoveStageAsync(int boardId, int stageId, bool isMovingForward)
+    {
         try
         {
-            await _stageService.MoveStage(boardId, stageId, false);
+            await _stageService.MoveStage(boardId, stageId, isMovingForward);
         }
         catch (Exception ex)
         {
