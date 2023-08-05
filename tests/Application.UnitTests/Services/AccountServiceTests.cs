@@ -207,6 +207,18 @@ public class AccountServiceTests
             await service.UpdateUserProfileAsync("Test", updated));
     }
     [Fact]
+    public async Task UpdateUserProfileAsync_DoesntThrowException_IfUpdatedProfileIsNull()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = await GetAccountServiceAsync(context, seedDefaultUser: true);
+        UserProfileUpdateModel updated = null!;
+
+        var exception = await Record.ExceptionAsync(async () =>
+            await service.UpdateUserProfileAsync("Test", updated));
+
+        Assert.Null(exception);
+    }
+    [Fact]
     public async Task ChangePasswordAsync_ChangesPassword_IfProvidedWithValidData()
     {
         var context = ServicesTestsHelper.GetTestDbContext();
@@ -228,15 +240,10 @@ public class AccountServiceTests
     {
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = await GetAccountServiceAsync(context);
+        var model = new ChangePasswordModel() { OldPassword = "password", NewPassword = "new12345" };
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
-            await service.ChangePasswordAsync("Test",
-                new ChangePasswordModel()
-                {
-                    OldPassword = "password",
-                    NewPassword = "new12345"
-                })
-        );
+            await service.ChangePasswordAsync("Test", model));
     }
     [Fact]
     public async Task ChangePasswordAsync_ThrowsExceptionAndDoesNotChangePassword_IfProvidedPreviousPasswordIsNotCorrect()
@@ -244,10 +251,10 @@ public class AccountServiceTests
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = await GetAccountServiceAsync(context, seedDefaultUser: true);
         var oldHash = (await context.Users.FirstOrDefaultAsync(u => u.UserName == "Test"))?.PasswordHash;
+        var model = new ChangePasswordModel() { OldPassword = "IncorrectOldPassword", NewPassword = "new12345" };
 
-        await Assert.ThrowsAnyAsync<Exception>(async () =>
-            await service.ChangePasswordAsync("Test",
-                new ChangePasswordModel() { OldPassword = "IncorrectOldPassword", NewPassword = "new12345" }));
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.ChangePasswordAsync("Test", model));
 
         var newHash = (await context.Users.FirstOrDefaultAsync(u => u.UserName == "Test"))?.PasswordHash;
 

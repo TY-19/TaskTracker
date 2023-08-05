@@ -13,9 +13,6 @@ internal class TestDbContext : IdentityDbContext, ITrackerDbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.Entity<Subpart>()
-            .Property(s => s.PercentValue)
-            .HasColumnType("decimal(8, 2)");
         builder.Entity<Assignment>()
             .HasOne(a => a.Stage)
             .WithMany(ws => ws.Assignments)

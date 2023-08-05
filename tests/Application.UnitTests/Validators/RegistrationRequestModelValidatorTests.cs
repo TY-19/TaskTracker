@@ -28,7 +28,11 @@ public class RegistrationRequestModelValidatorTests
     }
     [Theory]
     [InlineData("")]
+    [InlineData("Aa")]
     [InlineData("VeryVeryVeryVeryVeryLongName")]
+    [InlineData("With space")]
+    [InlineData("Spec#Symbols")]
+    [InlineData("User@#$%^&*")]
     [InlineData(null)]
     public void ShouldBeInvalid_WhenUserNameIsInvalid(string? username)
     {
@@ -64,6 +68,7 @@ public class RegistrationRequestModelValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData("1234567")]
+    [InlineData("tootootootootootootoolongpassword")]
     [InlineData(null)]
     public void ShouldBeInvalid_WhenPasswordIsInvalid(string? password)
     {

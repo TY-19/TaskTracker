@@ -29,4 +29,31 @@ public class BoardPutModelValidatorTests
 
         Assert.False(result.IsValid);
     }
+    [Fact]
+    public void ShouldBeInvalid_WhenNameIsTooShort()
+    {
+        var model = new BoardPutModel() { Name = "Aa" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenNameIsTooLong()
+    {
+        var model = new BoardPutModel() { Name = "Very very very very very very very very very very very very very long name" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenNameContainsOnlyDigits()
+    {
+        var model = new BoardPutModel() { Name = "12345" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
 }

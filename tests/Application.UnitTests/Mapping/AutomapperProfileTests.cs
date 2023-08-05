@@ -26,6 +26,28 @@ public class AutomapperProfileTests
             () => Assert.Equal(2, result.AssignmentsIds.Count())
         );
     }
+    [Fact]
+    public void Mapper_MapsUserToUserProfile_IfUserDoesntContainEmployee()
+    {
+        IMapper mapper = GetMapper();
+        User user = new()
+        {
+            Id = "12345678-1234-1234-1234-123456789012",
+            UserName = "testUser",
+            Email = "test@email.com",
+        };
+
+        var result = mapper.Map<UserProfileModel>(user);
+
+        Assert.Multiple(
+            () => Assert.Equal(user.UserName, result.UserName),
+            () => Assert.Equal(user.UserName, result.UserName),
+            () => Assert.Equal(user.Email, result.Email),
+            () => Assert.Null(result.EmployeeId),
+            () => Assert.Null(result.FirstName),
+            () => Assert.Null(result.LastName)
+        );
+    }
 
     [Fact]
     public void Mapper_MapsSubpartToSubpartGetModel()
@@ -200,13 +222,31 @@ public class AutomapperProfileTests
     {
         IMapper mapper = GetMapper();
         Employee employye = employee1;
+        employye.User = user1;
 
         var result = mapper.Map<EmployeeGetModel>(employye);
 
         Assert.Multiple(
             () => Assert.Equal(employye.Id, result.Id),
             () => Assert.Equal(employye.FirstName, result.FirstName),
-            () => Assert.Equal(employye.LastName, result.LastName)
+            () => Assert.Equal(employye.LastName, result.LastName),
+            () => Assert.Equal(employye.User.UserName, result.UserName)
+        );
+    }
+    [Fact]
+    public void Mapper_MapsEmployeeToEmployeeGetBoardModel_IfUserIsNull()
+    {
+        IMapper mapper = GetMapper();
+        Employee employye = employee1;
+        employye.User = null!;
+
+        var result = mapper.Map<EmployeeGetModel>(employye);
+
+        Assert.Multiple(
+            () => Assert.Equal(employye.Id, result.Id),
+            () => Assert.Equal(employye.FirstName, result.FirstName),
+            () => Assert.Equal(employye.LastName, result.LastName),
+            () => Assert.Null(result.UserName)
         );
     }
 

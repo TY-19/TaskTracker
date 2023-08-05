@@ -29,4 +29,16 @@ public class WorkflowStagePutModelValidatorTests
 
         Assert.False(result.IsValid);
     }
+    [Fact]
+    public void ShouldBeInvalid_WhenNameIsTooLong()
+    {
+        var model = new WorkflowStagePutModel()
+        {
+            Name = "Very very very very very very very very very very very very very long name"
+        };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
 }

@@ -52,6 +52,17 @@ public class ChangePasswordModelValidatorTests
         Assert.False(result.IsValid);
     }
     [Fact]
+    public void ShouldBeInvalid_WhenNewPasswordIsTooLong()
+    {
+        var model = new ChangePasswordModel() { OldPassword = "oldPassword",
+            NewPassword = "Too too too too too too too long password"
+        };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
     public void ShouldBeInvalid_WhenOldAndNewPasswordAreEqual()
     {
         var model = new ChangePasswordModel() { OldPassword = "password", NewPassword = "password" };

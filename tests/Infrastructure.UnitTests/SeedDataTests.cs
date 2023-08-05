@@ -48,8 +48,8 @@ public class SeedDataTests
     public async Task SeedDefaultRolesAndUsersAsync_AddsUserWithProvidedCredentials_IfConfigurationContainsCredentials()
     {
         TrackerDbContext context = UnitTestHelper.GetTestDbContext();
-        var configuration = GetTestIConfigurationMock();
-        var seeder = GetSeedDataInstance(context, configuration.Object);
+        Mock<IConfiguration> configuration = GetTestIConfigurationMock();
+        SeedData seeder = GetSeedDataInstance(context, configuration.Object);
 
         await seeder.SeedDefaultRolesAndUsersAsync();
 
@@ -63,7 +63,7 @@ public class SeedDataTests
     {
         TrackerDbContext context = UnitTestHelper.GetTestDbContext();
         var configuration = new Mock<IConfiguration>();
-        var seeder = GetSeedDataInstance(context, configuration.Object);
+        SeedData seeder = GetSeedDataInstance(context, configuration.Object);
 
         await seeder.SeedDefaultRolesAndUsersAsync();
 
@@ -79,7 +79,7 @@ public class SeedDataTests
         TrackerDbContext context = UnitTestHelper.GetTestDbContext();
         context.Users.Add(new User() { UserName = "ExistedUser" });
         var configuration = new Mock<IConfiguration>();
-        var seeder = GetSeedDataInstance(context, configuration.Object);
+        SeedData seeder = GetSeedDataInstance(context, configuration.Object);
 
         await seeder.SeedDefaultRolesAndUsersAsync();
 
@@ -91,11 +91,11 @@ public class SeedDataTests
     public async Task SeedDefaultRolesAndUsersAsync_AddsNewAdmin_IfConfigurationParameterSetNewAdminIsTrue()
     {
         TrackerDbContext context = UnitTestHelper.GetTestDbContext();
-        var configurationEmpty = new Mock<IConfiguration>();
-        var configurationFilled = GetTestIConfigurationMock();
+        Mock<IConfiguration> configurationEmpty = new ();
+        Mock<IConfiguration> configurationFilled = GetTestIConfigurationMock();
         configurationFilled.Setup(c => c["SetNewAdmin"]).Returns("true");
-        var seeder1 = GetSeedDataInstance(context, configurationEmpty.Object);
-        var seeder2 = GetSeedDataInstance(context, configurationFilled.Object);
+        SeedData seeder1 = GetSeedDataInstance(context, configurationEmpty.Object);
+        SeedData seeder2 = GetSeedDataInstance(context, configurationFilled.Object);
 
         await seeder1.SeedDefaultRolesAndUsersAsync();
         await seeder2.SeedDefaultRolesAndUsersAsync();

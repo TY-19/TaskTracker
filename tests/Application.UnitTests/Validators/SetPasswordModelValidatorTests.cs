@@ -29,4 +29,25 @@ public class SetPasswordModelValidatorTests
 
         Assert.False(result.IsValid);
     }
+    [Fact]
+    public void ShouldBeInvalid_WhenNewPasswordIsTooShort()
+    {
+        var model = new SetPasswordModel() { NewPassword = "123" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenNewPasswordIsTooLong()
+    {
+        var model = new SetPasswordModel()
+        {
+            NewPassword = "Too too too too too too too long password"
+        };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
 }

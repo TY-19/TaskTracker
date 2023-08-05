@@ -23,11 +23,12 @@ internal static class ServicesTestsHelper
     {
         var userStore = new UserStore<User>(context);
         var passwordHasher = new PasswordHasher<User>();
-        var options = new OptionsWrapper<IdentityOptions>(new IdentityOptions());
+        var options = new OptionsWrapper<IdentityOptions>(GetIdentityOptions());
+        var passwordValidators = new List<IPasswordValidator<User>>() { new PasswordValidator<User>() };
         var logger = new Logger<UserManager<User>>(new LoggerFactory());
 
         return new UserManager<User>(userStore,
-            options, passwordHasher, null, null, null, null, null, logger);
+            options, passwordHasher, null, passwordValidators, null, null, null, logger);
     }
 
     public static RoleManager<IdentityRole> GetRoleManager(TestDbContext context)
@@ -40,5 +41,16 @@ internal static class ServicesTestsHelper
     {
         return new MapperConfiguration(cfg =>
             cfg.AddProfile<TestAutomapperProfile>()).CreateMapper();
+    }
+
+    private static IdentityOptions GetIdentityOptions()
+    {
+        IdentityOptions options = new ();
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 1;
+        return options;
     }
 }

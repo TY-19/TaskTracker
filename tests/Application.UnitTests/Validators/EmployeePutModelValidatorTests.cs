@@ -23,7 +23,7 @@ public class EmployeePutModelValidatorTests
     [Fact]
     public void ShouldBeInvalid_WhenFirstNameIsAnEmptyString()
     {
-        var model = new EmployeePutModel() { FirstName = string.Empty };
+        var model = new EmployeePutModel() { FirstName = string.Empty, LastName = "Last" };
 
         var result = _validator.TestValidate(model);
 
@@ -32,7 +32,33 @@ public class EmployeePutModelValidatorTests
     [Fact]
     public void ShouldBeInvalid_WhenLastNameIsAnEmptyString()
     {
-        var model = new EmployeePutModel() { LastName = string.Empty };
+        var model = new EmployeePutModel() { FirstName = "First", LastName = string.Empty };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenFirstNameIsTooLomg()
+    {
+        var model = new EmployeePutModel()
+        {
+            FirstName = "Very very very very very very very very very long first name",
+            LastName = "Last"
+        };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenLastNameIsTooLong()
+    {
+        var model = new EmployeePutModel()
+        {
+            FirstName = "First",
+            LastName = "Very very very very very very very very very long last name"
+        };
 
         var result = _validator.TestValidate(model);
 

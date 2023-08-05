@@ -54,6 +54,30 @@ public class AssignmentServiceTests
         Assert.Equal(board.Name, result.Board.Name);
     }
     [Fact]
+    public async Task CreateAssignmentAsync_ThrowsArgumentExceptionIfBoardDoesNotExist()
+    {
+        using var context = ServicesTestsHelper.GetTestDbContext();
+        var assignment = new AssignmentPostModel() { Topic = "Task 1", StageId = 1 };
+        AssignmentService service = GetAssignmentService(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.CreateAssignmentAsync(1, assignment));
+    }
+    [Fact]
+    public async Task CreateAssignmentAsync_ThrowsArgumentExceptionIfModelIsNull()
+    {
+        using var context = ServicesTestsHelper.GetTestDbContext();
+        var board = new Board { Name = "Board1" };
+        var stage = new WorkflowStage { Name = "Stage1", Position = 1, BoardId = board.Id, };
+        await context.Boards.AddAsync(board);
+        await context.Stages.AddAsync(stage);
+        await context.SaveChangesAsync();
+        AssignmentService service = GetAssignmentService(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.CreateAssignmentAsync(1, null!));
+    }
+    [Fact]
     public async Task GetAssignmentAsync_ReturnsTheCorrectAssignment()
     {
         using var context = ServicesTestsHelper.GetTestDbContext();

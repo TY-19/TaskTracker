@@ -35,15 +35,15 @@ public class UserService : IUserService
 
     public async Task<UserProfileModel?> GetUserByNameOrIdAsync(string userNameOrId)
     {
-        User? user = await GetUserByIdOrNameFromDBAsync(userNameOrId);
+        User? user = await GetUserWithEmployeeByIdOrNameFromDBAsync(userNameOrId);
         return user == null
             ? null
             : await GetUserProfileModelWithRolesAsync(user);
     }
-    private async Task<User?> GetUserByIdOrNameFromDBAsync(string userNameOrId)
+    private async Task<User?> GetUserWithEmployeeByIdOrNameFromDBAsync(string userNameOrId)
     {
-        return await GetUserByIdAsync(userNameOrId) ??
-            await GetUserByNameAsync(userNameOrId);
+        return await GetUserWithEmployeeByIdAsync(userNameOrId) ??
+            await GetUserWithEmployeeByNameAsync(userNameOrId);
     }
     private async Task<IEnumerable<UserProfileModel>> GetUserProfileModelsWithRolesAsync(IEnumerable<User> users)
     {
@@ -61,7 +61,7 @@ public class UserService : IUserService
         return model;
     }
 
-    private async Task<User?> GetUserByIdAsync(string userId)
+    private async Task<User?> GetUserWithEmployeeByIdAsync(string userId)
     {
         return await _context.Users
             .Include(u => u.Employee)
@@ -69,7 +69,7 @@ public class UserService : IUserService
             .ThenInclude(e => e.Assignments)
             .FirstOrDefaultAsync(u => u.Id == userId);
     }
-    private async Task<User?> GetUserByNameAsync(string userName)
+    private async Task<User?> GetUserWithEmployeeByNameAsync(string userName)
     {
         return await _context.Users
             .Include(u => u.Employee)
@@ -88,20 +88,23 @@ public class UserService : IUserService
 
     public async Task ChangeUserPasswordAsync(string usernameOrId, string newPassword)
     {
-        User user = await GetUserByIdOrNameFromDBAsync(usernameOrId)
-            ?? throw new ArgumentException("User with such an Id or Name does not exist", nameof(usernameOrId));
+        User user = await _userManager.FindByIdAsync(usernameOrId)
+            ?? await _userManager.FindByNameAsync(usernameOrId);
+        if (user == null)
+            throw new ArgumentException("User with such an Id or Name does not exist", nameof(usernameOrId));
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, newPassword);
     }
 
     public async Task DeleteUserAsync(string usernameOrId)
     {
-        User? user = await GetUserByIdOrNameFromDBAsync(usernameOrId);
+        User? user = await GetUserWithEmployeeByIdOrNameFromDBAsync(usernameOrId);
         if (user == null)
             return;
 
         await DeleteEmployeeAsync(user.Employee);
-        await _userManager.DeleteAsync(user);
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
     }
 
     private async Task DeleteEmployeeAsync(Employee? employee)
@@ -126,7 +129,7 @@ public class UserService : IUserService
 
     public async Task UpdateUserRoles(string userName, IEnumerable<string> roles)
     {
-        User? user = await GetUserByNameAsync(userName);
+        User? user = await _userManager.FindByNameAsync(userName);
         if (user == null)
             return;
 

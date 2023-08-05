@@ -29,4 +29,23 @@ public class WorkflowStagePostModelValidatorTests
 
         Assert.False(result.IsValid);
     }
+    [Fact]
+    public void ShouldBeInvalid_WhenNameIsEmpty()
+    {
+        var model = new WorkflowStagePostModel() { Name = "" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenNameIsTooLong()
+    {
+        var model = new WorkflowStagePostModel() {
+            Name = "Very very very very very very very very very very very very very long name" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
 }

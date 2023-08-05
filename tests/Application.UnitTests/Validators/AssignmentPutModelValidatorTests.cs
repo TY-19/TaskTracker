@@ -30,4 +30,48 @@ public class AssignmentPutModelValidatorTests
 
         Assert.False(result.IsValid);
     }
+    [Fact]
+    public void ShouldBeInvalid_WhenTopicIsTooLomg()
+    {
+        var model = new AssignmentPutModel()
+        {
+            Topic = "Very very very very very very very very very very very very very long topic",
+        };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenDeadlineIsInThePast()
+    {
+        var dateTime = DateTime.Now.AddMinutes(-1);
+        var model = new AssignmentPutModel()
+        {
+            Deadline = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day,
+                dateTime.Hour, dateTime.Minute, dateTime.Second, DateTimeKind.Local),
+        };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenProvidedWithInvalidSubpart()
+    {
+        var model = new AssignmentPutModel()
+        {
+            Subparts = new[]
+            {
+                new SubpartPutModel()
+                {
+                    Name = ""
+                }
+            }
+        };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
 }

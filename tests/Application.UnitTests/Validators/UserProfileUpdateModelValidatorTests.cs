@@ -20,19 +20,14 @@ public class UserProfileUpdateModelValidatorTests
 
         Assert.True(result.IsValid);
     }
-    [Fact]
-    public void ShouldBeInvalid_WhenUserNameIsAnEmptyString()
-    {
-        var model = new UserProfileUpdateModel() { Email = "email@example.com", UserName = string.Empty };
-
-        var result = _validator.TestValidate(model);
-
-        Assert.False(result.IsValid);
-    }
     [Theory]
+    [InlineData("")]
     [InlineData("ab")]
     [InlineData("TheVeryVeryVeryVeryVeryLongUserName")]
-    public void ShouldBeInvalid_WhenUserNameLengthIsInvalid(string userName)
+    [InlineData("With space")]
+    [InlineData("Spec#Symbols")]
+    [InlineData("User@#$%^&*")]
+    public void ShouldBeInvalid_WhenUserNameIsInvalid(string userName)
     {
         var model = new UserProfileUpdateModel() { Email = "email@example.com", UserName = userName };
 
@@ -40,19 +35,59 @@ public class UserProfileUpdateModelValidatorTests
 
         Assert.False(result.IsValid);
     }
-    [Fact]
-    public void ShouldBeInvalid_WhenEmailIsAnEmptyString()
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("emailatexample.com")]
+    [InlineData("email@example@com")]
+    public void ShouldBeInvalid_WhenEmailIsInvalid(string email)
     {
-        var model = new UserProfileUpdateModel() { Email = string.Empty, UserName = "User" };
+        var model = new UserProfileUpdateModel() { Email = email, UserName = "User" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void ShouldBeInvalid_WhenFirstNameIsAnEmptyString()
+    {
+        var model = new UserProfileUpdateModel() { FirstName = string.Empty };
 
         var result = _validator.TestValidate(model);
 
         Assert.False(result.IsValid);
     }
     [Fact]
-    public void ShouldBeInvalid_WhenEmailIsInvalid()
+    public void ShouldBeInvalid_WhenLastNameIsAnEmptyString()
     {
-        var model = new UserProfileUpdateModel() { Email = "notEmail.com", UserName = "User" };
+        var model = new UserProfileUpdateModel() { LastName = string.Empty };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenFirstNameIsTooLomg()
+    {
+        var model = new UserProfileUpdateModel()
+        {
+            FirstName = "Very very very very very very very very very long first name",
+            LastName = "Last"
+        };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenLastNameIsTooLong()
+    {
+        var model = new UserProfileUpdateModel()
+        {
+            FirstName = "First",
+            LastName = "Very very very very very very very very very long last name"
+        };
 
         var result = _validator.TestValidate(model);
 

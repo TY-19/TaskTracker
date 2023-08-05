@@ -130,7 +130,8 @@ public class AccountService : IAccountService
         user.Employee.FirstName = updatedUser.FirstName ?? user.Employee.FirstName;
         user.Employee.LastName = updatedUser.LastName ?? user.Employee.LastName;
 
-        await _userManager.UpdateAsync(user);
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
     }
 
     private async Task<Employee> CreateNewEmployeeAsync()
@@ -146,9 +147,15 @@ public class AccountService : IAccountService
         User user = await _userManager.FindByNameAsync(userName)
             ?? throw new ArgumentException("User does not exist");
 
-        IdentityResult result = await _userManager
-            .ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-
+        IdentityResult result = null!;
+        try
+        {
+            result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+        }
+        catch
+        {
+            throw new ArgumentException("Password has not been changed");
+        }
         if (!result.Succeeded)
             throw new ArgumentException("Password has not been changed");
     }

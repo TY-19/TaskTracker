@@ -29,4 +29,31 @@ public class BoardPostModelValidatorTests
 
         Assert.False(result.IsValid);
     }
+    [Fact]
+    public void ShouldBeInvalid_WhenNameIsTooShort()
+    {
+        var model = new BoardPostModel() { Name = "Aa"};
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenNameIsTooLong()
+    {
+        var model = new BoardPostModel() { Name = "Very very very very very very very very very very very very very long name" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenNameContainsOnlyDigits()
+    {
+        var model = new BoardPostModel() { Name = "12345" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
 }

@@ -38,4 +38,44 @@ public class EmployeePostModelValidatorTests
 
         Assert.False(result.IsValid);
     }
+    [Fact]
+    public void ShouldBeInvalid_WhenFirstNameIsAnEmptyString()
+    {
+        var model = new EmployeePostModel() { FirstName = string.Empty, LastName = "Last" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenLastNameIsAnEmptyString()
+    {
+        var model = new EmployeePostModel() { FirstName = "First", LastName = string.Empty };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenFirstNameIsTooLomg()
+    {
+        var model = new EmployeePostModel() { 
+            FirstName = "Very very very very very very very very very long first name", 
+            LastName = "Last" };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void ShouldBeInvalid_WhenLastNameIsTooLong()
+    {
+        var model = new EmployeePostModel() { FirstName = "First",
+            LastName = "Very very very very very very very very very long last name"
+        };
+
+        var result = _validator.TestValidate(model);
+
+        Assert.False(result.IsValid);
+    }
 }
