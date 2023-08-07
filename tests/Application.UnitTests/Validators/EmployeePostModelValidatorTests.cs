@@ -59,8 +59,8 @@ public class EmployeePostModelValidatorTests
     [Fact]
     public void ShouldBeInvalid_WhenFirstNameIsTooLomg()
     {
-        var model = new EmployeePostModel() { 
-            FirstName = "Very very very very very very very very very long first name", 
+        var model = new EmployeePostModel() {
+            FirstName = "Very very very very very very very very very long first name",
             LastName = "Last" };
 
         var result = _validator.TestValidate(model);

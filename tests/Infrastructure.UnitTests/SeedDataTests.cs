@@ -88,6 +88,19 @@ public class SeedDataTests
     }
 
     [Fact]
+    public async Task SeedDefaultRolesAndUsersAsync_DoesNotAddUser_IfDatabaseAlreadyContainsUsersAndConfigurationAreNotProvided()
+    {
+        TrackerDbContext context = UnitTestHelper.GetTestDbContext();
+        context.Users.Add(new User() { UserName = "ExistedUser" });
+        SeedData seeder = GetSeedDataInstance(context, null!);
+
+        await seeder.SeedDefaultRolesAndUsersAsync();
+
+        Assert.Equal(1, context.Users.Count());
+        Assert.Equal("ExistedUser", context.Users.First().UserName);
+    }
+
+    [Fact]
     public async Task SeedDefaultRolesAndUsersAsync_AddsNewAdmin_IfConfigurationParameterSetNewAdminIsTrue()
     {
         TrackerDbContext context = UnitTestHelper.GetTestDbContext();
@@ -103,6 +116,18 @@ public class SeedDataTests
         Assert.Equal(2, context.Users.Count());
         Assert.True(context.Users.Any(u => u.UserName == "admin"));
         Assert.True(context.Users.Any(u => u.UserName == "TestsAdminName"));
+    }
+
+    [Fact]
+    public async Task SeedDefaultRolesAndUsersAsync_AddsNewAdminWithDefaultCredentials_IfConfigurationAreNotProvided()
+    {
+        TrackerDbContext context = UnitTestHelper.GetTestDbContext();
+        SeedData seeder = GetSeedDataInstance(context, null!);
+
+        await seeder.SeedDefaultRolesAndUsersAsync();
+
+        Assert.Equal(1, context.Users.Count());
+        Assert.True(context.Users.Any(u => u.UserName == "admin"));
     }
 
     private static SeedData GetSeedDataInstance(TrackerDbContext context, IConfiguration configuration)

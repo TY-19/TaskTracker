@@ -69,11 +69,11 @@ public class SeedData
     {
         if (!_context.Users.Any() || _configuration?["SetNewAdmin"] == "true")
         {
-            string defaultAdminName = _configuration["DefaultCredentials:Admin:Name"]
+            string defaultAdminName = _configuration?["DefaultCredentials:Admin:Name"]
                 ?? "admin";
-            string defaultAdminEmail = _configuration["DefaultCredentials:Admin:Email"]
+            string defaultAdminEmail = _configuration?["DefaultCredentials:Admin:Email"]
                 ?? "email@example.com";
-            string defaultAdminPassword = _configuration["DefaultCredentials:Admin:Password"]
+            string defaultAdminPassword = _configuration?["DefaultCredentials:Admin:Password"]
                 ?? "Pa$$w0rd";
 
             var admin = new User
