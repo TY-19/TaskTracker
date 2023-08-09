@@ -41,8 +41,10 @@ public class WorkflowStagePostModelValidatorTests
     [Fact]
     public void ShouldBeInvalid_WhenNameIsTooLong()
     {
-        var model = new WorkflowStagePostModel() {
-            Name = "Very very very very very very very very very very very very very long name" };
+        var model = new WorkflowStagePostModel()
+        {
+            Name = "Very very very very very very very very very very very very very long name"
+        };
 
         var result = _validator.TestValidate(model);
 

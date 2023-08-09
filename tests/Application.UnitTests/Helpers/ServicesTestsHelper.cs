@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.UnitTests.Helpers;
@@ -17,6 +18,18 @@ internal static class ServicesTestsHelper
             .Options;
 
         return new TestDbContext(options);
+    }
+
+    public static Mock<UserManager<User>> GetMockUserManager(TestDbContext context)
+    {
+        var userStore = new UserStore<User>(context);
+        var passwordHasher = new PasswordHasher<User>();
+        var options = new OptionsWrapper<IdentityOptions>(GetIdentityOptions());
+        var passwordValidators = new List<IPasswordValidator<User>>() { new PasswordValidator<User>() };
+        var logger = new Logger<UserManager<User>>(new LoggerFactory());
+
+        return new Mock<UserManager<User>>(MockBehavior.Loose, userStore,
+            options, passwordHasher, null, passwordValidators, null, null, null, logger);
     }
 
     public static UserManager<User> GetUserManager(TestDbContext context)
@@ -45,7 +58,7 @@ internal static class ServicesTestsHelper
 
     private static IdentityOptions GetIdentityOptions()
     {
-        IdentityOptions options = new ();
+        IdentityOptions options = new();
         options.Password.RequireUppercase = false;
         options.Password.RequireLowercase = false;
         options.Password.RequireNonAlphanumeric = false;

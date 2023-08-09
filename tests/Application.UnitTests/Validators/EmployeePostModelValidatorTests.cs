@@ -59,9 +59,11 @@ public class EmployeePostModelValidatorTests
     [Fact]
     public void ShouldBeInvalid_WhenFirstNameIsTooLomg()
     {
-        var model = new EmployeePostModel() {
+        var model = new EmployeePostModel()
+        {
             FirstName = "Very very very very very very very very very long first name",
-            LastName = "Last" };
+            LastName = "Last"
+        };
 
         var result = _validator.TestValidate(model);
 
@@ -70,7 +72,9 @@ public class EmployeePostModelValidatorTests
     [Fact]
     public void ShouldBeInvalid_WhenLastNameIsTooLong()
     {
-        var model = new EmployeePostModel() { FirstName = "First",
+        var model = new EmployeePostModel()
+        {
+            FirstName = "First",
             LastName = "Very very very very very very very very very long last name"
         };
 

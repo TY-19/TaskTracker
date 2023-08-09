@@ -43,9 +43,7 @@ public class StageService : IStageService
         {
             Name = model.Name,
             BoardId = board.Id,
-            Position = (board.Stages?
-                .Select(s => s.Position)
-                .DefaultIfEmpty().Max() ?? 0) + 1,
+            Position = board.Stages.Select(s => s.Position).DefaultIfEmpty().Max() + 1,
         };
     }
 
@@ -152,12 +150,8 @@ public class StageService : IStageService
 
     private async Task<int> GetIdOfStageInThePositionAsync(int boardId, int position)
     {
-        int newStageId = (await _context.Stages.FirstOrDefaultAsync(
-            s => s.BoardId == boardId && s.Position == position))?.Id ?? 0;
-
-        if (newStageId == 0)
-            throw new InvalidOperationException("Stage cannot be deleted because it contains assignments and there are no other stages on the board to transfer them");
-
-        return newStageId;
+        return (await _context.Stages
+            .FirstAsync(s => s.BoardId == boardId && s.Position == position))
+            .Id;
     }
 }

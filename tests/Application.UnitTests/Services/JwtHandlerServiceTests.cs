@@ -25,6 +25,33 @@ public class JwtHandlerServiceTests
         Assert.IsType<JwtSecurityToken>(token);
     }
     [Fact]
+    public async Task GetTokenAsync_ReturnToken_IfConfigurationDoesntContainJwtSettings()
+    {
+        var configuration = new Mock<IConfiguration>();
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var user = new User() { UserName = "TestName", Email = "testemail@example.com" };
+        var service = new JwtHandlerService(configuration.Object,
+            ServicesTestsHelper.GetUserManager(context));
+
+        var token = await service.GetTokenAsync(user);
+
+        Assert.NotNull(token);
+        Assert.IsType<JwtSecurityToken>(token);
+    }
+    [Fact]
+    public async Task GetTokenAsync_ReturnToken_IfConfigurationWasNotProvided()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var user = new User() { UserName = "TestName", Email = "testemail@example.com" };
+        var service = new JwtHandlerService(null!,
+            ServicesTestsHelper.GetUserManager(context));
+
+        var token = await service.GetTokenAsync(user);
+
+        Assert.NotNull(token);
+        Assert.IsType<JwtSecurityToken>(token);
+    }
+    [Fact]
     public async Task GetTokenAsync_ReturnsTokenWithTheCorrectDetails()
     {
         var configuration = new Mock<IConfiguration>();

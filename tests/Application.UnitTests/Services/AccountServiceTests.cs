@@ -265,6 +265,21 @@ public class AccountServiceTests
         );
     }
 
+    [Fact]
+    public async Task ChangePasswordAsync_ThrowsException_IfPasswordWasntChanged()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var userManager = ServicesTestsHelper.GetMockUserManager(context);
+        userManager.Setup(u => u.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(new User());
+        userManager.Setup(u => u.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(IdentityResult.Failed());
+        var service = await GetAccountServiceAsync(context, userManager.Object);
+        var model = new ChangePasswordModel() { OldPassword = "OldPassword", NewPassword = "NewPassword" };
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.ChangePasswordAsync("Test", model));
+    }
+
     private static async Task<AccountService> GetAccountServiceAsync(
         TestDbContext context,
         bool seedDefaultUser = false,
@@ -272,6 +287,17 @@ public class AccountServiceTests
         bool seedDefaultAdmin = false)
     {
         var userManager = ServicesTestsHelper.GetUserManager(context);
+        return await GetAccountServiceAsync(context, userManager,
+            seedDefaultUser, seedDefaultEmployee, seedDefaultAdmin);
+    }
+
+    private static async Task<AccountService> GetAccountServiceAsync(
+        TestDbContext context,
+        UserManager<User> userManager,
+        bool seedDefaultUser = false,
+        bool seedDefaultEmployee = false,
+        bool seedDefaultAdmin = false)
+    {
         await AddDefaultRolesAsync(context);
 
         if (seedDefaultUser)

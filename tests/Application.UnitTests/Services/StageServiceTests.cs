@@ -47,6 +47,20 @@ public class StageServiceTests
         Assert.Equal(3, board?.Stages.Count);
     }
     [Fact]
+    public async Task AddStageToTheBoardAsync_AddsStageOnTheFirstPosition_IfBoardHasNotContainStagesYet()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        Board board = new() { Id = 1, Name = "First board" };
+        await context.Boards.AddAsync(board);
+        await context.SaveChangesAsync();
+        var service = GetStageService(context);
+
+        var result = await service.AddStageToTheBoardAsync(1,
+            new WorkflowStagePostModel() { Name = "NewStage" });
+
+        Assert.Equal(1, result.Position);
+    }
+    [Fact]
     public async Task AddStageToTheBoardAsync_ThrowsAnException_IfBoardDoesNotExist()
     {
         var context = ServicesTestsHelper.GetTestDbContext();
@@ -132,6 +146,94 @@ public class StageServiceTests
             await service.UpdateStageAsync(2, 1,
                 new WorkflowStagePutModel() { Name = "Updated" }));
     }
+    [Fact]
+    public async Task MoveStage_MovesStageForward()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetStageService(context);
+        await DefaultData.SeedAsync(context);
+
+        await service.MoveStage(1, 1, true);
+        var stage = await context.Stages.FirstOrDefaultAsync(s => s.Id == 1);
+
+        Assert.NotNull(stage);
+        Assert.Equal(2, stage.Position);
+    }
+    [Fact]
+    public async Task MoveStage_MovesStageBack()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetStageService(context);
+        await DefaultData.SeedAsync(context);
+
+        await service.MoveStage(1, 2, false);
+        var stage = await context.Stages.FirstOrDefaultAsync(s => s.Id == 2);
+
+        Assert.NotNull(stage);
+        Assert.Equal(1, stage.Position);
+    }
+    [Fact]
+    public async Task MoveStage_ExchangeStagesPosition_IfStageIsMovedToAnotherStagePosition()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetStageService(context);
+        await DefaultData.SeedAsync(context);
+
+        await service.MoveStage(1, 1, true);
+        var stageMoved = await context.Stages.FirstOrDefaultAsync(s => s.Id == 1);
+        var stageDisplaced = await context.Stages.FirstOrDefaultAsync(s => s.Id == 2);
+
+        Assert.NotNull(stageMoved);
+        Assert.NotNull(stageDisplaced);
+        Assert.Multiple(
+            () => Assert.Equal(2, stageMoved.Position),
+            () => Assert.Equal(1, stageDisplaced.Position)
+        );
+
+    }
+    [Fact]
+    public async Task MoveStage_ThrowsExceptionAndDoesntMoveStageForward_IfItIsAlreadyInTheLastPosition()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetStageService(context);
+        await DefaultData.SeedAsync(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.MoveStage(1, 2, true));
+        var stage = await context.Stages.FirstOrDefaultAsync(s => s.Id == 2);
+
+        Assert.NotNull(stage);
+        Assert.Equal(2, stage.Position);
+    }
+    [Fact]
+    public async Task MoveStage_ThrowsExceptionAndDoesntMoveStageBack_IfItIsAlreadyInTheFirstPosition()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetStageService(context);
+        await DefaultData.SeedAsync(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.MoveStage(1, 1, false));
+        var stage = await context.Stages.FirstOrDefaultAsync(s => s.Id == 1);
+
+        Assert.NotNull(stage);
+        Assert.Equal(1, stage.Position);
+    }
+    [Fact]
+    public async Task MoveStage_ThrowsExceptionAndDoesntMoveStageBack_IfItOnTheOtherBoard()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetStageService(context);
+        await DefaultData.SeedAsync(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.MoveStage(2, 1, true));
+        var stage = await context.Stages.FirstOrDefaultAsync(s => s.Id == 1);
+
+        Assert.NotNull(stage);
+        Assert.Equal(1, stage.Position);
+    }
+
     [Fact]
     public async Task DeleteStageAsync_DeletesTheAssignment_IfProvidedDataIsValid()
     {

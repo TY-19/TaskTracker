@@ -54,7 +54,9 @@ public class ChangePasswordModelValidatorTests
     [Fact]
     public void ShouldBeInvalid_WhenNewPasswordIsTooLong()
     {
-        var model = new ChangePasswordModel() { OldPassword = "oldPassword",
+        var model = new ChangePasswordModel()
+        {
+            OldPassword = "oldPassword",
             NewPassword = "Too too too too too too too long password"
         };
 

@@ -4,6 +4,7 @@ using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.Application.Services;
 using TaskTracker.Application.UnitTests.Helpers;
+using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.UnitTests.Services;
@@ -188,11 +189,114 @@ public class AssignmentServiceTests
         Assert.NotNull(result);
     }
 
-    private static AssignmentService GetAssignmentService(TestDbContext context)
+    [Fact]
+    public async Task MoveAssignmentToTheStageAsync_MovesAssignmentToTheDestinatedStage_IfCalledByResponsibleEmployee()
     {
-        var mapper = ServicesTestsHelper.GetMapper();
+        using var context = ServicesTestsHelper.GetTestDbContext();
+        await DefaultData.SeedAsync(context);
         var userService = new Mock<IUserService>();
-        return new AssignmentService(context, mapper, userService.Object);
+        userService.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new UserProfileModel() { EmployeeId = 1 });
+        AssignmentService service = GetAssignmentService(context, userService.Object);
+
+        await service.MoveAssignmentToTheStageAsync(1, 1, 2, "testUser");
+        var assignment = await context.Assignments.FirstOrDefaultAsync(a => a.Id == 1);
+
+        Assert.NotNull(assignment);
+        Assert.Equal(2, assignment.StageId);
+    }
+    [Fact]
+    public async Task MoveAssignmentToTheStageAsync_MovesAssignmentToTheDestinatedStage_IfCalledByManager()
+    {
+        using var context = ServicesTestsHelper.GetTestDbContext();
+        await DefaultData.SeedAsync(context);
+        var userService = new Mock<IUserService>();
+        userService.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new UserProfileModel()
+            {
+                Roles = new List<string>() { DefaultRolesNames.DEFAULT_MANAGER_ROLE }
+            });
+        AssignmentService service = GetAssignmentService(context, userService.Object);
+
+        await service.MoveAssignmentToTheStageAsync(1, 1, 2, "testUser");
+        var assignment = await context.Assignments.FirstOrDefaultAsync(a => a.Id == 1);
+
+        Assert.NotNull(assignment);
+        Assert.Equal(2, assignment.StageId);
+    }
+    [Fact]
+    public async Task MoveAssignmentToTheStageAsync_ThrowsExceptionAndDoesntMoveAssignment_IfUserHasNoPermission()
+    {
+        using var context = ServicesTestsHelper.GetTestDbContext();
+        await DefaultData.SeedAsync(context);
+        AssignmentService service = GetAssignmentService(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.MoveAssignmentToTheStageAsync(1, 1, 2, "nonExistedUser"));
+        var assignment = await context.Assignments.FirstOrDefaultAsync(a => a.Id == 1);
+
+        Assert.NotNull(assignment);
+        Assert.Equal(1, assignment.StageId);
+    }
+    [Fact]
+    public async Task ChangeAssignmentStatus_ChangesStatus_IfCalledByResponsibleEmployee()
+    {
+        using var context = ServicesTestsHelper.GetTestDbContext();
+        await DefaultData.SeedAsync(context);
+        var userService = new Mock<IUserService>();
+        userService.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new UserProfileModel() { EmployeeId = 1 });
+        AssignmentService service = GetAssignmentService(context, userService.Object);
+
+        await service.ChangeAssignmentStatus(1, 1, true, "testUser");
+        var assignment = await context.Assignments.FirstOrDefaultAsync(a => a.Id == 1);
+
+        Assert.NotNull(assignment);
+        Assert.True(assignment.IsCompleted);
+    }
+    [Fact]
+    public async Task ChangeAssignmentStatus_ChangesStatus_IfCalledByAdmin()
+    {
+        using var context = ServicesTestsHelper.GetTestDbContext();
+        await DefaultData.SeedAsync(context);
+        var userService = new Mock<IUserService>();
+        userService.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new UserProfileModel()
+            {
+                Roles = new List<string>() { DefaultRolesNames.DEFAULT_ADMIN_ROLE }
+            });
+        AssignmentService service = GetAssignmentService(context, userService.Object);
+
+        await service.ChangeAssignmentStatus(1, 1, true, "testUser");
+        var assignment = await context.Assignments.FirstOrDefaultAsync(a => a.Id == 1);
+
+        Assert.NotNull(assignment);
+        Assert.True(assignment.IsCompleted);
+    }
+    [Fact]
+    public async Task ChangeAssignmentStatus_ThrowsExceptionAndDoesntChangeStatus_IfUserHasNoPermission()
+    {
+        using var context = ServicesTestsHelper.GetTestDbContext();
+        await DefaultData.SeedAsync(context);
+        AssignmentService service = GetAssignmentService(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await service.ChangeAssignmentStatus(1, 1, true, "nonExistedUser"));
+        var assignment = await context.Assignments.FirstOrDefaultAsync(a => a.Id == 1);
+
+        Assert.NotNull(assignment);
+        Assert.False(assignment.IsCompleted);
     }
 
+    private static AssignmentService GetAssignmentService(TestDbContext context)
+    {
+        var userService = new Mock<IUserService>();
+        return GetAssignmentService(context, userService.Object);
+    }
+
+    private static AssignmentService GetAssignmentService(TestDbContext context, IUserService userService)
+    {
+        var mapper = ServicesTestsHelper.GetMapper();
+        return new AssignmentService(context, mapper, userService);
+    }
 }

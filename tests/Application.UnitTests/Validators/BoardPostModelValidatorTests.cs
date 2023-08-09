@@ -32,7 +32,7 @@ public class BoardPostModelValidatorTests
     [Fact]
     public void ShouldBeInvalid_WhenNameIsTooShort()
     {
-        var model = new BoardPostModel() { Name = "Aa"};
+        var model = new BoardPostModel() { Name = "Aa" };
 
         var result = _validator.TestValidate(model);
 

@@ -46,9 +46,7 @@ public class EmployeeService : IEmployeeService
         if (employee == null)
             return null;
 
-        return employee.User != null
-            ? await GetEmployeeModelWithRolesAsync(employee)
-            : _mapper.Map<EmployeeGetModel>(employee);
+        return await GetEmployeeModelWithRolesAsync(employee);
     }
 
     private async Task<IEnumerable<EmployeeGetModel>> GetEmployeeModelsWithRolesAsync(

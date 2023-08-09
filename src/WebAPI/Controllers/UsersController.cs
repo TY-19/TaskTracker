@@ -100,7 +100,7 @@ public class UsersController : ControllerBase
                 await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
 
             if (updatedUser.Roles?.Any() == true)
-                await _userService.UpdateUserRoles(userName, updatedUser.Roles);
+                await _userService.UpdateUserRolesAsync(userName, updatedUser.Roles);
         }
         catch (Exception ex)
         {

@@ -104,7 +104,7 @@ public class SeedDataTests
     public async Task SeedDefaultRolesAndUsersAsync_AddsNewAdmin_IfConfigurationParameterSetNewAdminIsTrue()
     {
         TrackerDbContext context = UnitTestHelper.GetTestDbContext();
-        Mock<IConfiguration> configurationEmpty = new ();
+        Mock<IConfiguration> configurationEmpty = new();
         Mock<IConfiguration> configurationFilled = GetTestIConfigurationMock();
         configurationFilled.Setup(c => c["SetNewAdmin"]).Returns("true");
         SeedData seeder1 = GetSeedDataInstance(context, configurationEmpty.Object);

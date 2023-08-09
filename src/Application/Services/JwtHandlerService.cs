@@ -25,18 +25,18 @@ public class JwtHandlerService
         EnsureUserIsNotNull(user);
 
         return new JwtSecurityToken(
-            issuer: _configuration["JwtSettings:Issuer"] ?? "TaskTracker",
-            audience: _configuration["JwtSettings:Audience"] ?? "*",
+            issuer: _configuration?["JwtSettings:Issuer"] ?? "TaskTracker",
+            audience: _configuration?["JwtSettings:Audience"] ?? "*",
             claims: await GetClaimsAsync(user),
             expires: DateTime.Now.AddMinutes(Convert.ToDouble(
-                _configuration["JwtSettings:ExpirationTimeInMinutes"] ?? "60")),
+                _configuration?["JwtSettings:ExpirationTimeInMinutes"] ?? "60")),
             signingCredentials: GetSigningCredentials());
     }
 
     private SigningCredentials GetSigningCredentials()
     {
         var key = Encoding.UTF8.GetBytes(
-            _configuration["JwtSettings:SecurityKey"] ?? "defaultKey");
+            _configuration?["JwtSettings:SecurityKey"] ?? "defaultKey");
         var secret = new SymmetricSecurityKey(key);
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }

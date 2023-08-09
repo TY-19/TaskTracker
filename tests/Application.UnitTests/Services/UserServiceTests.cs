@@ -1,6 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Moq;
 using TaskTracker.Application.Services;
 using TaskTracker.Application.UnitTests.Helpers;
+using TaskTracker.Domain.Common;
+using TaskTracker.Domain.Entities;
 
 namespace TaskTracker.Application.UnitTests.Services;
 
@@ -103,6 +107,18 @@ public class UserServiceTests
         Assert.Null(user);
     }
     [Fact]
+    public async Task DeleteUserAsync_DeletesTheEmployee_IfUserContainsEmployee()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var service = GetUserService(context);
+        await DefaultData.SeedAsync(context);
+
+        await service.DeleteUserAsync("testUser");
+        var employee = await context.Employees.FirstOrDefaultAsync(e => e.Id == 1);
+
+        Assert.Null(employee);
+    }
+    [Fact]
     public async Task DeleteUserAsync_DoesNotThrowAnException_IfThereAreNoSuchAnUser()
     {
         var context = ServicesTestsHelper.GetTestDbContext();
@@ -113,6 +129,25 @@ public class UserServiceTests
 
         Assert.Null(exception);
     }
+    [Fact]
+    public async Task DeleteUserAsync_DoesNotThrowAnException_IfTUserDoesNotContainEmployee()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var user = new User()
+        {
+            Id = "12345678-1234-1234-1234-123456789012",
+            UserName = "testUser"
+        };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        var service = GetUserService(context);
+
+        var exception = await Record.ExceptionAsync(async () =>
+            await service.DeleteUserAsync("testUser"));
+
+        Assert.Null(exception);
+    }
+
     [Fact]
     public async Task ChangeUserPasswordAsync_WorksCorrect()
     {
@@ -140,11 +175,193 @@ public class UserServiceTests
         await Assert.ThrowsAnyAsync<ArgumentException>(async () =>
             await service.ChangeUserPasswordAsync("NonExistedUser", "newPassword"));
     }
+    [Fact]
+    public async Task GetAllRoles_WorksCorrect()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var role = new IdentityRole()
+        {
+            Id = "12345678-1234-1234-1234-123456789012",
+            Name = "TestRole",
+            NormalizedName = "TESTROLE"
+        };
+        await context.Roles.AddAsync(role);
+        await context.SaveChangesAsync();
+        var service = GetUserService(context);
+
+        var result = service.GetAllRoles();
+
+        Assert.NotNull(result);
+        Assert.Multiple(
+            () => Assert.Single(result),
+            () => Assert.Contains("TestRole", result)
+        );
+    }
+    [Fact]
+    public async Task UpdateUserRoles_WorksCorrect()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var mockUserManager = ServicesTestsHelper.GetMockUserManager(context);
+        mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(new User());
+        mockUserManager.Setup(m => m.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE });
+        mockUserManager.Setup(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.GetUsersInRoleAsync(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
+            .ReturnsAsync(new List<User>() { new User(), new User() });
+        var service = GetUserService(context, mockUserManager.Object);
+
+        await service.UpdateUserRolesAsync("testUser", new List<string>() {
+            DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE,
+            DefaultRolesNames.DEFAULT_MANAGER_ROLE
+        });
+
+        mockUserManager.Verify(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Once());
+        mockUserManager.Verify(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Once());
+    }
+    [Fact]
+    public async Task UpdateUserRoles_DoesntThrowException_IfUserDoesNotExist()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var mockUserManager = ServicesTestsHelper.GetMockUserManager(context);
+        mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync((User)null!);
+        var service = GetUserService(context, mockUserManager.Object);
+
+        await service.UpdateUserRolesAsync("testUser", new List<string>() {
+            DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE,
+            DefaultRolesNames.DEFAULT_MANAGER_ROLE
+        });
+
+        mockUserManager.Verify(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Never());
+        mockUserManager.Verify(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Never());
+    }
+    [Fact]
+    public async Task UpdateUserRoles_DoesntUpdateRoles_IfOldAndNewRolesAreTheSame()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var mockUserManager = ServicesTestsHelper.GetMockUserManager(context);
+        mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(new User());
+        mockUserManager.Setup(m => m.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() {
+                DefaultRolesNames.DEFAULT_MANAGER_ROLE, DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE });
+        mockUserManager.Setup(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.GetUsersInRoleAsync(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
+            .ReturnsAsync(new List<User>() { new User(), new User() });
+        var service = GetUserService(context, mockUserManager.Object);
+
+        await service.UpdateUserRolesAsync("testUser", new List<string>() {
+            DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE,
+            DefaultRolesNames.DEFAULT_MANAGER_ROLE
+        });
+
+        mockUserManager.Verify(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Never());
+        mockUserManager.Verify(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Never());
+    }
+    [Fact]
+    public async Task UpdateUserRoles_DoesntUpdateRoles_IfUserIsTheLastAdminAndIsToBeRemovedFromAdminRole()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var mockUserManager = ServicesTestsHelper.GetMockUserManager(context);
+        mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(new User());
+        mockUserManager.Setup(m => m.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { DefaultRolesNames.DEFAULT_ADMIN_ROLE });
+        mockUserManager.Setup(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.GetUsersInRoleAsync(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
+            .ReturnsAsync(new List<User>() { new User() });
+        var service = GetUserService(context, mockUserManager.Object);
+
+        await service.UpdateUserRolesAsync("testUser", new List<string>() {
+            DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE,
+            DefaultRolesNames.DEFAULT_MANAGER_ROLE
+        });
+
+        mockUserManager.Verify(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Never());
+        mockUserManager.Verify(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Never());
+    }
+    [Fact]
+    public async Task UpdateUserRoles_UpdatesRoles_IfUserIsTheLastAdminButIsNotToBeRemovedFromAdminRole()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var mockUserManager = ServicesTestsHelper.GetMockUserManager(context);
+        mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(new User());
+        mockUserManager.Setup(m => m.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { DefaultRolesNames.DEFAULT_ADMIN_ROLE });
+        mockUserManager.Setup(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.GetUsersInRoleAsync(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
+            .ReturnsAsync(new List<User>() { new User() });
+        var service = GetUserService(context, mockUserManager.Object);
+
+        await service.UpdateUserRolesAsync("testUser", new List<string>() {
+            DefaultRolesNames.DEFAULT_ADMIN_ROLE,
+            DefaultRolesNames.DEFAULT_MANAGER_ROLE
+        });
+
+        mockUserManager.Verify(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Once());
+        mockUserManager.Verify(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Once());
+    }
+    [Fact]
+    public async Task UpdateUserRoles_UpdatesRoles_IfUserIsAdminButNotLast()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        var mockUserManager = ServicesTestsHelper.GetMockUserManager(context);
+        mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(new User());
+        mockUserManager.Setup(m => m.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { DefaultRolesNames.DEFAULT_ADMIN_ROLE });
+        mockUserManager.Setup(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        mockUserManager.Setup(m => m.GetUsersInRoleAsync(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
+            .ReturnsAsync(new List<User>() { new User(), new User() });
+        var service = GetUserService(context, mockUserManager.Object);
+
+        await service.UpdateUserRolesAsync("testUser", new List<string>() {
+            DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE,
+            DefaultRolesNames.DEFAULT_MANAGER_ROLE
+        });
+
+        mockUserManager.Verify(m => m.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Once());
+        mockUserManager.Verify(m => m.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()),
+            Times.Once());
+    }
 
     private static UserService GetUserService(TestDbContext context)
     {
-        return new UserService(ServicesTestsHelper.GetMapper(),
-            ServicesTestsHelper.GetUserManager(context),
+        var userManager = ServicesTestsHelper.GetUserManager(context);
+        return GetUserService(context, userManager);
+    }
+
+    private static UserService GetUserService(TestDbContext context, UserManager<User> userManager)
+    {
+        return new UserService(ServicesTestsHelper.GetMapper(), userManager,
             ServicesTestsHelper.GetRoleManager(context), context);
     }
 }

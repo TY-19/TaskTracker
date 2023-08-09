@@ -112,12 +112,7 @@ public class UserService : IUserService
         if (employee == null)
             return;
 
-        Employee? toDelete = await _context.Employees
-                .FirstOrDefaultAsync(e => e.Id == employee.Id);
-
-        if (toDelete == null)
-            return;
-
+        Employee toDelete = await _context.Employees.FirstAsync(e => e.Id == employee.Id);
         _context.Employees.Remove(toDelete);
         await _context.SaveChangesAsync();
     }
@@ -127,24 +122,24 @@ public class UserService : IUserService
         return _roleManager.Roles.Select(r => r.Name);
     }
 
-    public async Task UpdateUserRoles(string userName, IEnumerable<string> roles)
+    public async Task UpdateUserRolesAsync(string userName, IEnumerable<string> roles)
     {
         User? user = await _userManager.FindByNameAsync(userName);
         if (user == null)
             return;
 
         IEnumerable<string> oldRoles = await _userManager.GetRolesAsync(user);
-        if (!await AreToBeUpdated(oldRoles, roles))
+        if (!await AreToBeUpdatedAsync(oldRoles, roles))
             return;
 
         await _userManager.RemoveFromRolesAsync(user, oldRoles);
         await _userManager.AddToRolesAsync(user, roles);
     }
 
-    private async Task<bool> AreToBeUpdated(IEnumerable<string> oldRoles, IEnumerable<string> newRoles)
+    private async Task<bool> AreToBeUpdatedAsync(IEnumerable<string> oldRoles, IEnumerable<string> newRoles)
     {
         return !AreOldAndNewRolesTheSame(oldRoles, newRoles)
-            && (!await IsLastAdmin(oldRoles)
+            && (!await IsLastAdminAsync(oldRoles)
                 || newRoles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE));
     }
 
@@ -157,7 +152,7 @@ public class UserService : IUserService
             && oldRolesHashSet.SetEquals(newRolesHashSet);
     }
 
-    private async Task<bool> IsLastAdmin(IEnumerable<string> roles)
+    private async Task<bool> IsLastAdminAsync(IEnumerable<string> roles)
     {
         if (!roles.Contains(DefaultRolesNames.DEFAULT_ADMIN_ROLE))
             return false;

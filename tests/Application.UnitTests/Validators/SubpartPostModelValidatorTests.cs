@@ -32,9 +32,11 @@ public class SubpartPostModelValidatorTests
     [Fact]
     public void ShouldBeInvalid_WhenNameIsTooLong()
     {
-        var model = new SubpartPostModel() {
+        var model = new SubpartPostModel()
+        {
             Name = "Very very very very very very very very very very very very very long name",
-            AssignmentId = 1 };
+            AssignmentId = 1
+        };
 
         var result = _validator.TestValidate(model);
 

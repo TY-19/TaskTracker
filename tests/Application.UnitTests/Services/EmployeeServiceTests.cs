@@ -76,6 +76,21 @@ public class EmployeeServiceTests
         Assert.Null(result);
     }
     [Fact]
+    public async Task GetEmployeeByIdAsync_ReturnsEmployeeWithoutRoles_IfEmployeeDoesNotContainUser()
+    {
+        var context = ServicesTestsHelper.GetTestDbContext();
+        Employee employee = new() { Id = 100, FirstName = "Test", LastName = "Employee" };
+        await context.Employees.AddAsync(employee);
+        await context.SaveChangesAsync();
+        var service = GetEmployeeService(context);
+
+        var result = await service.GetEmployeeByIdAsync(100);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Roles);
+        Assert.Empty(result.Roles);
+    }
+    [Fact]
     public async Task AddEmployeeToTheBoardAsync_WorksCorrect()
     {
         var context = ServicesTestsHelper.GetTestDbContext();

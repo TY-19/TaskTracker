@@ -10,5 +10,5 @@ public interface IUserService
     public Task ChangeUserPasswordAsync(string usernameOrId, string newPassword);
     public Task DeleteUserAsync(string usernameOrId);
     public IEnumerable<string> GetAllRoles();
-    public Task UpdateUserRoles(string userName, IEnumerable<string> roles);
+    public Task UpdateUserRolesAsync(string userName, IEnumerable<string> roles);
 }
