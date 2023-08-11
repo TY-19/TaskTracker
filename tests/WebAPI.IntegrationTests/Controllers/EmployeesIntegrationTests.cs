@@ -63,6 +63,65 @@ public class EmployeesIntegrationTests
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
     }
     [Fact]
+    public async Task EmployeesController_GetAllEmployees_ReturnsCorrectNumbersOfEmployees()
+    {
+        await PrepareTestFixture();
+        var employee1 = new Employee() { Id = 1, FirstName = "FirstName1", LastName = "LastName1" };
+        var employee2 = new Employee() { Id = 2, FirstName = "FirstName2", LastName = "LastName2" };
+        var board1 = new Board() { Id = 1, Employees = new List<Employee>() { employee1 } };
+        var board2 = new Board() { Id = 2, Employees = new List<Employee>() { employee2 } };
+        await _seedHelper.CreateBoardAsync(board1);
+        await _seedHelper.CreateBoardAsync(board2);
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        const string RequestURI = $"api/employees";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+        httpResponse.EnsureSuccessStatusCode();
+
+        var result = JsonSerializer.Deserialize<IEnumerable<EmployeeGetModel>>(httpResponse.Content.ReadAsStream(),
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+        Assert.NotNull(result);
+        Assert.Equal(3, result.Count());
+    }
+    [Fact]
+    public async Task EmployeesController_GetAllEmployees_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
+    {
+        await PrepareTestFixture();
+        var employee1 = new Employee() { Id = 1, FirstName = "FirstName1", LastName = "LastName1" };
+        var employee2 = new Employee() { Id = 2, FirstName = "FirstName2", LastName = "LastName2" };
+        var employee3 = new Employee() { Id = 3, FirstName = "FirstName3", LastName = "LastName3" };
+        var board1 = new Board() { Id = 1, Employees = new List<Employee>() { employee1, employee2 } };
+        var board2 = new Board() { Id = 2, Employees = new List<Employee>() { employee3 } };
+        await _seedHelper.CreateBoardAsync(board1);
+        await _seedHelper.CreateBoardAsync(board2);
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        const string RequestURI = $"api/employees";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task EmployeesController_GetAllEmployees_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
+    {
+        await PrepareTestFixture();
+        var employee1 = new Employee() { Id = 1, FirstName = "FirstName1", LastName = "LastName1" };
+        var employee2 = new Employee() { Id = 2, FirstName = "FirstName2", LastName = "LastName2" };
+        var employee3 = new Employee() { Id = 3, FirstName = "FirstName3", LastName = "LastName3" };
+        var board1 = new Board() { Id = 1, Employees = new List<Employee>() { employee1, employee2 } };
+        var board2 = new Board() { Id = 2, Employees = new List<Employee>() { employee3 } };
+        await _seedHelper.CreateBoardAsync(board1);
+        await _seedHelper.CreateBoardAsync(board2);
+        const string RequestURI = $"api/employees";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
+    }
+    [Fact]
     public async Task EmployeesController_GetEmployeeById_ReturnsTheCorrectEmployee()
     {
         await PrepareTestFixture();

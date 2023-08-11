@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TaskTracker.Domain.Entities;
 using TaskTracker.Infrastructure;
 
@@ -70,6 +71,19 @@ internal class DataSeedingHelper
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         await context!.Employees.AddAsync(employee);
         await context!.SaveChangesAsync();
+    }
+
+    public async Task AddEmployeeToTheBoardAsync(int employeeId, int boardId)
+    {
+        using var test = _factory.Services.CreateScope();
+        var context = test.ServiceProvider.GetService<TrackerDbContext>();
+        var board = await context!.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
+        var employee = await context!.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
+        if (board != null && employee != null)
+        {
+            employee.Boards.Add(board);
+            await context.SaveChangesAsync();
+        }
     }
 
     private Board Board1 { get; } = new Board { Id = 1 };

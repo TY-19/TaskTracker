@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using TaskTracker.Application.Models;
+using TaskTracker.Domain.Common;
 using TaskTracker.Infrastructure;
 using TaskTracker.WebAPI.IntegrationTests.Helpers;
 
@@ -229,7 +230,12 @@ public class UsersIntegrationTests
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/users/testemployee";
         const string UserName = "UpdatedName";
-        var model = new UserProfileUpdateModel() { UserName = UserName };
+        var model = new UserProfileUpdateModel()
+        {
+            UserName = UserName,
+            Roles = new List<string>() {
+            DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE }
+        };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
 
@@ -464,6 +470,45 @@ public class UsersIntegrationTests
 
         Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
         Assert.True(await DoesUserWithSuchANameExistInTheDatabaseAsync(UserName));
+    }
+    [Fact]
+    public async Task UsersController_GetAllRoles_ReturnsCorrectNumbersOfRoles()
+    {
+        await PrepareTestFixture();
+        string? token = _authHelper.TestAdminUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        const string RequestURI = $"api/users/roles";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+        httpResponse.EnsureSuccessStatusCode();
+
+        var result = JsonSerializer.Deserialize<IEnumerable<string>>(httpResponse.Content.ReadAsStream(),
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+        Assert.NotNull(result);
+        Assert.Equal(3, result.Count());
+    }
+    [Fact]
+    public async Task UsersController_GetAllRoles_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
+    {
+        await PrepareTestFixture();
+        const string RequestURI = $"api/users/roles";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task UsersController_GetAllRoles_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
+    {
+        await PrepareTestFixture();
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        const string RequestURI = $"api/users/roles";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
     }
 
     private async Task<bool> DoesUserWithSuchANameExistInTheDatabaseAsync(string userName)

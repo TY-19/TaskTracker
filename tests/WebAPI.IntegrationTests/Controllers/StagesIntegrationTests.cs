@@ -287,6 +287,254 @@ public class StagesIntegrationTests
         Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
     }
     [Fact]
+    public async Task StagesController_MoveStageForward_ExchangesStagesPositions()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/1/moveforward";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+        httpResponse.EnsureSuccessStatusCode();
+        var stage1 = await GetStageFromDbByNameAsync(1, firstStageName);
+        var stage2 = await GetStageFromDbByNameAsync(1, secondStageName);
+
+        Assert.NotNull(stage1);
+        Assert.NotNull(stage2);
+        Assert.Equal(secondStagePosition, stage1.Position);
+        Assert.Equal(firstStagePosition, stage2.Position);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageForward_ReturnsBadRequest_IfBoardIdIsIncorrect()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/99/stages/1/moveforward";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageForward_ReturnsBadRequest_IStageDoesNotExist()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/99/moveforward";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageForward_ReturnsBadRequest_IfStageIsAlreadyInLastPosition()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/2/moveforward";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageForward_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/1/moveforward";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageForward_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/1/moveforward";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageBack_ExchangesStagesPositions()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/2/moveback";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+        httpResponse.EnsureSuccessStatusCode();
+        var stage1 = await GetStageFromDbByNameAsync(1, firstStageName);
+        var stage2 = await GetStageFromDbByNameAsync(1, secondStageName);
+
+        Assert.NotNull(stage1);
+        Assert.NotNull(stage2);
+        Assert.Equal(secondStagePosition, stage1.Position);
+        Assert.Equal(firstStagePosition, stage2.Position);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageBack_ReturnsBadRequest_IfBoardIdIsIncorrect()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/99/stages/1/moveback";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageBack_ReturnsBadRequest_IStageDoesNotExist()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/99/moveback";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageBack_ReturnsBadRequest_IfStageIsAlreadyInFirstPosition()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestManagerUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/1/moveback";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageBack_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/1/moveback";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_MoveStageBack_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
+    {
+        string firstStageName = "First stage";
+        string secondStageName = "Second stage";
+        int firstStagePosition = 1;
+        int secondStagePosition = 2;
+        await PrepareTestFixture();
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 1, name: firstStageName, position: firstStagePosition));
+        await _seedHelper.CreateStageAsync(
+            GetStage(id: 2, name: secondStageName, position: secondStagePosition));
+        const string RequestURI = $"api/boards/1/stages/1/moveback";
+
+        var httpResponse = await _httpClient.PutAsync(RequestURI, null);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
+    }
+    [Fact]
     public async Task StagesController_DeleteStageById_DeletesStage()
     {
         await PrepareTestFixture();
@@ -387,11 +635,16 @@ public class StagesIntegrationTests
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         return expected == await context!.Stages.Where(s => s.BoardId == boardId).CountAsync();
     }
-    private async Task<bool> DoesBoardContainsStageWithSuchANameAsync(int boardId, string name)
+
+    private async Task<WorkflowStage?> GetStageFromDbByNameAsync(int boardId, string name)
     {
         using var test = _factory.Services.CreateScope();
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
-        return await context!.Stages.FirstOrDefaultAsync(s => s.BoardId == boardId && s.Name == name) != null;
+        return await context!.Stages.FirstOrDefaultAsync(s => s.BoardId == boardId && s.Name == name);
+    }
+    private async Task<bool> DoesBoardContainsStageWithSuchANameAsync(int boardId, string name)
+    {
+        return await GetStageFromDbByNameAsync(boardId, name) != null;
     }
     private async Task<bool> DoesBoardContainsTheAssignmentOnExpectedStageAsync(int boardId, string expectedStageName, string assignmentTopic)
     {
@@ -401,5 +654,18 @@ public class StagesIntegrationTests
             .Include(s => s.Assignments)
             .FirstOrDefaultAsync(s => s.BoardId == boardId && s.Name == expectedStageName);
         return stage?.Assignments.Any(a => a.Topic == assignmentTopic) ?? false;
+    }
+
+    private WorkflowStage GetStage(int id = 1, int boardId = 1, string name = "Stage 1",
+        int position = 1)
+    {
+        return new WorkflowStage()
+        {
+            Id = id,
+            BoardId = boardId,
+            Name = name,
+            Position = position
+        };
+
     }
 }

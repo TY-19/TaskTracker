@@ -59,6 +59,12 @@ internal class AuthenticationTestsHelper
     private static async Task CreateUserAsync(User user, string password, string role,
         UserManager<User> userManager)
     {
+        await CreateUserInnerAsync(user, password, userManager);
+        await AddUserToRoleInnerAsync(user, role, userManager);
+    }
+
+    private static async Task CreateUserInnerAsync(User user, string password, UserManager<User> userManager)
+    {
         try
         {
             await userManager!.CreateAsync(user, password);
@@ -67,7 +73,12 @@ internal class AuthenticationTestsHelper
         {
             if (ex is not DbUpdateConcurrencyException && ex is not ArgumentException)
                 throw;
+            else if (ex is DbUpdateConcurrencyException)
+                await CreateUserInnerAsync(user, password, userManager);
         }
+    }
+    private static async Task AddUserToRoleInnerAsync(User user, string role, UserManager<User> userManager)
+    {
         try
         {
             await userManager.AddToRoleAsync(user, role);
@@ -76,8 +87,11 @@ internal class AuthenticationTestsHelper
         {
             if (ex is not DbUpdateConcurrencyException && ex is not ArgumentException)
                 throw;
+            else if (ex is DbUpdateConcurrencyException)
+                await AddUserToRoleInnerAsync(user, role, userManager);
         }
     }
+
 
     private static readonly string password = "Pa$$w0rd";
     private static readonly User testAdmin = new()

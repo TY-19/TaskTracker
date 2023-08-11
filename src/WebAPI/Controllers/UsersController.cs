@@ -96,11 +96,11 @@ public class UsersController : ControllerBase
         {
             await _accountService.UpdateUserProfileAsync(userName, updatedUser);
 
-            if (updatedUser.UserName != null && updatedUser.UserName != userName)
-                await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
-
             if (updatedUser.Roles?.Any() == true)
                 await _userService.UpdateUserRolesAsync(userName, updatedUser.Roles);
+
+            if (updatedUser.UserName != null && updatedUser.UserName != userName)
+                await _userService.UpdateUserNameAsync(userName, updatedUser.UserName);
         }
         catch (Exception ex)
         {
@@ -151,6 +151,8 @@ public class UsersController : ControllerBase
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
     [Route("roles")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public ActionResult<IEnumerable<string>> GetAllRoles()
     {
         return Ok(_userService.GetAllRoles());
