@@ -68,22 +68,32 @@ public class StagesControllerTests
         Assert.IsType<NotFoundResult>(result);
     }
     [Fact]
-    public async Task CreateANewStageOnTheBoard_ReturnsCreatedAtActionResult()
+    public async Task CreateNewStageOnTheBoard_ReturnsCreatedAtActionResult()
     {
         _serviceMock.Setup(a => a.AddStageToTheBoardAsync(It.IsAny<int>(), It.IsAny<WorkflowStagePostModel>()))
             .ReturnsAsync(new WorkflowStageGetModel());
 
-        var result = (await _controller.CreateANewStageOnTheBoard(1, new WorkflowStagePostModel())).Result;
+        var result = (await _controller.CreateNewStageOnTheBoard(1, new WorkflowStagePostModel())).Result;
 
         Assert.IsType<CreatedAtActionResult>(result);
     }
     [Fact]
-    public async Task CreateANewStageOnTheBoard_ReturnsBadRequestObjectResult_IfTheStageWasNotCreated()
+    public async Task CreateNewStageOnTheBoard_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new StagesController(_serviceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = (await controller.CreateNewStageOnTheBoard(1, new WorkflowStagePostModel())).Result;
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task CreateNewStageOnTheBoard_ReturnsBadRequestObjectResult_IfTheStageWasNotCreated()
     {
         _serviceMock.Setup(a => a.AddStageToTheBoardAsync(It.IsAny<int>(), It.IsAny<WorkflowStagePostModel>()))
             .ThrowsAsync(new ArgumentException("TestExcaption"));
 
-        var result = (await _controller.CreateANewStageOnTheBoard(1, new WorkflowStagePostModel())).Result;
+        var result = (await _controller.CreateNewStageOnTheBoard(1, new WorkflowStagePostModel())).Result;
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -98,12 +108,62 @@ public class StagesControllerTests
         Assert.IsType<NoContentResult>(result);
     }
     [Fact]
+    public async Task UpdateStageById_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new StagesController(_serviceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = await controller.UpdateStageById(1, 1, new WorkflowStagePutModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
     public async Task UpdateStageById_ReturnsBadRequestObjectResult_IfTheStageWasNotUpdated()
     {
         _serviceMock.Setup(a => a.UpdateStageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<WorkflowStagePutModel>()))
             .ThrowsAsync(new ArgumentException("TestException"));
 
         var result = await _controller.UpdateStageById(1, 1, new WorkflowStagePutModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task MoveStageForward_ReturnsNoContentResult()
+    {
+        _serviceMock.Setup(a => a.MoveStage(It.IsAny<int>(), It.IsAny<int>(), true))
+            .Callback(() => { });
+
+        var result = await _controller.MoveStageForward(1, 1);
+
+        Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
+    public async Task MoveStageForward_ReturnsBadRequestObjectResult_IfTheStageWasNotMoved()
+    {
+        _serviceMock.Setup(a => a.MoveStage(It.IsAny<int>(), It.IsAny<int>(), true))
+            .ThrowsAsync(new ArgumentException("TestException"));
+
+        var result = await _controller.MoveStageForward(1, 1);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task MoveStageBack_ReturnsNoContentResult()
+    {
+        _serviceMock.Setup(a => a.MoveStage(It.IsAny<int>(), It.IsAny<int>(), false))
+            .Callback(() => { });
+
+        var result = await _controller.MoveStageBack(1, 1);
+
+        Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
+    public async Task MoveStageBack_ReturnsBadRequestObjectResult_IfTheStageWasNotMoved()
+    {
+        _serviceMock.Setup(a => a.MoveStage(It.IsAny<int>(), It.IsAny<int>(), false))
+            .ThrowsAsync(new ArgumentException("TestException"));
+
+        var result = await _controller.MoveStageBack(1, 1);
 
         Assert.IsType<BadRequestObjectResult>(result);
     }

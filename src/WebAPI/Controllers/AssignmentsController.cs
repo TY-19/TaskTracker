@@ -38,7 +38,7 @@ public class AssignmentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> CreateANewAssignment(int boardId,
+    public async Task<IActionResult> CreateNewAssignment(int boardId,
         AssignmentPostModel model)
     {
         ValidationResult validationResult = _validationService.Validate(model);
@@ -207,17 +207,18 @@ public class AssignmentsController : ControllerBase
         if (model.AssignmentId != taskId)
             return BadRequest("Not created");
 
-        SubpartGetModel? subpart;
+        SubpartGetModel subpart;
         try
         {
-            subpart = await _subpartService.AddSubpartToTheAssignmentAsync(model);
+            subpart = await _subpartService.AddSubpartToTheAssignmentAsync(model)
+                ?? throw new ArgumentException("Subpart wasn't added");
         }
         catch (ArgumentException ex)
         {
             return BadRequest(ex.Message);
         }
         return CreatedAtAction(nameof(GetSubpartById),
-            new { boardId, taskId = subpart?.AssignmentId, subpartId = subpart?.Id },
+            new { boardId, taskId = subpart.AssignmentId, subpartId = subpart.Id },
             subpart);
     }
 

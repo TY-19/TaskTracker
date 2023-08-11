@@ -151,7 +151,7 @@ public class UsersController : ControllerBase
     [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
     [Route("roles")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult GetAllRoles()
+    public ActionResult<IEnumerable<string>> GetAllRoles()
     {
         return Ok(_userService.GetAllRoles());
     }

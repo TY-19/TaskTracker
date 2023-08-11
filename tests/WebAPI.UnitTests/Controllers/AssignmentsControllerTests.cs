@@ -71,22 +71,32 @@ public class AssignmentsControllerTests
         Assert.Null(result);
     }
     [Fact]
-    public async Task CreateANewAssignment_ReturnsCreatedAtActionResult()
+    public async Task CreateNewAssignment_ReturnsCreatedAtActionResult()
     {
         _assignmentServiceMock.Setup(a => a.CreateAssignmentAsync(It.IsAny<int>(), It.IsAny<AssignmentPostModel>()))
            .ReturnsAsync(new AssignmentGetModel());
 
-        var result = await _controller.CreateANewAssignment(1, new AssignmentPostModel());
+        var result = await _controller.CreateNewAssignment(1, new AssignmentPostModel());
 
         Assert.IsType<CreatedAtActionResult>(result);
     }
     [Fact]
-    public async Task CreateANewAssignment_ReturnsBadRequestObjectResult_IfTheAssignmentWasNotCreated()
+    public async Task CreateNewAssignment_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new AssignmentsController(_assignmentServiceMock.Object,
+            _subpartServiceMock.Object, ControllersHelper.GetValidationService(false));
+
+        var result = await controller.CreateNewAssignment(1, new AssignmentPostModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task CreateNewAssignment_ReturnsBadRequestObjectResult_IfTheAssignmentWasNotCreated()
     {
         _assignmentServiceMock.Setup(a => a.CreateAssignmentAsync(It.IsAny<int>(), It.IsAny<AssignmentPostModel>()))
            .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.CreateANewAssignment(1, new AssignmentPostModel());
+        var result = await _controller.CreateNewAssignment(1, new AssignmentPostModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -102,6 +112,16 @@ public class AssignmentsControllerTests
         Assert.IsType<NoContentResult>(result);
     }
     [Fact]
+    public async Task UpdateAssignmentById_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new AssignmentsController(_assignmentServiceMock.Object,
+            _subpartServiceMock.Object, ControllersHelper.GetValidationService(false));
+
+        var result = await controller.UpdateAssignmentById(1, 1, new AssignmentPutModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
     public async Task UpdateAssignmentById_ReturnsBadRequestObjectResult_IfTheAssignmentWasNotUpdated()
     {
         _assignmentServiceMock.Setup(a => a.UpdateAssignmentAsync(It.IsAny<int>(),
@@ -111,6 +131,114 @@ public class AssignmentsControllerTests
         var result = await _controller.UpdateAssignmentById(1, 1, new AssignmentPutModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task MoveAssignmentToTheStage_ReturnsNoContentResult()
+    {
+        _assignmentServiceMock.Setup(a => a.MoveAssignmentToTheStageAsync(
+            It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+            .Callback(() => { });
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
+
+        var result = await _controller.MoveAssignmentToTheStage(1, 1, 2);
+
+        Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
+    public async Task MoveAssignmentToTheStage_BadRequestObjectResult_IfTheAssignmentWasNotMoved()
+    {
+        _assignmentServiceMock.Setup(a => a.MoveAssignmentToTheStageAsync(
+            It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+            .ThrowsAsync(new ArgumentException("Test exception"));
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
+
+        var result = await _controller.MoveAssignmentToTheStage(1, 1, 2);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task MoveAssignmentToTheStage_ReturnsUnauthorizedResult_IfUserIsNotIdentified()
+    {
+        _assignmentServiceMock.Setup(a => a.MoveAssignmentToTheStageAsync(
+            It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+            .Callback(() => { });
+        ControllersHelper.AddUserWithoutIdentityToControllerContext(_controller);
+
+        var result = await _controller.MoveAssignmentToTheStage(1, 1, 2);
+
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+    [Fact]
+    public async Task CompleteAssignmentById_ReturnsNoContentResult()
+    {
+        _assignmentServiceMock.Setup(a => a.ChangeAssignmentStatus(
+            It.IsAny<int>(), It.IsAny<int>(), true, It.IsAny<string>()))
+            .Callback(() => { });
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
+
+        var result = await _controller.CompleteAssignmentById(1, 1);
+
+        Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
+    public async Task CompleteAssignmentById_BadRequestObjectResult_IfTheAssignmentWasNotMoved()
+    {
+        _assignmentServiceMock.Setup(a => a.ChangeAssignmentStatus(
+            It.IsAny<int>(), It.IsAny<int>(), true, It.IsAny<string>()))
+            .ThrowsAsync(new ArgumentException("Test exception"));
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
+
+        var result = await _controller.CompleteAssignmentById(1, 1);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task CompleteAssignmentById_ReturnsUnauthorizedResult_IfUserIsNotIdentified()
+    {
+        _assignmentServiceMock.Setup(a => a.ChangeAssignmentStatus(
+            It.IsAny<int>(), It.IsAny<int>(), true, It.IsAny<string>()))
+            .Callback(() => { });
+        ControllersHelper.AddUserWithoutIdentityToControllerContext(_controller);
+
+        var result = await _controller.CompleteAssignmentById(1, 1);
+
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+    [Fact]
+    public async Task UncompleteAssignmentById_ReturnsNoContentResult()
+    {
+        _assignmentServiceMock.Setup(a => a.ChangeAssignmentStatus(
+            It.IsAny<int>(), It.IsAny<int>(), false, It.IsAny<string>()))
+            .Callback(() => { });
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
+
+        var result = await _controller.UncompleteAssignmentById(1, 1);
+
+        Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
+    public async Task UncompleteAssignmentById_BadRequestObjectResult_IfTheAssignmentWasNotMoved()
+    {
+        _assignmentServiceMock.Setup(a => a.ChangeAssignmentStatus(
+            It.IsAny<int>(), It.IsAny<int>(), false, It.IsAny<string>()))
+            .ThrowsAsync(new ArgumentException("Test exception"));
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
+
+        var result = await _controller.UncompleteAssignmentById(1, 1);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task UncompleteAssignmentById_ReturnsUnauthorizedResult_IfUserIsNotIdentified()
+    {
+        _assignmentServiceMock.Setup(a => a.ChangeAssignmentStatus(
+            It.IsAny<int>(), It.IsAny<int>(), false, It.IsAny<string>()))
+            .Callback(() => { });
+        ControllersHelper.AddUserWithoutIdentityToControllerContext(_controller);
+
+        var result = await _controller.UncompleteAssignmentById(1, 1);
+
+        Assert.IsType<UnauthorizedResult>(result);
     }
     [Fact]
     public async Task DeleteAssignmentById_ReturnsNoContentResult()
@@ -185,10 +313,30 @@ public class AssignmentsControllerTests
         Assert.IsType<CreatedAtActionResult>(result);
     }
     [Fact]
+    public async Task AddSubpartToTheAssignment_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new AssignmentsController(_assignmentServiceMock.Object,
+            _subpartServiceMock.Object, ControllersHelper.GetValidationService(false));
+
+        var result = await controller.AddSubpartToTheAssignment(1, 1, new SubpartPostModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
     public async Task AddSubpartToTheAssignment_ReturnsBadRequestObjectResult_IfTheSubpartWasNotAdded()
     {
         _subpartServiceMock.Setup(s => s.AddSubpartToTheAssignmentAsync(It.IsAny<SubpartPostModel>()))
            .ThrowsAsync(new ArgumentException("TestException"));
+
+        var result = await _controller.AddSubpartToTheAssignment(1, 1, new SubpartPostModel() { AssignmentId = 1 });
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
+    public async Task AddSubpartToTheAssignment_ReturnsBadRequestObjectResult_IfModelIsNull()
+    {
+        _subpartServiceMock.Setup(s => s.AddSubpartToTheAssignmentAsync(It.IsAny<SubpartPostModel>()))
+           .ReturnsAsync((SubpartGetModel?)null);
 
         var result = await _controller.AddSubpartToTheAssignment(1, 1, new SubpartPostModel() { AssignmentId = 1 });
 
@@ -214,6 +362,16 @@ public class AssignmentsControllerTests
         var result = await _controller.UpdateSubpart(1, 1, 1, new SubpartPutModel() { Name = "New name" });
 
         Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
+    public async Task UpdateSubpart_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new AssignmentsController(_assignmentServiceMock.Object,
+            _subpartServiceMock.Object, ControllersHelper.GetValidationService(false));
+
+        var result = await controller.UpdateSubpart(1, 1, 1, new SubpartPutModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
     }
     [Fact]
     public async Task UpdateSubpart_ReturnsBadRequestObjectResult_IfTheSubpartWasNotUpdated()

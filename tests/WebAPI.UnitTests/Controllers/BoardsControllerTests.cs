@@ -37,6 +37,26 @@ public class BoardsControllerTests
         Assert.IsAssignableFrom<IEnumerable<BoardGetModel>>(result);
     }
     [Fact]
+    public async Task GetBoardsOfTheEmployee_ReturnsOkObjectResult()
+    {
+        _serviceMock.Setup(a => a.GetBoardOfTheEmployeeAsync(It.IsAny<string>()))
+            .Callback(() => { });
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
+
+        var result = (await _controller.GetBoardsOfTheEmployee()).Result;
+
+        Assert.IsType<OkObjectResult>(result);
+    }
+    [Fact]
+    public async Task GetBoardsOfTheEmployee_ReturnsUnauthorizedResult_IfUserIsNotIdentified()
+    {
+        ControllersHelper.AddUserWithoutIdentityToControllerContext(_controller);
+
+        var result = (await _controller.GetBoardsOfTheEmployee()).Result;
+
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+    [Fact]
     public async Task GetBoard_ReturnsOkObjectResult()
     {
         _serviceMock.Setup(s => s.GetBoardByIdAsync(It.IsAny<int>()))
@@ -78,6 +98,16 @@ public class BoardsControllerTests
         Assert.IsType<CreatedAtActionResult>(result);
     }
     [Fact]
+    public async Task CreateNewBoard_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new BoardsController(_serviceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = await controller.CreateNewBoard(new BoardPostModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
     public async Task CreateNewBoard_ReturnsBadRequestObjectResult_IfTheBoardWasNotCreated()
     {
         _serviceMock.Setup(s => s.AddBoardAsync(It.IsAny<string>()))
@@ -106,6 +136,16 @@ public class BoardsControllerTests
         var result = await _controller.UpdateBoardName(1, new BoardPutModel());
 
         Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
+    public async Task UpdateBoardName_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new BoardsController(_serviceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = await controller.UpdateBoardName(1, new BoardPutModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
     }
     [Fact]
     public async Task UpdateBoardName_ReturnsBadRequestObjectResult_IfTheBoardNameWasNotUpdated()

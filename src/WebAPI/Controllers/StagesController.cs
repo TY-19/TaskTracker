@@ -35,7 +35,7 @@ public class StagesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<WorkflowStageGetModel>> CreateANewStageOnTheBoard(
+    public async Task<ActionResult<WorkflowStageGetModel>> CreateNewStageOnTheBoard(
         int boardId, WorkflowStagePostModel model)
     {
         ValidationResult validationResult = _validationService.Validate(model);
@@ -88,7 +88,7 @@ public class StagesController : ControllerBase
         {
             await _stageService.UpdateStageAsync(boardId, stageId, model);
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
             return BadRequest(ex.Message);
         }
@@ -125,7 +125,7 @@ public class StagesController : ControllerBase
         {
             await _stageService.MoveStage(boardId, stageId, isMovingForward);
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
             return BadRequest(ex.Message);
         }
@@ -144,11 +144,11 @@ public class StagesController : ControllerBase
         try
         {
             await _stageService.DeleteStageAsync(boardId, stageId);
-            return NoContent();
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
-            return BadRequest($"{ex.Message}");
+            return BadRequest(ex.Message);
         }
+        return NoContent();
     }
 }

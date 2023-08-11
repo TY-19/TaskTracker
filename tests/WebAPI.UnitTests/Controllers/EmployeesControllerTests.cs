@@ -15,6 +15,16 @@ public class EmployeesControllerTests
         _controller = new EmployeesController(_serviceMock.Object);
     }
     [Fact]
+    public async Task GetAllEmployee_ReturnsOkObjectResult()
+    {
+        _serviceMock.Setup(s => s.GetAllAsync())
+            .ReturnsAsync(new List<EmployeeGetModel>());
+
+        var result = (await _controller.GetAllEmployees()).Result;
+
+        Assert.IsType<OkObjectResult>(result);
+    }
+    [Fact]
     public async Task GetAllEmployeesOfTheBoard_ReturnsOkObjectResult()
     {
         _serviceMock.Setup(s => s.GetAllEmployeeFromTheBoardAsync(It.IsAny<int>()))

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.WebAPI.Controllers;
@@ -41,6 +39,18 @@ public class AccountControllerTests
         Assert.NotNull(result);
         Assert.IsType<LoginResponseModel>(result);
     }
+    [Fact]
+    public async Task Login_ReturnsUnsuccessLoginResponseModel_IfRequestIsInvalid()
+    {
+        var controller = new AccountController(_serviceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = ((await controller.Login(new LoginRequestModel())).Result as OkObjectResult)?.Value;
+
+        Assert.NotNull(result);
+        Assert.IsType<LoginResponseModel>(result);
+        Assert.False((result as LoginResponseModel)?.Success);
+    }
 
     [Fact]
     public async Task Registration_ReturnsOkObjectResult()
@@ -66,13 +76,26 @@ public class AccountControllerTests
         Assert.NotNull(result);
         Assert.IsType<RegistrationResponseModel>(result);
     }
+    [Fact]
+    public async Task Login_ReturnsUnsuccessRegistrationResponseModel_IfRequestIsInvalid()
+    {
+        var controller = new AccountController(_serviceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = ((await controller.Registration(new RegistrationRequestModel()))
+            .Result as OkObjectResult)?.Value;
+
+        Assert.NotNull(result);
+        Assert.IsType<RegistrationResponseModel>(result);
+        Assert.False((result as RegistrationResponseModel)?.Success);
+    }
 
     [Fact]
     public async Task ViewProfile_ReturnsOkObjectResult()
     {
         _serviceMock.Setup(s => s.GetUserProfileAsync(It.IsAny<string>()))
             .ReturnsAsync(new UserProfileModel());
-        AddAuthorizedIdentityUserToControllerContext(_controller);
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
 
         var result = (await _controller.ViewProfile()).Result;
 
@@ -84,7 +107,7 @@ public class AccountControllerTests
     {
         _serviceMock.Setup(s => s.GetUserProfileAsync(It.IsAny<string>()))
             .ReturnsAsync(new UserProfileModel());
-        AddAuthorizedIdentityUserToControllerContext(_controller);
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
 
         var result = ((await _controller.ViewProfile()).Result as OkObjectResult)?.Value;
 
@@ -97,7 +120,7 @@ public class AccountControllerTests
     {
         _serviceMock.Setup(s => s.GetUserProfileAsync(It.IsAny<string>()))
             .ReturnsAsync((UserProfileModel?)null);
-        AddAuthorizedIdentityUserToControllerContext(_controller);
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
 
         var result = (await _controller.ViewProfile()).Result;
 
@@ -114,13 +137,24 @@ public class AccountControllerTests
 
         Assert.IsType<NotFoundResult>(result);
     }
+    [Fact]
+    public async Task ViewProfile_ReturnsNotFoundResult_IfUserIsNotIdentified()
+    {
+        _serviceMock.Setup(s => s.GetUserProfileAsync(It.IsAny<string>()))
+            .ReturnsAsync(new UserProfileModel());
+        ControllersHelper.AddUserWithoutIdentityToControllerContext(_controller);
+
+        var result = (await _controller.ViewProfile()).Result;
+
+        Assert.IsType<NotFoundResult>(result);
+    }
 
     [Fact]
     public async Task UpdateProfile_ReturnsNoContentResult()
     {
         _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(),
             It.IsAny<UserProfileUpdateModel>())).Callback(() => { });
-        AddAuthorizedIdentityUserToControllerContext(_controller);
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new UserProfileUpdateModel() { Email = "test@example.com" };
 
         var result = await _controller.UpdateProfile(model);
@@ -139,12 +173,34 @@ public class AccountControllerTests
         Assert.IsType<NotFoundResult>(result);
     }
     [Fact]
+    public async Task UpdateProfile_ReturnsNotFoundResult_IfUserIsNotIdentified()
+    {
+        _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(),
+            It.IsAny<UserProfileUpdateModel>())).Callback(() => { });
+        ControllersHelper.AddUserWithoutIdentityToControllerContext(_controller);
+        var model = new UserProfileUpdateModel() { Email = "test@example.com" };
+
+        var result = await _controller.UpdateProfile(model);
+
+        Assert.IsType<NotFoundResult>(result);
+    }
+    [Fact]
+    public async Task UpdateProfile_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new AccountController(_serviceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = await controller.UpdateProfile(new UserProfileUpdateModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
     public async Task UpdateProfile_ReturnsBadRequestObjectResult_IfUpdatingWasNotSuccessful()
     {
         _serviceMock.Setup(s => s.UpdateUserProfileAsync(It.IsAny<string>(),
             It.IsAny<UserProfileUpdateModel>()))
             .ThrowsAsync(new ArgumentException("TestException"));
-        AddAuthorizedIdentityUserToControllerContext(_controller);
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new UserProfileUpdateModel() { Email = "test@example.com" };
 
         var result = await _controller.UpdateProfile(model);
@@ -157,7 +213,7 @@ public class AccountControllerTests
     {
         _serviceMock.Setup(s => s.ChangePasswordAsync(It.IsAny<string>(),
             It.IsAny<ChangePasswordModel>())).Callback(() => { });
-        AddAuthorizedIdentityUserToControllerContext(_controller);
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new ChangePasswordModel() { OldPassword = "oldPassword", NewPassword = "newPassword" };
 
         var result = await _controller.ChangePassword(model);
@@ -177,29 +233,38 @@ public class AccountControllerTests
 
     }
     [Fact]
+    public async Task ChangePassword_ReturnsNotFoundResult_IfUserIsNotIdentified()
+    {
+        _serviceMock.Setup(s => s.ChangePasswordAsync(It.IsAny<string>(),
+            It.IsAny<ChangePasswordModel>())).Callback(() => { });
+        ControllersHelper.AddUserWithoutIdentityToControllerContext(_controller);
+        var model = new ChangePasswordModel();
+
+        var result = await _controller.ChangePassword(model);
+
+        Assert.IsType<NotFoundResult>(result);
+    }
+    [Fact]
+    public async Task ChangePassword_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new AccountController(_serviceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = await controller.ChangePassword(new ChangePasswordModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
     public async Task ChangePassword_ReturnsBadRequestObjectResult_IfOperationWasNotSuccessful()
     {
         _serviceMock.Setup(s => s.ChangePasswordAsync(It.IsAny<string>(),
             It.IsAny<ChangePasswordModel>()))
             .ThrowsAsync(new ArgumentException("TestException"));
-        AddAuthorizedIdentityUserToControllerContext(_controller);
+        ControllersHelper.AddAuthorizedIdentityUserToControllerContext(_controller);
         var model = new ChangePasswordModel() { OldPassword = "oldPassword", NewPassword = "newPassword" };
 
         var result = await _controller.ChangePassword(model);
 
         Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    private static void AddAuthorizedIdentityUserToControllerContext(ControllerBase controller)
-    {
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new Claim(ClaimTypes.Name, "User")
-        }, "mock"));
-
-        controller.ControllerContext = new ControllerContext()
-        {
-            HttpContext = new DefaultHttpContext() { User = user }
-        };
     }
 }

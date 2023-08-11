@@ -81,6 +81,18 @@ public class UsersControllerTests
         Assert.IsType<OkObjectResult>(result);
     }
     [Fact]
+    public async Task CreateUserProfile_ReturnsUnsuccessRegistrationResponseModel_IfRequestIsInvalid()
+    {
+        var controller = new UsersController(_userServiceMock.Object, _accountServiceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = ((await controller.CreateUserProfile(new RegistrationRequestModel())).Result as OkObjectResult)?.Value;
+
+        Assert.NotNull(result);
+        Assert.IsType<RegistrationResponseModel>(result);
+        Assert.False((result as RegistrationResponseModel)?.Success);
+    }
+    [Fact]
     public async Task UpdateUserProfile_ReturnsNoContentResult()
     {
         _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
@@ -105,6 +117,31 @@ public class UsersControllerTests
         var result = await _controller.UpdateUserProfile("oldName", new UserProfileUpdateModel() { UserName = "newName" });
 
         Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
+    public async Task UpdateUserProfile_ReturnsNoContentResult_WhenCorrectlyUpdatesUserRoles()
+    {
+        _userServiceMock.Setup(u => u.GetUserByNameOrIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new UserProfileModel());
+        _userServiceMock.Setup(a => a.UpdateUserRolesAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
+            .Callback(() => { });
+        _accountServiceMock.Setup(a => a.UpdateUserProfileAsync(It.IsAny<string>(), It.IsAny<UserProfileUpdateModel>()))
+            .Callback(() => { });
+        var model = new UserProfileUpdateModel() { Roles = new List<string>() { "firstRole", "secondRole" } };
+
+        var result = await _controller.UpdateUserProfile("oldName", model);
+
+        Assert.IsType<NoContentResult>(result);
+    }
+    [Fact]
+    public async Task UpdateUserProfile_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new UsersController(_userServiceMock.Object, _accountServiceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = await controller.UpdateUserProfile("testUser", new UserProfileUpdateModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
     }
     [Fact]
     public async Task UpdateUserProfile_ReturnsBadRequestObjectResult_IfTheUserProfileWasNotUpdated()
@@ -151,6 +188,16 @@ public class UsersControllerTests
         Assert.IsType<NoContentResult>(result);
     }
     [Fact]
+    public async Task ChangeUserPassword_ReturnsBadRequestObjectResult_IfModelWasInvalid()
+    {
+        var controller = new UsersController(_userServiceMock.Object, _accountServiceMock.Object,
+            ControllersHelper.GetValidationService(false));
+
+        var result = await controller.ChangeUserPassword("testUser", new SetPasswordModel());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    [Fact]
     public async Task ChangeUserPassword_ReturnsBadRequestObjectResult_IfUserDoesNotExist()
     {
         _userServiceMock.Setup(a => a.ChangeUserPasswordAsync(It.IsAny<string>(), It.IsAny<string>()))
@@ -171,5 +218,15 @@ public class UsersControllerTests
         var result = await _controller.ChangeUserPassword("1", new SetPasswordModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void GetAllRoles_ReturnsOkObjectResult()
+    {
+        _userServiceMock.Setup(u => u.GetAllRoles()).Returns(new List<string>());
+
+        var result = (_controller.GetAllRoles()).Result;
+
+        Assert.IsType<OkObjectResult>(result);
     }
 }

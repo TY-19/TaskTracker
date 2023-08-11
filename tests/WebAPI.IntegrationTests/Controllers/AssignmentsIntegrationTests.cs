@@ -34,7 +34,7 @@ public class AssignmentsIntegrationTests
     }
 
     [Fact]
-    public async Task AssignmentsController_CreateANewAssignment_AddsAssignmentToTheDatabase()
+    public async Task AssignmentsController_CreateNewAssignment_AddsAssignmentToTheDatabase()
     {
         await PrepareTestFixture();
         const string TOPIC = "Test";
@@ -62,7 +62,7 @@ public class AssignmentsIntegrationTests
     }
 
     [Fact]
-    public async Task AssignmentsController_CreateANewAssignment_ReturnsBadRequestStatusCode_IfModelIsNotValid()
+    public async Task AssignmentsController_CreateNewAssignment_ReturnsBadRequestStatusCode_IfModelIsNotValid()
     {
         await PrepareTestFixture();
         var assignment = new AssignmentPostModel();
@@ -79,7 +79,7 @@ public class AssignmentsIntegrationTests
     }
 
     [Fact]
-    public async Task AssignmentsController_CreateANewAssignment_ReturnsBadRequestStatusCode_IfBoardDoesNotExist()
+    public async Task AssignmentsController_CreateNewAssignment_ReturnsBadRequestStatusCode_IfBoardDoesNotExist()
     {
         await PrepareTestFixture();
         const string TOPIC = "Test";
@@ -97,7 +97,7 @@ public class AssignmentsIntegrationTests
     }
 
     [Fact]
-    public async Task AssignmentsController_CreateANewAssignment_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
+    public async Task AssignmentsController_CreateNewAssignment_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
         const string TOPIC = "Test";
@@ -113,7 +113,7 @@ public class AssignmentsIntegrationTests
     }
 
     [Fact]
-    public async Task AssignmentsController_CreateANewAssignment_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
+    public async Task AssignmentsController_CreateNewAssignment_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
     {
         await PrepareTestFixture();
         const string TOPIC = "Test";

@@ -61,7 +61,7 @@ public class StagesIntegrationTests
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
     }
     [Fact]
-    public async Task StagesController_CreateANewStageOnTheBoard_CreatesANewStageOnTheBoard()
+    public async Task StagesController_CreateNewStageOnTheBoard_CreatesANewStageOnTheBoard()
     {
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
@@ -79,7 +79,7 @@ public class StagesIntegrationTests
         Assert.True(await DoesBoardContainsStageWithSuchANameAsync(1, StageName));
     }
     [Fact]
-    public async Task StagesController_CreateANewStageOnTheBoard_ReturnsBadRequestStatusCode_IfModelIsNotValid()
+    public async Task StagesController_CreateNewStageOnTheBoard_ReturnsBadRequestStatusCode_IfModelIsNotValid()
     {
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
@@ -94,7 +94,7 @@ public class StagesIntegrationTests
         Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
     }
     [Fact]
-    public async Task StagesController_CreateANewStageOnTheBoard_ReturnsBadRequestStatusCode_IfBoardDoesNotExist()
+    public async Task StagesController_CreateNewStageOnTheBoard_ReturnsBadRequestStatusCode_IfBoardDoesNotExist()
     {
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
@@ -110,7 +110,7 @@ public class StagesIntegrationTests
         Assert.Equal(StatusCodes.Status400BadRequest, (int)httpResponse.StatusCode);
     }
     [Fact]
-    public async Task StagesController_CreateANewStageOnTheBoard_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
+    public async Task StagesController_CreateNewStageOnTheBoard_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
         const string RequestURI = $"api/boards/1/stages";
@@ -124,7 +124,7 @@ public class StagesIntegrationTests
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
     }
     [Fact]
-    public async Task StagesController_CreateANewStageOnTheBoard_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
+    public async Task StagesController_CreateNewStageOnTheBoard_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
     {
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
