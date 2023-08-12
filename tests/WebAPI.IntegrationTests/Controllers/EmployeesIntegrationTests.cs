@@ -39,7 +39,7 @@ public class EmployeesIntegrationTests
         await _seedHelper.CreateBoardAsync(board2);
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/employees";
+        const string RequestURI = "api/employees";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -61,7 +61,7 @@ public class EmployeesIntegrationTests
         var board2 = new Board() { Id = 2, Employees = new List<Employee>() { employee3 } };
         await _seedHelper.CreateBoardAsync(board1);
         await _seedHelper.CreateBoardAsync(board2);
-        const string RequestURI = $"api/employees";
+        const string RequestURI = "api/employees";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -80,7 +80,7 @@ public class EmployeesIntegrationTests
         await _seedHelper.CreateBoardAsync(board2);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/employees";
+        const string RequestURI = "api/employees";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -97,7 +97,7 @@ public class EmployeesIntegrationTests
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees";
+        const string RequestURI = "api/boards/1/employees";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -116,7 +116,7 @@ public class EmployeesIntegrationTests
         var employee2 = new Employee() { Id = 2, FirstName = "FirstName2", LastName = "LastName2" };
         var board = new Board() { Id = 1, Employees = new List<Employee>() { employee1, employee2 } };
         await _seedHelper.CreateBoardAsync(board);
-        const string RequestURI = $"api/boards/1/employees";
+        const string RequestURI = "api/boards/1/employees";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -132,7 +132,7 @@ public class EmployeesIntegrationTests
         await _seedHelper.CreateBoardAsync(board);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees";
+        const string RequestURI = "api/boards/1/employees";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -150,7 +150,7 @@ public class EmployeesIntegrationTests
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees/1";
+        const string RequestURI = "api/boards/1/employees/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -171,7 +171,7 @@ public class EmployeesIntegrationTests
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees/1";
+        const string RequestURI = "api/boards/1/employees/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -186,7 +186,7 @@ public class EmployeesIntegrationTests
         var employee = new Employee() { Id = 1, FirstName = FirstName, LastName = LastName };
         var board = new Board() { Id = 1, Employees = new List<Employee>() { employee } };
         await _seedHelper.CreateBoardAsync(board);
-        const string RequestURI = $"api/boards/1/employees/1";
+        const string RequestURI = "api/boards/1/employees/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -201,7 +201,7 @@ public class EmployeesIntegrationTests
         await _seedHelper.CreateBoardAsync(board);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees/1";
+        const string RequestURI = "api/boards/1/employees/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -211,11 +211,11 @@ public class EmployeesIntegrationTests
     public async Task EmployeesController_AddEmployeeToTheBoard_AddsEmployeeToTheBoard()
     {
         await PrepareTestFixture();
-        var board = new Board() { Id = 1, Employees = new List<Employee>() { } };
+        var board = new Board() { Id = 1, Employees = new List<Employee>() };
         await _seedHelper.CreateBoardAsync(board);
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees/testemployee";
+        const string RequestURI = "api/boards/1/employees/testemployee";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, null);
         httpResponse.EnsureSuccessStatusCode();
@@ -226,11 +226,11 @@ public class EmployeesIntegrationTests
     public async Task EmployeesController_AddEmployeeToTheBoard_ReturnsBadRequestStatusCode_IfEmployeeDoesNotExist()
     {
         await PrepareTestFixture();
-        var board = new Board() { Id = 1, Employees = new List<Employee>() { } };
+        var board = new Board() { Id = 1, Employees = new List<Employee>() };
         await _seedHelper.CreateBoardAsync(board);
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees/nonexistingemployee";
+        const string RequestURI = "api/boards/1/employees/nonexistingemployee";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, null);
 
@@ -240,11 +240,11 @@ public class EmployeesIntegrationTests
     public async Task EmployeesController_AddEmployeeToTheBoard_ReturnsBadRequestStatusCode_IfBoardDoesNotExist()
     {
         await PrepareTestFixture();
-        var board = new Board() { Id = 1, Employees = new List<Employee>() { } };
+        var board = new Board() { Id = 1, Employees = new List<Employee>() };
         await _seedHelper.CreateBoardAsync(board);
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/999/employees/testemployee";
+        const string RequestURI = "api/boards/999/employees/testemployee";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, null);
 
@@ -254,9 +254,9 @@ public class EmployeesIntegrationTests
     public async Task EmployeesController_AddEmployeeToTheBoard_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        var board = new Board() { Id = 1, Employees = new List<Employee>() { } };
+        var board = new Board() { Id = 1, Employees = new List<Employee>() };
         await _seedHelper.CreateBoardAsync(board);
-        const string RequestURI = $"api/boards/1/employees/testemployee";
+        const string RequestURI = "api/boards/1/employees/testemployee";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, null);
 
@@ -266,11 +266,11 @@ public class EmployeesIntegrationTests
     public async Task EmployeesController_AddEmployeeToTheBoard_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
     {
         await PrepareTestFixture();
-        var board = new Board() { Id = 1, Employees = new List<Employee>() { } };
+        var board = new Board() { Id = 1, Employees = new List<Employee>() };
         await _seedHelper.CreateBoardAsync(board);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees/testemployee";
+        const string RequestURI = "api/boards/1/employees/testemployee";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, null);
 
@@ -287,7 +287,7 @@ public class EmployeesIntegrationTests
         await _seedHelper.CreateBoardAsync(board);
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees/1";
+        const string RequestURI = "api/boards/1/employees/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -303,7 +303,7 @@ public class EmployeesIntegrationTests
         var employee1 = new Employee() { Id = 1, FirstName = FirstName, LastName = LastName };
         var board = new Board() { Id = 1, Employees = new List<Employee>() { employee1 } };
         await _seedHelper.CreateBoardAsync(board);
-        const string RequestURI = $"api/boards/1/employees/1";
+        const string RequestURI = "api/boards/1/employees/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
 
@@ -320,7 +320,7 @@ public class EmployeesIntegrationTests
         await _seedHelper.CreateBoardAsync(board);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/employees/1";
+        const string RequestURI = "api/boards/1/employees/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
 

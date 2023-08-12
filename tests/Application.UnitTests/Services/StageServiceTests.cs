@@ -189,7 +189,6 @@ public class StageServiceTests
             () => Assert.Equal(2, stageMoved.Position),
             () => Assert.Equal(1, stageDisplaced.Position)
         );
-
     }
     [Fact]
     public async Task MoveStage_ThrowsExceptionAndDoesntMoveStageForward_IfItIsAlreadyInTheLastPosition()
@@ -314,7 +313,6 @@ public class StageServiceTests
         await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await service.DeleteStageAsync(2, 3));
     }
-
 
     private static StageService GetStageService(TestDbContext context)
     {

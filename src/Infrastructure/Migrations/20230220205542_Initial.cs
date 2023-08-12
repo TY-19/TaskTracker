@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
+#pragma warning disable RCS1021
 
 namespace TaskTracker.Infrastructure.Migrations
 {
@@ -418,3 +419,4 @@ namespace TaskTracker.Infrastructure.Migrations
         }
     }
 }
+#pragma warning restore RCS1021

@@ -50,7 +50,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
+    [Authorize(Roles = DefaultRolesNames.DEFAULT_ADMIN_ROLE)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -74,7 +74,7 @@ public class UsersController : ControllerBase
         };
     }
 
-    [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
+    [Authorize(Roles = DefaultRolesNames.DEFAULT_ADMIN_ROLE)]
     [Route("{userNameOrId}")]
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -110,7 +110,7 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
+    [Authorize(Roles = DefaultRolesNames.DEFAULT_ADMIN_ROLE)]
     [Route("{userNameOrId}/changepassword")]
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -135,7 +135,7 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
+    [Authorize(Roles = DefaultRolesNames.DEFAULT_ADMIN_ROLE)]
     [Route("{userNameOrId}")]
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -148,7 +148,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = $"{DefaultRolesNames.DEFAULT_ADMIN_ROLE}")]
+    [Authorize(Roles = DefaultRolesNames.DEFAULT_ADMIN_ROLE)]
     [Route("roles")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

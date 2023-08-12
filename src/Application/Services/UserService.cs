@@ -88,10 +88,9 @@ public class UserService : IUserService
 
     public async Task ChangeUserPasswordAsync(string usernameOrId, string newPassword)
     {
-        User user = await _userManager.FindByIdAsync(usernameOrId)
-            ?? await _userManager.FindByNameAsync(usernameOrId);
-        if (user == null)
-            throw new ArgumentException("User with such an Id or Name does not exist", nameof(usernameOrId));
+        User user = (await _userManager.FindByIdAsync(usernameOrId)
+            ?? await _userManager.FindByNameAsync(usernameOrId))
+            ?? throw new ArgumentException("User with such an Id or Name does not exist", nameof(usernameOrId));
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, newPassword);
     }

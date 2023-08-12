@@ -30,7 +30,7 @@ public class AccountIntegrationTests
     public async Task AccountController_Login_ReturnsCorrectUserToken()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/login";
+        const string RequestURI = "api/account/login";
         var loginRequest = new LoginRequestModel() { NameOrEmail = "testemployee@example.com", Password = "Pa$$w0rd" };
         var content = new StringContent(JsonSerializer.Serialize(loginRequest),
             Encoding.UTF8, "application/json");
@@ -48,7 +48,7 @@ public class AccountIntegrationTests
     public async Task AccountController_Login_ReturnsNoUserToken_IfCredentialsAreInvalid()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/login";
+        const string RequestURI = "api/account/login";
         var loginRequest = new LoginRequestModel() { NameOrEmail = "testemployee@example.com", Password = "Invalid" };
         var content = new StringContent(JsonSerializer.Serialize(loginRequest),
             Encoding.UTF8, "application/json");
@@ -66,7 +66,7 @@ public class AccountIntegrationTests
     public async Task AccountController_Login_ReturnsNoUserToken_IfRequestModelIsInvalid()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/login";
+        const string RequestURI = "api/account/login";
         var loginRequest = new LoginRequestModel() { NameOrEmail = string.Empty, Password = string.Empty };
         var content = new StringContent(JsonSerializer.Serialize(loginRequest),
             Encoding.UTF8, "application/json");
@@ -83,7 +83,7 @@ public class AccountIntegrationTests
     [Fact]
     public async Task AccountController_Registration_CreatesNewUser()
     {
-        const string RequestURI = $"api/account/registration";
+        const string RequestURI = "api/account/registration";
         const string UserName = "NewTestUser";
         var registrationRequest = new RegistrationRequestModel()
         {
@@ -106,7 +106,7 @@ public class AccountIntegrationTests
     [Fact]
     public async Task AccountController_Registration_ReturnsUnsuccessResult_IfModelIsInvalid()
     {
-        const string RequestURI = $"api/account/registration";
+        const string RequestURI = "api/account/registration";
         const string UserName = "NewTestUser";
         var registrationRequest = new RegistrationRequestModel()
         {
@@ -130,7 +130,7 @@ public class AccountIntegrationTests
     public async Task AccountController_Registration_ReturnsUnsuccessResult_IfUserAlreadyExist()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/registration";
+        const string RequestURI = "api/account/registration";
         const string UserName = "testemployee";
         var registrationRequest = new RegistrationRequestModel()
         {
@@ -153,7 +153,7 @@ public class AccountIntegrationTests
     public async Task AccountController_ViewProfile_ReturnsUserProfile()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile";
+        const string RequestURI = "api/account/profile";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -169,7 +169,7 @@ public class AccountIntegrationTests
     public async Task AccountController_ViewProfile_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile";
+        const string RequestURI = "api/account/profile";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -179,7 +179,7 @@ public class AccountIntegrationTests
     public async Task AccountController_UpdateProfile_UpdatesUserProfile()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile";
+        const string RequestURI = "api/account/profile";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string NewEmail = "newemail@example.com";
@@ -197,7 +197,7 @@ public class AccountIntegrationTests
     public async Task AccountController_UpdateProfile_ReturnsBadRequestStatusCode_IfModelIsNotValid()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile";
+        const string RequestURI = "api/account/profile";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var model = new UserProfileUpdateModel() { Email = "notEmail.com" };
@@ -212,7 +212,7 @@ public class AccountIntegrationTests
     public async Task AccountController_UpdateProfile_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile";
+        const string RequestURI = "api/account/profile";
         const string NewEmail = "newemail@example.com";
         var model = new UserProfileUpdateModel() { Email = NewEmail };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -227,7 +227,7 @@ public class AccountIntegrationTests
     public async Task AccountController_ChangePassword_ChangesUserPassword()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile/changepassword";
+        const string RequestURI = "api/account/profile/changepassword";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string NewPassword = "NewPassword";
@@ -245,7 +245,7 @@ public class AccountIntegrationTests
     public async Task AccountController_ChangePassword_DoesNotChangePassword_IfOldPasswordIsInvalid()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile/changepassword";
+        const string RequestURI = "api/account/profile/changepassword";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string NewPassword = "NewPassword";
@@ -263,7 +263,7 @@ public class AccountIntegrationTests
     public async Task AccountController_ChangePassword_ReturnsBadRequest_IfOldPasswordIsInvalid()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile/changepassword";
+        const string RequestURI = "api/account/profile/changepassword";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string NewPassword = "NewPassword";
@@ -279,7 +279,7 @@ public class AccountIntegrationTests
     public async Task AccountController_ChangePassword_ReturnsBadRequestStatusCode_IfModelIsNotValid()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile/changepassword";
+        const string RequestURI = "api/account/profile/changepassword";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var model = new ChangePasswordModel() { OldPassword = "Pa$$w0rd", NewPassword = "123" };
@@ -294,7 +294,7 @@ public class AccountIntegrationTests
     public async Task AccountController_ChangePassword_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/account/profile/changepassword";
+        const string RequestURI = "api/account/profile/changepassword";
         const string NewPassword = "NewPassword";
         var model = new ChangePasswordModel() { OldPassword = "Pa$$w0rd", NewPassword = NewPassword };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -317,5 +317,4 @@ public class AccountIntegrationTests
         var context = test.ServiceProvider.GetService<TrackerDbContext>();
         return await context!.Users.FirstOrDefaultAsync(a => a.Email == email) != null;
     }
-
 }

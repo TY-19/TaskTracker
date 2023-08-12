@@ -206,7 +206,6 @@ public class AccountControllerTests
         var result = await _controller.UpdateProfile(model);
 
         Assert.IsType<BadRequestObjectResult>(result);
-
     }
     [Fact]
     public async Task ChangePassword_ReturnsNoContentResult()
@@ -230,7 +229,6 @@ public class AccountControllerTests
         var result = await _controller.ChangePassword(model);
 
         Assert.IsType<NotFoundResult>(result);
-
     }
     [Fact]
     public async Task ChangePassword_ReturnsNotFoundResult_IfUserIsNotIdentified()

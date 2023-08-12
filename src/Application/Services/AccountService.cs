@@ -147,7 +147,7 @@ public class AccountService : IAccountService
         User user = await _userManager.FindByNameAsync(userName)
             ?? throw new ArgumentException("User does not exist");
 
-        IdentityResult result = null!;
+        IdentityResult result;
         try
         {
             result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);

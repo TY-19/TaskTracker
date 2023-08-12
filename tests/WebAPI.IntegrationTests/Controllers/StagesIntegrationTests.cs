@@ -39,7 +39,7 @@ public class StagesIntegrationTests
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = "First Stage" });
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 2, BoardId = 1, Name = "Second Stage" });
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
-        const string RequestURI = $"api/boards/1/stages";
+        const string RequestURI = "api/boards/1/stages";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -55,7 +55,7 @@ public class StagesIntegrationTests
         await PrepareTestFixture();
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = "First Stage" });
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 2, BoardId = 1, Name = "Second Stage" });
-        const string RequestURI = $"api/boards/1/stages";
+        const string RequestURI = "api/boards/1/stages";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -69,7 +69,7 @@ public class StagesIntegrationTests
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = "First Stage" });
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 2, BoardId = 1, Name = "Second Stage" });
-        const string RequestURI = $"api/boards/1/stages";
+        const string RequestURI = "api/boards/1/stages";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -81,7 +81,7 @@ public class StagesIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/stages";
+        const string RequestURI = "api/boards/1/stages";
         const string StageName = "NewStage";
         var stage = new WorkflowStagePostModel() { Name = StageName };
         var content = new StringContent(JsonSerializer.Serialize(stage),
@@ -99,7 +99,7 @@ public class StagesIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/stages";
+        const string RequestURI = "api/boards/1/stages";
         var stage = new WorkflowStagePostModel();
         var content = new StringContent(JsonSerializer.Serialize(stage),
             Encoding.UTF8, "application/json");
@@ -114,7 +114,7 @@ public class StagesIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/999/stages";
+        const string RequestURI = "api/boards/999/stages";
         const string StageName = "NewStage";
         var stage = new WorkflowStagePostModel() { Name = StageName };
         var content = new StringContent(JsonSerializer.Serialize(stage),
@@ -128,7 +128,7 @@ public class StagesIntegrationTests
     public async Task StagesController_CreateNewStageOnTheBoard_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/boards/1/stages";
+        const string RequestURI = "api/boards/1/stages";
         const string StageName = "NewStage";
         var stage = new WorkflowStagePostModel() { Name = StageName };
         var content = new StringContent(JsonSerializer.Serialize(stage),
@@ -144,7 +144,7 @@ public class StagesIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/stages";
+        const string RequestURI = "api/boards/1/stages";
         const string StageName = "NewStage";
         var stage = new WorkflowStagePostModel() { Name = StageName };
         var content = new StringContent(JsonSerializer.Serialize(stage),
@@ -163,7 +163,7 @@ public class StagesIntegrationTests
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -180,7 +180,7 @@ public class StagesIntegrationTests
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -196,7 +196,7 @@ public class StagesIntegrationTests
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -208,7 +208,7 @@ public class StagesIntegrationTests
         await PrepareTestFixture();
         const string StageName = "NewStage";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = StageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -222,7 +222,7 @@ public class StagesIntegrationTests
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = StageName });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -237,7 +237,7 @@ public class StagesIntegrationTests
         const string OldStageName = "Old Stage Name";
         const string NewStageName = "New Stage Name";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = OldStageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
         var model = new WorkflowStagePutModel() { Name = NewStageName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -256,7 +256,7 @@ public class StagesIntegrationTests
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string OldStageName = "Old Stage Name";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = OldStageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
         var model = new WorkflowStagePutModel() { Name = string.Empty };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -275,7 +275,7 @@ public class StagesIntegrationTests
         const string NewStageName = "New Stage Name";
         await _seedHelper.CreateBoardAsync(new Board() { Id = 2 });
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 2, Name = OldStageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
         var model = new WorkflowStagePutModel() { Name = NewStageName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -291,7 +291,7 @@ public class StagesIntegrationTests
         const string OldStageName = "Old Stage Name";
         const string NewStageName = "New Stage Name";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = OldStageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
         var model = new WorkflowStagePutModel() { Name = NewStageName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -309,7 +309,7 @@ public class StagesIntegrationTests
         const string OldStageName = "Old Stage Name";
         const string NewStageName = "New Stage Name";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = OldStageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
         var model = new WorkflowStagePutModel() { Name = NewStageName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -321,10 +321,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageForward_ExchangesStagesPositions()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -332,7 +332,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/1/moveforward";
+        const string RequestURI = "api/boards/1/stages/1/moveforward";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
         httpResponse.EnsureSuccessStatusCode();
@@ -347,10 +347,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageForward_ReturnsBadRequest_IfBoardIdIsIncorrect()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -358,7 +358,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/99/stages/1/moveforward";
+        const string RequestURI = "api/boards/99/stages/1/moveforward";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -367,10 +367,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageForward_ReturnsBadRequest_IStageDoesNotExist()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -378,7 +378,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/99/moveforward";
+        const string RequestURI = "api/boards/1/stages/99/moveforward";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -387,10 +387,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageForward_ReturnsBadRequest_IfStageIsAlreadyInLastPosition()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -398,7 +398,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/2/moveforward";
+        const string RequestURI = "api/boards/1/stages/2/moveforward";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -407,16 +407,16 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageForward_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         await _seedHelper.CreateStageAsync(
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/1/moveforward";
+        const string RequestURI = "api/boards/1/stages/1/moveforward";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -425,10 +425,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageForward_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -436,7 +436,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/1/moveforward";
+        const string RequestURI = "api/boards/1/stages/1/moveforward";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -445,10 +445,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageBack_ExchangesStagesPositions()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -456,7 +456,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/2/moveback";
+        const string RequestURI = "api/boards/1/stages/2/moveback";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
         httpResponse.EnsureSuccessStatusCode();
@@ -471,10 +471,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageBack_ReturnsBadRequest_IfBoardIdIsIncorrect()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -482,7 +482,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/99/stages/1/moveback";
+        const string RequestURI = "api/boards/99/stages/1/moveback";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -491,10 +491,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageBack_ReturnsBadRequest_IStageDoesNotExist()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -502,7 +502,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/99/moveback";
+        const string RequestURI = "api/boards/1/stages/99/moveback";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -511,10 +511,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageBack_ReturnsBadRequest_IfStageIsAlreadyInFirstPosition()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -522,7 +522,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/1/moveback";
+        const string RequestURI = "api/boards/1/stages/1/moveback";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -531,16 +531,16 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageBack_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         await _seedHelper.CreateStageAsync(
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/1/moveback";
+        const string RequestURI = "api/boards/1/stages/1/moveback";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -549,10 +549,10 @@ public class StagesIntegrationTests
     [Fact]
     public async Task StagesController_MoveStageBack_ReturnsForbiddenStatusCode_IfCalledByEmployeeUser()
     {
-        string firstStageName = "First stage";
-        string secondStageName = "Second stage";
-        int firstStagePosition = 1;
-        int secondStagePosition = 2;
+        const string firstStageName = "First stage";
+        const string secondStageName = "Second stage";
+        const int firstStagePosition = 1;
+        const int secondStagePosition = 2;
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -560,7 +560,7 @@ public class StagesIntegrationTests
             GetStage(id: 1, name: firstStageName, position: firstStagePosition));
         await _seedHelper.CreateStageAsync(
             GetStage(id: 2, name: secondStageName, position: secondStagePosition));
-        const string RequestURI = $"api/boards/1/stages/1/moveback";
+        const string RequestURI = "api/boards/1/stages/1/moveback";
 
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
 
@@ -574,7 +574,7 @@ public class StagesIntegrationTests
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string StageName = "Stage One";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = StageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -593,7 +593,7 @@ public class StagesIntegrationTests
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = StageName1, Position = 1 });
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 2, BoardId = 1, Name = StageName2, Position = 2 });
         await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, BoardId = 1, StageId = 1, Topic = AssignmentTopic });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -611,7 +611,7 @@ public class StagesIntegrationTests
         const string StageName = "Stage One";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = StageName, Position = 1 });
         await _seedHelper.CreateAssignmentAsync(new Assignment() { Id = 1, BoardId = 1, StageId = 1, Topic = "Assignment One" });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
 
@@ -627,7 +627,7 @@ public class StagesIntegrationTests
         await _seedHelper.CreateBoardAsync(new Board() { Id = 2 });
         const string StageName = "Stage One";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 2, Name = StageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -640,7 +640,7 @@ public class StagesIntegrationTests
         await PrepareTestFixture();
         const string StageName = "Stage One";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = StageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
 
@@ -654,7 +654,7 @@ public class StagesIntegrationTests
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string StageName = "Stage One";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = StageName });
-        const string RequestURI = $"api/boards/1/stages/1";
+        const string RequestURI = "api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
 
@@ -698,6 +698,5 @@ public class StagesIntegrationTests
             Name = name,
             Position = position
         };
-
     }
 }

@@ -43,7 +43,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts";
+        const string RequestURI = "api/boards/1/tasks/1/subparts";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -60,7 +60,7 @@ public class SubpartsIntegrationTests
         await PrepareTestFixture();
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = "First Part" });
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 2, AssignmentId = 1, Name = "Second Part" });
-        const string RequestURI = $"api/boards/1/tasks/1/subparts";
+        const string RequestURI = "api/boards/1/tasks/1/subparts";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -74,7 +74,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 2, AssignmentId = 1, Name = "Second Part" });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts";
+        const string RequestURI = "api/boards/1/tasks/1/subparts";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -89,7 +89,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -106,7 +106,7 @@ public class SubpartsIntegrationTests
         string? token = _authHelper.TestEmployeeUserToken;
         await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -118,7 +118,7 @@ public class SubpartsIntegrationTests
         await PrepareTestFixture();
         const string SubpartName = "First Part";
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -132,7 +132,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -148,7 +148,7 @@ public class SubpartsIntegrationTests
         var subpart = new SubpartPostModel() { AssignmentId = 1, Name = SubpartName };
         var content = new StringContent(JsonSerializer.Serialize(subpart),
             Encoding.UTF8, "application/json");
-        const string RequestURI = $"api/boards/1/tasks/1/subparts";
+        const string RequestURI = "api/boards/1/tasks/1/subparts";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
         httpResponse.EnsureSuccessStatusCode();
@@ -166,7 +166,7 @@ public class SubpartsIntegrationTests
         var subpart = new SubpartPostModel() { AssignmentId = 2, Name = SubpartName };
         var content = new StringContent(JsonSerializer.Serialize(subpart),
             Encoding.UTF8, "application/json");
-        const string RequestURI = $"api/boards/1/tasks/2/subparts";
+        const string RequestURI = "api/boards/1/tasks/2/subparts";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
 
@@ -183,7 +183,7 @@ public class SubpartsIntegrationTests
         var subpart = new SubpartPostModel();
         var content = new StringContent(JsonSerializer.Serialize(subpart),
             Encoding.UTF8, "application/json");
-        const string RequestURI = $"api/boards/1/tasks/1/subparts";
+        const string RequestURI = "api/boards/1/tasks/1/subparts";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
 
@@ -222,7 +222,7 @@ public class SubpartsIntegrationTests
         var subpart = new SubpartPostModel() { AssignmentId = 1, Name = SubpartName };
         var content = new StringContent(JsonSerializer.Serialize(subpart),
             Encoding.UTF8, "application/json");
-        const string RequestURI = $"api/boards/1/tasks/1/subparts";
+        const string RequestURI = "api/boards/1/tasks/1/subparts";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
 
@@ -238,7 +238,7 @@ public class SubpartsIntegrationTests
         var subpart = new SubpartPostModel() { AssignmentId = 1, Name = SubpartName };
         var content = new StringContent(JsonSerializer.Serialize(subpart),
             Encoding.UTF8, "application/json");
-        const string RequestURI = $"api/boards/1/tasks/1/subparts";
+        const string RequestURI = "api/boards/1/tasks/1/subparts";
 
         var httpResponse = await _httpClient.PostAsync(RequestURI, content);
 
@@ -253,7 +253,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = OldSubpartName });
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
         var model = new SubpartPutModel() { Name = NewSubpartName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -272,7 +272,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = OldSubpartName });
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
         var model = new SubpartPutModel() { Name = string.Empty };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -288,7 +288,7 @@ public class SubpartsIntegrationTests
         const string NewSubpartName = "New Subpart Name";
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
         var model = new SubpartPutModel() { Name = NewSubpartName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -303,7 +303,7 @@ public class SubpartsIntegrationTests
         const string OldSubpartName = "Old Subpart Name";
         const string NewSubpartName = "New Subpart Name";
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = OldSubpartName });
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
         var model = new SubpartPutModel() { Name = NewSubpartName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -320,7 +320,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = OldSubpartName });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
         var model = new SubpartPutModel() { Name = NewSubpartName };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -337,7 +337,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -353,7 +353,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 2, Name = SubpartName });
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -366,7 +366,7 @@ public class SubpartsIntegrationTests
         await PrepareTestFixture();
         const string SubpartName = "First Part";
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
 
@@ -380,7 +380,7 @@ public class SubpartsIntegrationTests
         await _seedHelper.CreateSubpartAsync(new Subpart() { Id = 1, AssignmentId = 1, Name = SubpartName });
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/boards/1/tasks/1/subparts/1";
+        const string RequestURI = "api/boards/1/tasks/1/subparts/1";
 
         var httpResponse = await _httpClient.DeleteAsync(RequestURI);
 

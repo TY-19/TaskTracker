@@ -57,8 +57,8 @@ public class JwtHandlerServiceTests
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(c => c["JwtSettings:SecurityKey"]).Returns("testkey");
         var context = ServicesTestsHelper.GetTestDbContext();
-        string userName = "TestName";
-        string userEmail = "testemail@example.com";
+        const string userName = "TestName";
+        const string userEmail = "testemail@example.com";
         var user = new User() { UserName = userName, Email = userEmail };
         var service = new JwtHandlerService(configuration.Object,
             ServicesTestsHelper.GetUserManager(context));

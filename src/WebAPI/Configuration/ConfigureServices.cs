@@ -26,7 +26,6 @@ public static class ConfigureServices
         services.AddAuthorization();
         services.ConfigureOptions<AuthorizationConfigOptions>();
 
-
         services.AddControllers();
         services.ConfigureOptions<JsonConfigOptions>();
 
@@ -54,6 +53,5 @@ public static class ConfigureServices
 
         services.AddSingleton<IValidationService, ValidationService>();
         services.AddSingleton(new AutomapperConfiguration().GetMapper());
-
     }
 }

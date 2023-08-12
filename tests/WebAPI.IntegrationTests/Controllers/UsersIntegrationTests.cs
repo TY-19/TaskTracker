@@ -32,7 +32,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/";
+        const string RequestURI = "api/users/";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -47,7 +47,7 @@ public class UsersIntegrationTests
     public async Task UsersController_GetAllUsers_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/users/";
+        const string RequestURI = "api/users/";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -59,7 +59,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/";
+        const string RequestURI = "api/users/";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -71,7 +71,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee";
+        const string RequestURI = "api/users/testemployee";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -89,7 +89,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/nonexistinguser";
+        const string RequestURI = "api/users/nonexistinguser";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -99,7 +99,7 @@ public class UsersIntegrationTests
     public async Task UsersController_GetUserProfile_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/users/testemployee";
+        const string RequestURI = "api/users/testemployee";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -111,7 +111,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee";
+        const string RequestURI = "api/users/testemployee";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -123,7 +123,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/";
+        const string RequestURI = "api/users/";
         const string UserName = "NewUser";
         var user = new RegistrationRequestModel() { UserName = UserName, Email = "newuser@example.com", Password = "Pa$$w0rd" };
         var content = new StringContent(JsonSerializer.Serialize(user),
@@ -144,7 +144,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/";
+        const string RequestURI = "api/users/";
         var user = new RegistrationRequestModel() { UserName = "testadmin", Email = "testadmin@example.com", Password = "Pa$$w0rd" };
         var content = new StringContent(JsonSerializer.Serialize(user),
             Encoding.UTF8, "application/json");
@@ -163,7 +163,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/";
+        const string RequestURI = "api/users/";
         var user = new RegistrationRequestModel() { UserName = "NewName", Email = "notemail", Password = "1234" };
         var content = new StringContent(JsonSerializer.Serialize(user),
             Encoding.UTF8, "application/json");
@@ -180,7 +180,7 @@ public class UsersIntegrationTests
     public async Task UsersController_CreateUserProfile_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/users/";
+        const string RequestURI = "api/users/";
         const string UserName = "NewUser";
         var user = new RegistrationRequestModel() { UserName = UserName, Email = "newuser@example.com", Password = "Pa$$w0rd" };
         var content = new StringContent(JsonSerializer.Serialize(user),
@@ -196,7 +196,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/";
+        const string RequestURI = "api/users/";
         const string UserName = "NewUser";
         var user = new RegistrationRequestModel() { UserName = UserName, Email = "newuser@example.com", Password = "Pa$$w0rd" };
         var content = new StringContent(JsonSerializer.Serialize(user),
@@ -212,7 +212,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/";
+        const string RequestURI = "api/users/";
         const string UserName = "NewUser";
         var user = new RegistrationRequestModel() { UserName = UserName, Email = "newuser@example.com", Password = "Pa$$w0rd" };
         var content = new StringContent(JsonSerializer.Serialize(user),
@@ -228,7 +228,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee";
+        const string RequestURI = "api/users/testemployee";
         const string UserName = "UpdatedName";
         var model = new UserProfileUpdateModel()
         {
@@ -251,7 +251,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/nonexistinguser";
+        const string RequestURI = "api/users/nonexistinguser";
         const string UserName = "UpdatedName";
         var model = new UserProfileUpdateModel() { UserName = UserName };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -267,7 +267,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee";
+        const string RequestURI = "api/users/testemployee";
         var model = new UserProfileUpdateModel() { Email = "notemail" };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -280,7 +280,7 @@ public class UsersIntegrationTests
     public async Task UsersController_UpdateUserProfile_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/users/testemployee";
+        const string RequestURI = "api/users/testemployee";
         const string UserName = "UpdatedName";
         var model = new UserProfileUpdateModel() { UserName = UserName };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -296,7 +296,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee";
+        const string RequestURI = "api/users/testemployee";
         const string UserName = "UpdatedName";
         var model = new UserProfileUpdateModel() { UserName = UserName };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -312,7 +312,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee";
+        const string RequestURI = "api/users/testemployee";
         const string UserName = "UpdatedName";
         var model = new UserProfileUpdateModel() { UserName = UserName };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -328,7 +328,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee/changepassword";
+        const string RequestURI = "api/users/testemployee/changepassword";
         const string NewPassword = "$tr0ngNewPassword";
         var model = new SetPasswordModel() { NewPassword = NewPassword };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -346,7 +346,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee/changepassword";
+        const string RequestURI = "api/users/testemployee/changepassword";
         var model = new SetPasswordModel() { NewPassword = string.Empty };
         var content = new StringContent(JsonSerializer.Serialize(model),
             Encoding.UTF8, "application/json");
@@ -361,7 +361,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/nonexistinguser/changepassword";
+        const string RequestURI = "api/users/nonexistinguser/changepassword";
         const string NewPassword = "$tr0ngNewPassword";
         var model = new SetPasswordModel() { NewPassword = NewPassword };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -375,7 +375,7 @@ public class UsersIntegrationTests
     public async Task UsersController_ChangeUserPassword_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/users/testemployee/changepassword";
+        const string RequestURI = "api/users/testemployee/changepassword";
         const string NewPassword = "$tr0ngNewPassword";
         var model = new SetPasswordModel() { NewPassword = NewPassword };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -391,7 +391,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee/changepassword";
+        const string RequestURI = "api/users/testemployee/changepassword";
         const string NewPassword = "$tr0ngNewPassword";
         var model = new SetPasswordModel() { NewPassword = NewPassword };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -407,7 +407,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/testemployee/changepassword";
+        const string RequestURI = "api/users/testemployee/changepassword";
         const string NewPassword = "$tr0ngNewPassword";
         var model = new SetPasswordModel() { NewPassword = NewPassword };
         var content = new StringContent(JsonSerializer.Serialize(model),
@@ -477,7 +477,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestAdminUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/roles";
+        const string RequestURI = "api/users/roles";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
         httpResponse.EnsureSuccessStatusCode();
@@ -492,7 +492,7 @@ public class UsersIntegrationTests
     public async Task UsersController_GetAllRoles_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
         await PrepareTestFixture();
-        const string RequestURI = $"api/users/roles";
+        const string RequestURI = "api/users/roles";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
@@ -504,7 +504,7 @@ public class UsersIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        const string RequestURI = $"api/users/roles";
+        const string RequestURI = "api/users/roles";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 

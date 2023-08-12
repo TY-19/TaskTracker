@@ -10,7 +10,6 @@ namespace TaskTracker.WebAPI.IntegrationTests.Infractructure;
 
 public class SeedDataTests
 {
-
     [Fact]
     public async Task SeedDefaultRolesAndUsersAsync_ApplyPendingMigrations()
     {

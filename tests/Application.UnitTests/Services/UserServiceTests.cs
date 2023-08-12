@@ -37,7 +37,7 @@ public class UserServiceTests
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = GetUserService(context);
         await DefaultData.SeedAsync(context);
-        string id = "12345678-1234-1234-1234-123456789012";
+        const string id = "12345678-1234-1234-1234-123456789012";
 
         var user = await service.GetUserByNameOrIdAsync(id);
 
@@ -50,7 +50,7 @@ public class UserServiceTests
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = GetUserService(context);
         await DefaultData.SeedAsync(context);
-        string userName = "secondUser";
+        const string userName = "secondUser";
 
         var user = await service.GetUserByNameOrIdAsync(userName);
 
@@ -73,8 +73,8 @@ public class UserServiceTests
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = GetUserService(context);
         await DefaultData.SeedAsync(context);
-        string oldName = "testUser";
-        string newName = "updatedUser";
+        const string oldName = "testUser";
+        const string newName = "updatedUser";
         string id = (await context.Users.FirstOrDefaultAsync(u => u.UserName == oldName))?.Id ?? string.Empty;
 
         await service.UpdateUserNameAsync(oldName, newName);
@@ -154,7 +154,7 @@ public class UserServiceTests
         var context = ServicesTestsHelper.GetTestDbContext();
         var service = GetUserService(context);
         await DefaultData.SeedAsync(context);
-        string userName = "testUser";
+        const string userName = "testUser";
         var oldHash = (await context.Users.FirstOrDefaultAsync(u => u.UserName == userName))?.PasswordHash;
 
         await service.ChangeUserPasswordAsync(userName, "newPassword");

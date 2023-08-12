@@ -493,7 +493,6 @@ public class AutomapperProfileTests
             cfg.AddProfile<AutomapperProfile>()).CreateMapper();
     }
 
-
     private readonly static Board board1 = new() { Id = 1, Name = "Board1" };
     private readonly static Board board2 = new() { Id = 2, Name = "Board2" };
     private readonly static WorkflowStage stage1 = new()

@@ -9,8 +9,8 @@ namespace TaskTracker.WebAPI.UnitTests.Helpers;
 
 internal static class ControllersHelper
 {
-    private static ValidationResult ValidationSuccessResult => new ValidationResult();
-    private static ValidationResult ValidationFailResult => new ValidationResult()
+    private static ValidationResult ValidationSuccessResult => new ();
+    private static ValidationResult ValidationFailResult => new ()
     {
         Errors = new List<ValidationFailure>()
         {

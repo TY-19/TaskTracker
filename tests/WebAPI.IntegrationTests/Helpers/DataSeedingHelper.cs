@@ -95,5 +95,4 @@ internal class DataSeedingHelper
         Position = 1
     };
     private Assignment Assignment1 { get; } = new Assignment() { Id = 1, Topic = "Test assignment 1", BoardId = 1, StageId = 1 };
-
 }

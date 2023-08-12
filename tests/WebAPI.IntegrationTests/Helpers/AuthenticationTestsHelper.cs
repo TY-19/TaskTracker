@@ -69,11 +69,9 @@ internal class AuthenticationTestsHelper
         {
             await userManager!.CreateAsync(user, password);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DbUpdateConcurrencyException || ex is ArgumentException)
         {
-            if (ex is not DbUpdateConcurrencyException && ex is not ArgumentException)
-                throw;
-            else if (ex is DbUpdateConcurrencyException)
+            if (ex is DbUpdateConcurrencyException)
                 await CreateUserInnerAsync(user, password, userManager);
         }
     }
@@ -83,17 +81,14 @@ internal class AuthenticationTestsHelper
         {
             await userManager.AddToRoleAsync(user, role);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DbUpdateConcurrencyException || ex is ArgumentException)
         {
-            if (ex is not DbUpdateConcurrencyException && ex is not ArgumentException)
-                throw;
-            else if (ex is DbUpdateConcurrencyException)
+            if (ex is DbUpdateConcurrencyException)
                 await AddUserToRoleInnerAsync(user, role, userManager);
         }
     }
 
-
-    private static readonly string password = "Pa$$w0rd";
+    private const string password = "Pa$$w0rd";
     private static readonly User testAdmin = new()
     {
         UserName = "testadmin",
@@ -116,7 +111,7 @@ internal class AuthenticationTestsHelper
 
     public static async Task<bool> IsTryLoginSuccessfulAync(HttpClient httpClient, string nameOrEmail, string password)
     {
-        const string RequestURI = $"api/account/login";
+        const string RequestURI = "api/account/login";
         var loginRequest = new LoginRequestModel() { NameOrEmail = nameOrEmail, Password = password };
         var content = new StringContent(JsonSerializer.Serialize(loginRequest),
         Encoding.UTF8, "application/json");

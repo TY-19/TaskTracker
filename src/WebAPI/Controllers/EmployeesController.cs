@@ -87,5 +87,4 @@ public class EmployeesController : ControllerBase
         await _employeeService.RemoveEmployeeFromTheBoardAsync(boardId, employeeId);
         return NoContent();
     }
-
 }

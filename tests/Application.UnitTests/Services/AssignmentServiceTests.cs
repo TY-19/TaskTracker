@@ -118,7 +118,7 @@ public class AssignmentServiceTests
         using var context = ServicesTestsHelper.GetTestDbContext();
         await DefaultData.SeedAsync(context);
         AssignmentService service = GetAssignmentService(context);
-        string topic = "Updated";
+        const string topic = "Updated";
         var model = new AssignmentPutModel() { Topic = topic };
 
         await service.UpdateAssignmentAsync(1, 1, model);
@@ -132,7 +132,7 @@ public class AssignmentServiceTests
         using var context = ServicesTestsHelper.GetTestDbContext();
         await DefaultData.SeedAsync(context);
         AssignmentService service = GetAssignmentService(context);
-        string topic = "Updated";
+        const string topic = "Updated";
         var model = new AssignmentPutModel() { Topic = topic };
 
         await Assert.ThrowsAsync<ArgumentException>(
@@ -144,7 +144,7 @@ public class AssignmentServiceTests
         using var context = ServicesTestsHelper.GetTestDbContext();
         await DefaultData.SeedAsync(context);
         AssignmentService service = GetAssignmentService(context);
-        string topic = "Updated";
+        const string topic = "Updated";
         var model = new AssignmentPutModel() { Topic = topic };
 
         await Assert.ThrowsAsync<ArgumentException>(
