@@ -256,7 +256,7 @@ public class AssignmentsControllerTests
         _subpartServiceMock.Setup(s => s.GetAllSubpartOfTheAssignmentAsync(It.IsAny<int>()))
             .ReturnsAsync(new List<SubpartGetModel>());
 
-        var result = (await _controller.GetAllSubpartsOfTheAssignment(1, 1)).Result;
+        var result = (await _controller.GetAllSubpartsOfTheAssignment(1)).Result;
 
         Assert.IsType<OkObjectResult>(result);
     }
@@ -266,7 +266,7 @@ public class AssignmentsControllerTests
         _subpartServiceMock.Setup(s => s.GetAllSubpartOfTheAssignmentAsync(It.IsAny<int>()))
             .ReturnsAsync(new List<SubpartGetModel>());
 
-        var result = ((await _controller.GetAllSubpartsOfTheAssignment(1, 1)).Result as OkObjectResult)?.Value;
+        var result = ((await _controller.GetAllSubpartsOfTheAssignment(1)).Result as OkObjectResult)?.Value;
 
         Assert.NotNull(result);
         Assert.IsAssignableFrom<IEnumerable<SubpartGetModel>>(result);
@@ -277,7 +277,7 @@ public class AssignmentsControllerTests
         _subpartServiceMock.Setup(s => s.GetSubpartByIdAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(new SubpartGetModel());
 
-        var result = (await _controller.GetSubpartById(1, 1, 1)).Result;
+        var result = (await _controller.GetSubpartById(1, 1)).Result;
 
         Assert.IsType<OkObjectResult>(result);
     }
@@ -287,7 +287,7 @@ public class AssignmentsControllerTests
         _subpartServiceMock.Setup(s => s.GetSubpartByIdAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(new SubpartGetModel());
 
-        var result = ((await _controller.GetSubpartById(1, 1, 1)).Result as OkObjectResult)?.Value;
+        var result = ((await _controller.GetSubpartById(1, 1)).Result as OkObjectResult)?.Value;
 
         Assert.NotNull(result);
         Assert.IsType<SubpartGetModel>(result);
@@ -298,7 +298,7 @@ public class AssignmentsControllerTests
         _subpartServiceMock.Setup(s => s.GetSubpartByIdAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync((SubpartGetModel?)null);
 
-        var result = (await _controller.GetSubpartById(1, 1, 1)).Result;
+        var result = (await _controller.GetSubpartById(1, 1)).Result;
 
         Assert.IsType<NotFoundResult>(result);
     }
@@ -359,7 +359,7 @@ public class AssignmentsControllerTests
             It.IsAny<SubpartPutModel>()))
                 .Callback(() => { });
 
-        var result = await _controller.UpdateSubpart(1, 1, 1, new SubpartPutModel() { Name = "New name" });
+        var result = await _controller.UpdateSubpart(1, 1, new SubpartPutModel() { Name = "New name" });
 
         Assert.IsType<NoContentResult>(result);
     }
@@ -369,7 +369,7 @@ public class AssignmentsControllerTests
         var controller = new AssignmentsController(_assignmentServiceMock.Object,
             _subpartServiceMock.Object, ControllersHelper.GetValidationService(false));
 
-        var result = await controller.UpdateSubpart(1, 1, 1, new SubpartPutModel());
+        var result = await controller.UpdateSubpart(1, 1, new SubpartPutModel());
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -380,7 +380,7 @@ public class AssignmentsControllerTests
             It.IsAny<SubpartPutModel>()))
                 .ThrowsAsync(new ArgumentException("TestException"));
 
-        var result = await _controller.UpdateSubpart(1, 1, 1, new SubpartPutModel() { Name = "New name" });
+        var result = await _controller.UpdateSubpart(1, 1, new SubpartPutModel() { Name = "New name" });
 
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -390,7 +390,7 @@ public class AssignmentsControllerTests
         _subpartServiceMock.Setup(s => s.DeleteSubpartAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback(() => { });
 
-        var result = await _controller.DeleteSubpart(1, 1, 1);
+        var result = await _controller.DeleteSubpart(1, 1);
 
         Assert.IsType<NoContentResult>(result);
     }

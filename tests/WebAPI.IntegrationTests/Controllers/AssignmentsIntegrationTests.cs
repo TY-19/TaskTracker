@@ -143,6 +143,7 @@ public class AssignmentsIntegrationTests
         await _seedHelper.CreateEmployeeAsync(new Employee() { Id = 1000 });
         await _seedHelper.CreateAssignmentAsync(GetAssignment(id: 1, responsibleEmployeeId: 1000));
         await _seedHelper.CreateAssignmentAsync(GetAssignment(id: 2, responsibleEmployeeId: 1000));
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/tasks";
@@ -168,7 +169,21 @@ public class AssignmentsIntegrationTests
 
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
     }
+    [Fact]
+    public async Task AssignmentController_GetAllAssignmentsOfTheBoard_ReturnsForbiddenStatusCode_IfCalledByEmployeeThatIsNotPartOfBoard()
+    {
+        await PrepareTestFixture();
+        await _seedHelper.CreateEmployeeAsync(new Employee() { Id = 1000 });
+        await _seedHelper.CreateAssignmentAsync(GetAssignment(id: 1, responsibleEmployeeId: 1000));
+        await _seedHelper.CreateAssignmentAsync(GetAssignment(id: 2, responsibleEmployeeId: 1000));
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        const string RequestURI = $"api/boards/1/tasks";
 
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
+    }
     [Fact]
     public async Task AssignmentController_GetAssignmentById_ReturnsTheCorrectAssignment()
     {
@@ -176,6 +191,7 @@ public class AssignmentsIntegrationTests
         const string TOPIC = "Test assignment 1";
         await _seedHelper.CreateEmployeeAsync(new Employee() { Id = 1000 });
         await _seedHelper.CreateAssignmentAsync(GetAssignment(topic: TOPIC, responsibleEmployeeId: 1000));
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         const string RequestURI = $"api/boards/1/tasks/1";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -193,6 +209,7 @@ public class AssignmentsIntegrationTests
     public async Task AssignmentController_GetAssignmentById_ReturnsNotFoundStatusCode_IfAssignmentDoesNotExist()
     {
         await PrepareTestFixture();
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         const string RequestURI = $"api/boards/1/tasks/1";
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -205,6 +222,7 @@ public class AssignmentsIntegrationTests
     public async Task AssignmentController_GetAssignmentById_ReturnsNotFoundStatusCode_IfAssignmentDoesNotBelongToThisBoard()
     {
         await PrepareTestFixture();
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         const string TOPIC = "Test assignment 1";
         await _seedHelper.CreateBoardAsync(new Board() { Id = 2 });
         await _seedHelper.CreateAssignmentAsync(GetAssignment(topic: TOPIC));
@@ -216,7 +234,6 @@ public class AssignmentsIntegrationTests
 
         Assert.Equal(StatusCodes.Status404NotFound, (int)httpResponse.StatusCode);
     }
-
     [Fact]
     public async Task AssignmentController_GetAssignmentById_ReturnsUnauthorizedStatusCode_IfUserIsNotAuthenticated()
     {
@@ -229,7 +246,21 @@ public class AssignmentsIntegrationTests
 
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
     }
+    [Fact]
+    public async Task AssignmentController_GetAssignmentById_ReturnsForbiddenStatusCode_IfCalledByEmployeeThatIsNotPartOfBoard()
+    {
+        await PrepareTestFixture();
+        const string TOPIC = "Test assignment 1";
+        await _seedHelper.CreateEmployeeAsync(new Employee() { Id = 1000 });
+        await _seedHelper.CreateAssignmentAsync(GetAssignment(topic: TOPIC, responsibleEmployeeId: 1000));
+        const string RequestURI = $"api/boards/1/tasks/1";
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
+    }
     [Fact]
     public async Task AssignmentController_UpdateAssignmentById_UpdatesAssignment()
     {
@@ -360,6 +391,7 @@ public class AssignmentsIntegrationTests
             Name = "Second stage",
             Position = 2
         });
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         await _seedHelper.CreateAssignmentAsync(GetAssignment(topic: TOPIC, responsibleEmployeeId: 100));
         string RequestURI = $"api/boards/1/tasks/1/move/" + DESTINATION_STAGE_ID;
         string? token = _authHelper.TestEmployeeUserToken;
@@ -394,7 +426,7 @@ public class AssignmentsIntegrationTests
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
         var assignmnet = await GetAssignmentFromTheDbByTopicAsync(TOPIC);
 
-        Assert.Equal(StatusCodes.Status400BadRequest, ((int)httpResponse.StatusCode));
+        Assert.Equal(StatusCodes.Status403Forbidden, ((int)httpResponse.StatusCode));
         Assert.NotNull(assignmnet);
         Assert.NotEqual(DESTINATION_STAGE_ID, assignmnet.StageId);
     }
@@ -422,6 +454,7 @@ public class AssignmentsIntegrationTests
         const string TOPIC = "Topic";
         const bool ISCOMPLETED = false;
         await PrepareTestFixture();
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         await _seedHelper.CreateAssignmentAsync(GetAssignment(topic: TOPIC, isCompleted: ISCOMPLETED, responsibleEmployeeId: 100));
         const string RequestURI = $"api/boards/1/tasks/1/complete";
         string? token = _authHelper.TestEmployeeUserToken;
@@ -449,7 +482,7 @@ public class AssignmentsIntegrationTests
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
         var assignmnet = await GetAssignmentFromTheDbByTopicAsync(TOPIC);
 
-        Assert.Equal(StatusCodes.Status400BadRequest, ((int)httpResponse.StatusCode));
+        Assert.Equal(StatusCodes.Status403Forbidden, ((int)httpResponse.StatusCode));
         Assert.NotNull(assignmnet);
         Assert.False(assignmnet.IsCompleted);
     }
@@ -477,6 +510,7 @@ public class AssignmentsIntegrationTests
         const string TOPIC = "Topic";
         const bool ISCOMPLETED = true;
         await PrepareTestFixture();
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         await _seedHelper.CreateAssignmentAsync(GetAssignment(topic: TOPIC, isCompleted: ISCOMPLETED, responsibleEmployeeId: 100));
         const string RequestURI = $"api/boards/1/tasks/1/uncomplete";
         string? token = _authHelper.TestEmployeeUserToken;
@@ -504,7 +538,7 @@ public class AssignmentsIntegrationTests
         var httpResponse = await _httpClient.PutAsync(RequestURI, null);
         var assignmnet = await GetAssignmentFromTheDbByTopicAsync(TOPIC);
 
-        Assert.Equal(StatusCodes.Status400BadRequest, ((int)httpResponse.StatusCode));
+        Assert.Equal(StatusCodes.Status403Forbidden, ((int)httpResponse.StatusCode));
         Assert.NotNull(assignmnet);
         Assert.True(assignmnet.IsCompleted);
     }

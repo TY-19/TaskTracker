@@ -38,6 +38,7 @@ public class StagesIntegrationTests
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = "First Stage" });
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 2, BoardId = 1, Name = "Second Stage" });
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         const string RequestURI = $"api/boards/1/stages";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
@@ -59,6 +60,20 @@ public class StagesIntegrationTests
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_GetAllStagesOfTheBoard_ReturnsForbiddenStatusCode_IfCalledByEmployeeThatIsNotPartOfBoard()
+    {
+        await PrepareTestFixture();
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = "First Stage" });
+        await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 2, BoardId = 1, Name = "Second Stage" });
+        const string RequestURI = $"api/boards/1/stages";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
     }
     [Fact]
     public async Task StagesController_CreateNewStageOnTheBoard_CreatesANewStageOnTheBoard()
@@ -145,6 +160,7 @@ public class StagesIntegrationTests
         await PrepareTestFixture();
         const string StageName = "NewStage";
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = StageName });
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/stages/1";
@@ -163,6 +179,7 @@ public class StagesIntegrationTests
         await PrepareTestFixture();
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         const string RequestURI = $"api/boards/1/stages/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
@@ -176,6 +193,7 @@ public class StagesIntegrationTests
         const string StageName = "NewStage";
         await _seedHelper.CreateBoardAsync(new Board() { Id = 2 });
         await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 2, Name = StageName });
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         string? token = _authHelper.TestEmployeeUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1/stages/1";
@@ -195,6 +213,20 @@ public class StagesIntegrationTests
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task StagesController_GetStageById_ReturnsForbiddenStatusCode_IfCalledByEmployeeThatIsNotPartOfBoard()
+    {
+        await PrepareTestFixture();
+        const string StageName = "NewStage";
+        await _seedHelper.CreateStageAsync(new WorkflowStage() { Id = 1, BoardId = 1, Name = StageName });
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        const string RequestURI = $"api/boards/1/stages/1";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
     }
     [Fact]
     public async Task StagesController_UpdateStageById_UpdatesStage()
@@ -656,7 +688,7 @@ public class StagesIntegrationTests
         return stage?.Assignments.Any(a => a.Topic == assignmentTopic) ?? false;
     }
 
-    private WorkflowStage GetStage(int id = 1, int boardId = 1, string name = "Stage 1",
+    private static WorkflowStage GetStage(int id = 1, int boardId = 1, string name = "Stage 1",
         int position = 1)
     {
         return new WorkflowStage()

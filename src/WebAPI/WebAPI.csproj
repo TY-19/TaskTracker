@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<InternalsVisibleTo Include="WebAPI.IntegrationTests"/>
+	<InternalsVisibleTo Include="WebAPI.IntegrationTests" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="FluentValidation" Version="11.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14" />

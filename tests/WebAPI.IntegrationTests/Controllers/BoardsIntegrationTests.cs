@@ -212,6 +212,7 @@ public class BoardsIntegrationTests
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string BoardName = "Board1";
         await _seedHelper.CreateBoardAsync(new Board() { Id = 1, Name = BoardName });
+        await _seedHelper.AddEmployeeToTheBoardAsync(100, 1);
         const string RequestURI = $"api/boards/1";
 
         var httpResponse = await _httpClient.GetAsync(RequestURI);
@@ -226,7 +227,7 @@ public class BoardsIntegrationTests
     public async Task BoardsController_GetBoard_ReturnsNotFoundStatusCode_IfBoardDoesNotExist()
     {
         await PrepareTestFixture();
-        string? token = _authHelper.TestEmployeeUserToken;
+        string? token = _authHelper.TestManagerUserToken;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         const string RequestURI = $"api/boards/1";
 
@@ -245,6 +246,20 @@ public class BoardsIntegrationTests
         var httpResponse = await _httpClient.GetAsync(RequestURI);
 
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)httpResponse.StatusCode);
+    }
+    [Fact]
+    public async Task BoardsController_GetBoard_ReturnsForbiddenStatusCode_IfCalledByEmployeeThatIsNotPartOfBoard()
+    {
+        await PrepareTestFixture();
+        string? token = _authHelper.TestEmployeeUserToken;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        const string BoardName = "Board1";
+        await _seedHelper.CreateBoardAsync(new Board() { Id = 1, Name = BoardName });
+        const string RequestURI = $"api/boards/1";
+
+        var httpResponse = await _httpClient.GetAsync(RequestURI);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, (int)httpResponse.StatusCode);
     }
     [Fact]
     public async Task BoardsController_UpdateBoardName_UpdatesBoardName()

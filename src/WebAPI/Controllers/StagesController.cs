@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.Domain.Common;
+using TaskTracker.WebAPI.Configuration.AuthorizationHandlers;
 
 namespace TaskTracker.WebAPI.Controllers;
 
@@ -21,9 +22,11 @@ public class StagesController : ControllerBase
         _validationService = validationService;
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<IEnumerable<WorkflowStageGetModel>>> GetAllStagesOfTheBoard(int boardId)
     {
         return Ok(await _stageService.GetAllStagesOfTheBoardAsync(boardId));
@@ -56,10 +59,12 @@ public class StagesController : ControllerBase
             result);
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{stageId}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<WorkflowStageGetModel>> GetStageById(int boardId, int stageId)
     {

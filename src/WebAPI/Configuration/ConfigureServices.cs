@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Services;
 using TaskTracker.Domain.Entities;
 using TaskTracker.Infrastructure;
+using TaskTracker.WebAPI.Configuration.AuthorizationHandlers;
 
 namespace TaskTracker.WebAPI.Configuration;
 public static class ConfigureServices
@@ -21,6 +23,9 @@ public static class ConfigureServices
         services.AddAuthentication()
             .AddJwtBearer(new JwtBearerConfigOptions(configuration).Configure);
         services.ConfigureOptions<AuthenticationConfigOptions>();
+        services.AddAuthorization();
+        services.ConfigureOptions<AuthorizationConfigOptions>();
+
 
         services.AddControllers();
         services.ConfigureOptions<JsonConfigOptions>();
@@ -44,7 +49,11 @@ public static class ConfigureServices
         services.AddScoped<IStageService, StageService>();
         services.AddScoped<ISubpartService, SubpartService>();
 
+        services.AddScoped<IAuthorizationHandler, BoardAccessAuthorizationHandler>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
         services.AddSingleton<IValidationService, ValidationService>();
         services.AddSingleton(new AutomapperConfiguration().GetMapper());
+
     }
 }

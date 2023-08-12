@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Models;
 using TaskTracker.Domain.Common;
+using TaskTracker.WebAPI.Configuration.AuthorizationHandlers;
 
 namespace TaskTracker.WebAPI.Controllers;
 
@@ -24,9 +25,11 @@ public class AssignmentsController : ControllerBase
         _validationService = validationService;
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<IEnumerable<AssignmentGetModel>>> GetAllAssignmentsOfTheBoard(int boardId)
     {
         return Ok(await _assignmentService.GetAllAssignmentsOfTheBoardAsync(boardId));
@@ -60,10 +63,12 @@ public class AssignmentsController : ControllerBase
             assignment);
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{taskId}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AssignmentGetModel>> GetAssignmentById(int boardId, int taskId)
     {
@@ -100,11 +105,13 @@ public class AssignmentsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{taskId}/move/{stageId}")]
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> MoveAssignmentToTheStage(int boardId, int taskId, int stageId)
     {
         string? userName = User.Identity?.Name;
@@ -121,21 +128,25 @@ public class AssignmentsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{taskId}/complete")]
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CompleteAssignmentById(int boardId, int taskId)
     {
         return await ChangeAssignmentStatusAsync(boardId, taskId, true);
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{taskId}/uncomplete")]
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UncompleteAssignmentById(int boardId, int taskId)
     {
         return await ChangeAssignmentStatusAsync(boardId, taskId, false);
@@ -169,21 +180,26 @@ public class AssignmentsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{taskId}/subparts")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<SubpartGetModel>>> GetAllSubpartsOfTheAssignment(
-        int boardId, int taskId)
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IEnumerable<SubpartGetModel>>> GetAllSubpartsOfTheAssignment(int taskId)
     {
         return Ok(await _subpartService.GetAllSubpartOfTheAssignmentAsync(taskId));
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{taskId}/subparts/{subpartId}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<SubpartGetModel>>> GetSubpartById(
-        int boardId, int taskId, int subpartId)
+       int taskId, int subpartId)
     {
         SubpartGetModel? subpart = await _subpartService.GetSubpartByIdAsync(taskId, subpartId);
         if (subpart == null)
@@ -192,11 +208,13 @@ public class AssignmentsController : ControllerBase
         return Ok(subpart);
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{taskId}/subparts")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddSubpartToTheAssignment(int boardId, int taskId,
         SubpartPostModel model)
     {
@@ -222,12 +240,14 @@ public class AssignmentsController : ControllerBase
             subpart);
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{taskId}/subparts/{subpartId}")]
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> UpdateSubpart(int boardId, int taskId,
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UpdateSubpart(int taskId,
         int subpartId, SubpartPutModel model)
     {
         ValidationResult validationResult = _validationService.Validate(model);
@@ -245,11 +265,13 @@ public class AssignmentsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(AuthorizationPoliciesNames.RESPONSIBLE_EMPLOYEE_POLICY)]
     [Route("{taskId}/subparts/{subpartId}")]
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> DeleteSubpart(int boardId, int taskId, int subpartId)
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> DeleteSubpart(int taskId, int subpartId)
     {
         await _subpartService.DeleteSubpartAsync(taskId, subpartId);
         return NoContent();

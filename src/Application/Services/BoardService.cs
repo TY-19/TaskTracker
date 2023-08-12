@@ -66,8 +66,7 @@ public class BoardService : IBoardService
 
     public async Task<BoardGetModel?> GetBoardByIdAsync(int id)
     {
-        Board? board = await GetBoardFromDbByIdAsync(id);
-        return _mapper.Map<BoardGetModel>(board);
+        return _mapper.Map<BoardGetModel>(await GetBoardFromDbByIdAsync(id));
     }
     private async Task<Board?> GetBoardFromDbByIdAsync(int id)
     {
