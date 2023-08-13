@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AssignmentsModes } from '../common/enums/assignments-modes';
 
 @Component({
   selector: 'tt-home',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
-
+  readonly assignmentsMode: AssignmentsModes = AssignmentsModes.MultyBoards;
 }

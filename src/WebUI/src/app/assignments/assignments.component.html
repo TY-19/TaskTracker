@@ -1,17 +1,11 @@
 <div class="content">
-    <button class="back-container" [routerLink]="['/boards', boardId]">
-        <mat-icon>
-            arrow_back
-        </mat-icon>
-        <p class="back-text">Back to the board</p>
-    </button>
+    <tt-assignments-single-board-mode *ngIf="isInSingleBoardMode && boardId"
+        [boardId]="boardId">
+    </tt-assignments-single-board-mode>
 
-    <div class="margin-top-10">
-        <a mat-flat-button color="primary" 
-            [routerLink]="['/boards', boardId, 'tasks', 'create']">
-            Create Task
-        </a>
-    </div>
+    <tt-assignments-multy-boards-mode *ngIf="isInMultyBoardsMode"
+        [boards]="boards">
+    </tt-assignments-multy-boards-mode>
 
     <mat-form-field [hidden]="!assignmentsTable" class="filter" floatLabel="never">
         <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
@@ -22,7 +16,7 @@
         </button>
     </mat-form-field>
 
-    <table mat-table [dataSource]="assignmentsTable"
+    <table mat-table [dataSource]="assignmentsTable!"
         matSort
         class="mat-elevation-z8 table"
         [hidden]="!assignmentsTable"
@@ -42,6 +36,12 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header="deadline"> Deadline </th>
             <td mat-cell *matCellDef="let assignment"> {{assignment.deadline | date: 'dd/MM/YYYY HH:mm'}} </td>
         </ng-container>
+        <ng-container matColumnDef="board">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="boardName"> Board </th>
+            <td mat-cell *matCellDef="let assignment">
+                {{assignment.boardName}}
+            </td>
+        </ng-container>
         <ng-container matColumnDef="stage">
             <th mat-header-cell *matHeaderCellDef mat-sort-header="stage"> Stage </th>
             <td mat-cell *matCellDef="let assignment">
@@ -60,24 +60,25 @@
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let assignment"> 
                 <a mat-flat-button color="primary"
-                    [routerLink]="['/boards', boardId, 'tasks', assignment.id]">
+                    [routerLink]="['/boards', assignment.boardId, 'tasks', assignment.id]">
                     Details
                 </a>
-                <a mat-flat-button class="edit-button"
-                    [routerLink]="['/boards', boardId, 'tasks', assignment.id, 'edit']">
+                <a *ngIf="authService.isAdmin() || authService.isManager()"
+                    mat-flat-button class="edit-button"
+                    [routerLink]="['/boards', assignment.boardId, 'tasks', assignment.id, 'edit']">
                     Edit
                 </a>
-                <a mat-flat-button color="warn"
-                    (click)="deleteAssignment(assignment.id)">
+                <a *ngIf="authService.isAdmin() || authService.isManager()"
+                    mat-flat-button color="warn"
+                    (click)="deleteAssignment(assignment.boardId, assignment.id)">
                     Delete
                 </a>
             </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="['topic', 'description', 'deadline', 'stage',
-            'responsibleEmployee', 'buttons']"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; let i = index;
-            columns: ['topic', 'description', 'deadline', 'stage', 'responsibleEmployee', 'buttons']">
+            columns: displayedColumns">
         </tr>
     </table>
 

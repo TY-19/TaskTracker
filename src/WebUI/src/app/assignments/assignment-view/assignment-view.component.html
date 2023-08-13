@@ -46,9 +46,9 @@
             </tr>
             <tr>
                 <td>Status:</td>
-                <td [class]="getAssignmentStatus('class')"
+                <td [class]="assignmentStatus.class"
                     class="last-column">
-                    {{getAssignmentStatus()}}
+                    {{assignmentStatus.text}}
                 </td>
             </tr>
         </table>
@@ -64,9 +64,9 @@
             mat-flat-button color="warn" (click)="deleteAssignment()">
             Delete
         </a>
-        <a *ngIf="isUserAuthorizeToChangeTaskStatus()"
+        <a *ngIf="isUserAuthorizeToChangeTaskStatus"
             mat-flat-button [color]="assignment!.isCompleted ? 'warn' : 'primary'"
-            (click)="changeTaskStatus(assignment!)">
+            (click)="changeAssignmentStatus(assignment!)">
             {{assignment!.isCompleted ? 'Cancel task completion' : 'Complete task' }}</a>
     </div>
 </div>

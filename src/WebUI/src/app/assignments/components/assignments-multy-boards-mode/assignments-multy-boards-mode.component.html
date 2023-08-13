@@ -1,0 +1,19 @@
+<div class="title" [routerLink]="['/tasks']">
+    Tasks
+</div>
+<div *ngIf="(authService.isAdmin() || authService.isManager())">
+    <a mat-flat-button [color]="showCreateMenu ? 'accent' :'primary'" 
+        class="create-button"
+        (click)="showCreateMenu = !showCreateMenu">
+        {{showCreateMenu ? 'Cancel' : 'Create Task'}}
+    </a>
+    <p *ngIf="showCreateMenu && boards">
+        <mat-select (valueChange)="createAssignment($event)" 
+            required placeholder="Select a board to create a task"
+            class="margin-top-10">
+            <mat-option *ngFor="let board of boards" [value]="board.id"> 
+                {{board.name}}
+            </mat-option>
+        </mat-select>
+    </p>
+</div>

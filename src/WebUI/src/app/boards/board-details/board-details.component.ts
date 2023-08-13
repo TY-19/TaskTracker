@@ -11,6 +11,7 @@ import { AssignmentEditComponent } from 'src/app/assignments/assignment-edit/ass
 import { AssignmentViewComponent } from 'src/app/assignments/assignment-view/assignment-view.component';
 import { AuthService } from 'src/app/auth/auth.service';
 import { AssignmentComparator, AssignmentFilter, BoardDisplayService } from './board-display-options/board-display.service';
+import { DisplayModes } from 'src/app/common/enums/display-modes';
 
 @Component({
   selector: 'tt-board-details',
@@ -26,7 +27,7 @@ export class BoardDetailsComponent implements OnInit {
   @ViewChild(AssignmentEditComponent) assignmentEdit!: AssignmentEditComponent;
   board! : Board;
   showSidebar: boolean = false;
-  sidebarContent: string = "details";
+  sidebarContent: DisplayModes = DisplayModes.View;
   currentTaskId?: number;
   showDisplayOption: boolean = false;
 
@@ -120,17 +121,17 @@ export class BoardDetailsComponent implements OnInit {
     return this.authService.getEmployeeId() === responsibleEmployeeId;
   }
 
-  isUserAuthorizeToChangeTaskStatus(): boolean {
+  get isUserAuthorizeToChangeTaskStatus(): boolean {
     if (this.assignmentView)
-      return this.assignmentView.isUserAuthorizeToChangeTaskStatus();
+      return this.assignmentView.isUserAuthorizeToChangeTaskStatus;
     return false;
   }
 
   updateChildren(task: Assignment) {
     if(this.showSidebar && this.currentTaskId == task.id) {
-      if(this.sidebarContent == "details")
-        this.assignmentView.getStage(task.stageId);
-      if(this.sidebarContent == "edit")
+      if(this.sidebarContent == DisplayModes.View)
+        this.assignmentView.loadStage(task.stageId);
+      if(this.sidebarContent == DisplayModes.Edit)
         this.assignmentEdit.updateStage();
     }
   }
@@ -140,9 +141,9 @@ export class BoardDetailsComponent implements OnInit {
       return "full-page";
 
     switch(this.sidebarContent) {
-      case "details": return "sidebar-view-margin";
-      case "create": return "sidebar-edit-margin";
-      case "edit": return "sidebar-edit-margin";
+      case DisplayModes.View: return "sidebar-view-margin";
+      case DisplayModes.Create: return "sidebar-edit-margin";
+      case DisplayModes.Edit: return "sidebar-edit-margin";
       default: return "full-page";
     }
   }
@@ -150,15 +151,15 @@ export class BoardDetailsComponent implements OnInit {
   viewTask(taskId: number) {
     this.currentTaskId = taskId;
     this.showSidebar = true;
-    this.sidebarContent = "details";
+    this.sidebarContent = DisplayModes.View;
   }
 
   createTask() {
     this.currentTaskId = undefined;
     this.showSidebar = true;
-    this.sidebarContent = "create";
+    this.sidebarContent = DisplayModes.Create;
     if (this.assignmentEdit) {
-      this.assignmentEdit.mode = "create";
+      this.assignmentEdit.mode = DisplayModes.Create;
       this.assignmentEdit.assignmentId = "0";
       this.assignmentEdit?.ngOnInit();
     }
@@ -167,7 +168,7 @@ export class BoardDetailsComponent implements OnInit {
   editTask(taskId: number) {
     this.currentTaskId = taskId;
     this.showSidebar = true;
-    this.sidebarContent = "edit";
+    this.sidebarContent = DisplayModes.Edit;
   }
 
   async onSubmit() {
@@ -182,11 +183,11 @@ export class BoardDetailsComponent implements OnInit {
     this.getBoard();
   }
 
-  changeTaskStatus(assignment: Assignment) {
+  changeAssignmentStatus(assignment: Assignment) {
     this.assignmentService
       .changeAssignmentStatus(this.board.id, assignment.id, !assignment.isCompleted)
         .subscribe(() => {
-          this.assignmentView.getAssignment(this.board.id.toString(), assignment.id.toString());
+          this.assignmentView.loadAssignment(this.board.id.toString(), assignment.id.toString());
         })
   }
 
@@ -197,7 +198,7 @@ export class BoardDetailsComponent implements OnInit {
           this.getBoard();
           this.currentTaskId = 0;
           this.showSidebar = false;
-          this.sidebarContent = "details";
+          this.sidebarContent = DisplayModes.View;
         });
   }
 
@@ -209,5 +210,17 @@ export class BoardDetailsComponent implements OnInit {
       && responsibleEmployeeId !== undefined
       && currentUserEmployeeId === responsibleEmployeeId;
     return doesTaskBelongsToEmployee ? 'employees-task' : 'non-employees-task';
+  }
+
+  get isInViewMode(): boolean {
+    return this.sidebarContent === DisplayModes.View;
+  }
+
+  get isInCreateMode(): boolean {
+    return this.sidebarContent === DisplayModes.Create;
+  }
+
+  get isInEditMode(): boolean {
+    return this.sidebarContent === DisplayModes.Edit;
   }
 }

@@ -17,12 +17,12 @@ export class EmployeeService {
     return this.http.get<Employee[]>(url);
   }
 
-  getEmployees(boardId: string): Observable<Employee[]> {
+  getEmployees(boardId: number | string): Observable<Employee[]> {
     const url = "/api/boards/" + boardId + "/employees";
     return this.http.get<Employee[]>(url);
   }
 
-  getEmployee(boardId: string, employeeId: number): Observable<Employee> {
+  getEmployee(boardId: number | string, employeeId: number | string): Observable<Employee> {
     const url = "/api/boards/" + boardId + "/employees/" + employeeId;
     return this.http.get<Employee>(url);
   }

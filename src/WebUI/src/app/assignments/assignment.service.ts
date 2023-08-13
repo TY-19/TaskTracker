@@ -12,34 +12,34 @@ export class AssignmentService {
 
   }
 
-  getAssignments(boardId: string) : Observable<Assignment[]> {
+  getAssignments(boardId: number | string) : Observable<Assignment[]> {
     const url = "/api/boards/" + boardId + "/tasks/";
     return this.http.get<Assignment[]>(url);
   }
 
-  getAssignment(boardId: string, assignmentId: string) : Observable<Assignment> {
+  getAssignment(boardId: number | string, assignmentId: number | string) : Observable<Assignment> {
     const url = "/api/boards/" + boardId + "/tasks/" + assignmentId;
     return this.http.get<Assignment>(url);
   }
 
-  createAssignment(boardId: string, assignment: Assignment) {
+  createAssignment(boardId: number | string, assignment: Assignment): Observable<Object> {
     const url = "/api/boards/" + boardId + "/tasks/";
     return this.http.post(url, assignment);
   }
 
-  updateAssignment(boardId: string, assignment: Assignment) {
+  updateAssignment(boardId: number | string, assignment: Assignment): Observable<Object> {
     const url = "/api/boards/" + boardId + "/tasks/" + assignment.id;
     return this.http.put(url, assignment);
   }
 
-  moveAssignmentToTheStage(boardId: number | string, 
-    assignmentId: number | string, stageId: number | string) {
+  moveAssignmentToTheStage(boardId: number | string, assignmentId: number | string,
+    stageId: number | string): Observable<Object> {
       const url = "/api/boards/" + boardId + "/tasks/" + assignmentId + "/move/" + stageId;
       return this.http.put(url, null);
   }
 
-  changeAssignmentStatus(boardId: number | string, 
-    assignmentId: number | string, isCompleted: boolean) {
+  changeAssignmentStatus(boardId: number | string, assignmentId: number | string,
+    isCompleted: boolean): Observable<Object> {
       let url = "/api/boards/" + boardId + "/tasks/" + assignmentId + "/";
       if (isCompleted) {
         url += "complete";
@@ -49,7 +49,7 @@ export class AssignmentService {
       return this.http.put(url, null);
   }
 
-  deleteAssignment(boardId: string, assignmentId: string) {
+  deleteAssignment(boardId: number | string, assignmentId: number | string): Observable<Object> {
     const url = "/api/boards/" + boardId + "/tasks/" + assignmentId;
     return this.http.delete(url);
   }

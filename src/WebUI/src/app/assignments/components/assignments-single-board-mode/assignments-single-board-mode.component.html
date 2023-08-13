@@ -1,0 +1,13 @@
+<button class="back-container" [routerLink]="['/boards', boardId]">
+    <mat-icon>
+        arrow_back
+    </mat-icon>
+    <p class="back-text">Back to the board</p>
+</button>
+
+<div class="margin-top-10">
+    <a mat-flat-button color="primary" 
+        [routerLink]="['/boards', boardId, 'tasks', 'create']">
+        Create Task
+    </a>
+</div>

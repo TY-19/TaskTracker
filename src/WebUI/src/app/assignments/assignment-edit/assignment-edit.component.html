@@ -32,7 +32,7 @@
         <br>
         <mat-form-field floatLabel="always">
             <mat-label>Stage:</mat-label>
-            <mat-select formControlName="stage" required>
+            <mat-select formControlName="stageId" required>
                 <mat-option *ngFor="let stage of stages" [value]="stage.id">
                     {{stage.name}}
                 </mat-option>
@@ -105,10 +105,10 @@
 
         <div *ngIf="!sidebarView" class="buttons">
             <button mat-flat-button color="primary" type="submit">
-                {{ mode === "create" ? "Add" : "Save" }}
+                {{ isInCreateMode ? "Add" : "Save" }}
             </button>
             <a mat-flat-button color="accent" 
-                [routerLink]="mode === 'create' ? ['/boards', boardId] : ['/boards', boardId, 'tasks', assignmentId]">
+                [routerLink]="isInCreateMode ? ['/boards', boardId] : ['/boards', boardId, 'tasks', assignmentId]">
                 Cancel
             </a>
         </div>

@@ -22,7 +22,7 @@ export class BoardService {
     return this.http.get<Board[]>(url);
 }
 
-  getBoard(id: string) : Observable<Board> {
+  getBoard(id: number | string) : Observable<Board> {
       const url = "/api/boards/" + id;
       return this.http.get<Board>(url);
   }

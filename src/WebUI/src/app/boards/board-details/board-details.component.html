@@ -5,17 +5,17 @@
         </mat-icon>
         <p class="panel-text">Hide panel</p>
     </button>
-    <tt-assignment-view *ngIf="sidebarContent=='details'"
+    <tt-assignment-view *ngIf="isInViewMode"
         [sidebarView]="true"
-        [boardId]="board.id.toString()"
-        [assignmentId]="currentTaskId!.toString()">
+        [boardId]="board.id"
+        [assignmentId]="currentTaskId">
     </tt-assignment-view>
-    <tt-assignment-edit *ngIf="sidebarContent == 'create' || sidebarContent=='edit'"
+    <tt-assignment-edit *ngIf="isInCreateMode || isInEditMode"
         [sidebarView]="true"
-        [boardId]="board.id.toString()"
-        [assignmentId]="currentTaskId?.toString()">
+        [boardId]="board.id"
+        [assignmentId]="currentTaskId">
     </tt-assignment-edit>
-    <div class="sidebar-buttons" *ngIf="sidebarContent=='details'">
+    <div class="sidebar-buttons" *ngIf="isInViewMode">
         <a mat-flat-button color="primary"
             [routerLink]="['/boards', board.id, 'tasks', currentTaskId]">
             Details
@@ -28,15 +28,15 @@
             mat-flat-button color="warn" (click)="deleteAssignment()">
             Delete
         </a>
-        <a *ngIf="isUserAuthorizeToChangeTaskStatus()"
+        <a *ngIf="isUserAuthorizeToChangeTaskStatus"
             mat-flat-button [color]="assignmentView.assignment!.isCompleted ? 'warn' : 'primary'"
-            (click)="changeTaskStatus(assignmentView.assignment!)">
+            (click)="changeAssignmentStatus(assignmentView.assignment!)">
             {{assignmentView.assignment!.isCompleted ? 'Cancel completion' : 'Complete task' }}
         </a>
     </div>
-    <div class="sidebar-buttons" *ngIf="sidebarContent == 'create' || sidebarContent == 'edit'">
+    <div class="sidebar-buttons" *ngIf="isInCreateMode || isInEditMode">
         <button mat-flat-button color="primary" (click)="onSubmit()">
-            {{ sidebarContent === "create" ? "Add" : "Save" }}
+            {{ isInCreateMode ? "Add" : "Save" }}
         </button>
         <a mat-flat-button color="accent" (click)="showSidebar=false">
             Cancel

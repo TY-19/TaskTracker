@@ -21,7 +21,6 @@ import { UserDetailsComponent } from './users/user-details/user-details.componen
 import { UserBoardsComponent } from './users/user-boards/user-boards.component';
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UserChangePasswordComponent } from './users/user-change-password/user-change-password.component';
-import { AssignmentsAllBoardsComponent } from './assignments/assignments-all-boards/assignments-all-boards.component';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
@@ -41,10 +40,12 @@ const routes: Routes = [
   { path: 'boards/:boardId/employees', component: EmployeesComponent, canActivate: [AuthGuard], 
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
   { path: 'boards/:boardId/tasks', component: AssignmentsComponent, canActivate: [AuthGuard] },
-  { path: 'boards/:boardId/tasks/create', component: AssignmentEditComponent, canActivate: [AuthGuard] },
+  { path: 'boards/:boardId/tasks/create', component: AssignmentEditComponent, canActivate: [AuthGuard],
+    data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
   { path: 'boards/:boardId/tasks/:taskId', component: AssignmentViewComponent, canActivate: [AuthGuard] },
-  { path: 'boards/:boardId/tasks/:taskId/edit', component: AssignmentEditComponent, canActivate: [AuthGuard] },
-  { path: 'tasks', component: AssignmentsAllBoardsComponent, canActivate: [AuthGuard] },
+  { path: 'boards/:boardId/tasks/:taskId/edit', component: AssignmentEditComponent, canActivate: [AuthGuard],
+    data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE, DefaultRolesNames.DEFAULT_MANAGER_ROLE] } },
+  { path: 'tasks', component: AssignmentsComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard],
     data: { roles: [DefaultRolesNames.DEFAULT_ADMIN_ROLE] } },
   { path: 'users/create', component: UserCreateComponent, canActivate: [AuthGuard], 

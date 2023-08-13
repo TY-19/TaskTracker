@@ -4,13 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from '../assignment.service';
 import { StageService } from 'src/app/stages/stage.service';
 import { Stage } from 'src/app/models/stage';
-import * as moment from 'moment';
 import { Employee } from 'src/app/models/employee';
 import { EmployeeService } from 'src/app/employees/employee.service';
 import { Assignment } from 'src/app/models/assignment';
 import { Subpart } from 'src/app/models/subpart';
 import { SubpartsComponent } from 'src/app/subparts/subparts.component';
 import { CustomValidators } from 'src/app/common/custom-validators';
+import { DisplayModes } from 'src/app/common/enums/display-modes';
+import { employeeByFirstNameComparator } from 'src/app/common/helpers/comparators';
+import { AssignmentDisplayService } from '../assignment-display.service';
 
 @Component({
   selector: 'tt-assignment-edit',
@@ -18,22 +20,28 @@ import { CustomValidators } from 'src/app/common/custom-validators';
   styleUrls: ['./assignment-edit.component.scss']
 })
 export class AssignmentEditComponent implements OnInit {
-  @Input() boardId?: string;
-  @Input() assignmentId?: string;
+  @Input() boardId?: number | string;
+  @Input() assignmentId?: number | string;
   @Input() sidebarView: boolean = false;
   @ViewChild(SubpartsComponent) subpartsComponent!: SubpartsComponent;
-
-  form!: FormGroup;
-  isFormValid: boolean = false;
 
   stages: Stage[] = [];
   subparts: Subpart[] = [];
   employees: Employee[] = [];
-  mode: string = "edit";
+
+  form!: FormGroup;
+  get isFormValid(): boolean {
+    return this.subpartsComponent.areAllSubpartsValid() && this.form.valid;
+  };
+  mode: DisplayModes = DisplayModes.Edit;
+  get isInCreateMode() {
+    return this.mode === DisplayModes.Create;
+  }
   
   constructor(private activatedRoute: ActivatedRoute,
     private router: Router,
     private assignmentService: AssignmentService,
+    private assignmentDisplayService: AssignmentDisplayService,
     private employeeService: EmployeeService,
     private stageService: StageService) { 
       
@@ -45,13 +53,13 @@ export class AssignmentEditComponent implements OnInit {
     this.prepareData();
   }
 
-  private setFields() {
+  private setFields(): void {
     this.boardId ??= this.activatedRoute.snapshot.paramMap.get('boardId')!;
-    this.assignmentId ??= this.activatedRoute.snapshot.paramMap.get('taskId') ?? "0";
-    this.mode = this.assignmentId == "0" ? "create" : "edit";
+    this.assignmentId ??= this.activatedRoute.snapshot.paramMap.get('taskId') ?? 0;
+    this.mode = this.assignmentId == 0 ? DisplayModes.Create : DisplayModes.Edit;
   }
 
-  private initiateForm() {
+  private initiateForm(): void {
     this.form = new FormGroup({
       id: new FormControl(0, [
         Validators.required
@@ -61,7 +69,7 @@ export class AssignmentEditComponent implements OnInit {
         Validators.maxLength(50)
       ]),
       description: new FormControl(),
-      stage: new FormControl(null, [
+      stageId: new FormControl(null, [
         Validators.required
       ]),
       deadlineDate: new FormControl(new Date(), [
@@ -74,14 +82,13 @@ export class AssignmentEditComponent implements OnInit {
       isCompleted: new FormControl(false)
     }, {
       validators: CustomValidators.dateInTheFutureValidator()
-    }
-    );
+    });
   }
 
-  private prepareData() {
-    this.getStages();
-    this.getEmployees();
-    if (this.mode === "edit") {
+  private prepareData(): void {
+    this.loadStages();
+    this.loadEmployees();
+    if (this.mode === DisplayModes.Edit) {
       this.loadAssignment();
     }
     else {
@@ -89,110 +96,89 @@ export class AssignmentEditComponent implements OnInit {
     }
   }
 
-  private loadAssignment() {
-    this.assignmentService.getAssignment(this.boardId!, this.assignmentId!)
-      .subscribe(result => {
-        this.form.patchValue(result);
-        this.form.patchValue({ 'deadlineDate': result.deadline });
-        this.form.patchValue({ 'deadlineTime': this.getTimeFromDateTime(result.deadline) });
-        this.form.patchValue({ 'stage': result.stageId });
-        this.form.patchValue({ 'responsibleEmployeeId': result.responsibleEmployeeId });
-
-        this.subparts = result.subparts;
-      });
-  }
-
-  public updateStage() {
-    this.assignmentService.getAssignment(this.boardId!, this.assignmentId!)
-      .subscribe(result => {
-        this.form.patchValue({ 'stage': result.stageId });
-      });
-  }
-
-  private getStages() {
+  private loadStages(): void {
     this.stageService.getStages(this.boardId!)
       .subscribe(stages => {
         this.stages = stages;
       });
   }
 
-  private getEmployees() {
+  private loadEmployees(): void {
     this.employeeService.getEmployees(this.boardId!)
       .subscribe(result => {
         this.employees = result;
-        this.employees.sort((a, b) => {
-          let compareResult = a.firstName?.localeCompare(b.firstName!);
-          if(compareResult) return compareResult;
-          else return 0;
-        });
-      })
+        this.employees.sort(employeeByFirstNameComparator);
+      });
   }
 
-  onSubmit() {
-    this.isFormValid = this.subpartsComponent.areAllSubpartsValid() && this.form.valid;
+  private loadAssignment(): void {
+    this.assignmentService.getAssignment(this.boardId!, this.assignmentId!)
+      .subscribe(result => {
+        this.patchForm(result);
+        this.subparts = result.subparts;
+      });
+  }
+
+  private patchForm(assignment: Assignment): void {
+    this.form.patchValue(assignment);
+    this.form.patchValue({ 'deadlineDate': assignment.deadline });
+    this.form.patchValue({ 'deadlineTime':
+      this.assignmentDisplayService.getTimeFromDateTime(assignment.deadline) });
+  }
+
+  updateStage(): void {
+    this.assignmentService.getAssignment(this.boardId!, this.assignmentId!)
+      .subscribe(result => this.form.patchValue({ 'stage': result.stageId }));
+  }
+
+  onSubmit(): void {
     if(this.isFormValid)
     {
-      let assignment: Assignment = {
-        id: this.form.controls['id'].value,
-        topic: this.form.controls['topic'].value,
-        description: this.form.controls['description'].value,
-        boardId: Number(this.boardId),
-        stageId: this.form.controls['stage'].value,
-        deadline: this.getDeadline(),
-        responsibleEmployeeId: this.form.controls['responsibleEmployeeId'].value,
-        isCompleted: this.form.controls['isCompleted'].value,
-        subparts: this.subpartsComponent.getSubparts()
-      };
+      let assignment = this.getAssignmentFromTheForm();
       
-      if (this.mode === "create")
+      if (this.mode === DisplayModes.Create)
         this.createAssignment(assignment);
-      else if (this.mode === "edit")
+      else if (this.mode === DisplayModes.Edit)
         this.updateAssignment(assignment);
     } else {
       this.form.markAllAsTouched();
     }
   }
 
+  private getAssignmentFromTheForm(): Assignment {
+    return {
+      id: this.form.controls['id'].value,
+      topic: this.form.controls['topic'].value,
+      description: this.form.controls['description'].value,
+      boardId: Number(this.boardId),
+      stageId: this.form.controls['stage'].value,
+      deadline: this.getDeadline(),
+      responsibleEmployeeId: this.form.controls['responsibleEmployeeId'].value,
+      isCompleted: this.form.controls['isCompleted'].value,
+      subparts: this.subpartsComponent.getSubparts()
+    };
+  }
+
   private getDeadline() : Date {
-      let deadlineDate = this.form.controls['deadlineDate'].value;
-      
-      let deadline : moment.Moment = moment.isMoment(deadlineDate)
-        ? moment(deadlineDate)
-        : moment(deadlineDate, 'YYYY-MM-DDTHH:mm:ss'); 
-
-      let deadlineTime = this.form.controls['deadlineTime'].value;
-      let timeMoment = moment(deadlineTime, 'HH:mm');
-
-      deadline = moment(deadline).hour(0).minute(0)
-        .add(timeMoment.hours() + deadline.utcOffset() / 60, 'hours')
-        .add(timeMoment.minutes(), 'minutes');
-
-      return deadline.toDate();
+      const deadlineDate = this.form.controls['deadlineDate'].value;
+      const deadlineTime = this.form.controls['deadlineTime'].value;
+      return this.assignmentDisplayService.getDeadline(deadlineDate, deadlineTime);
   }
 
-  private getTimeFromDateTime(dateTime: Date | undefined) : string {
-    if (!dateTime) return "00:00";
-    let momentDateTime = moment(dateTime, 'YYYY-MM-DDTHH:mm:ss');
-    return momentDateTime.hours() + ":" + momentDateTime.minutes();
-  }
-
-  private createAssignment(assignment: any) {
+  private createAssignment(assignment: Assignment): void {
     this.assignmentService.createAssignment(this.boardId!, assignment)
       .subscribe( () => { 
         if(!this.sidebarView) {
-          this.router.navigate(['/boards', this.boardId])
-            .catch(error => console.log(error))
+          this.router.navigate(['/boards', this.boardId]);
         }
     });
   }
 
-  private updateAssignment(assignment: any) {
-    
+  private updateAssignment(assignment: Assignment): void {
     this.assignmentService.updateAssignment(this.boardId!, assignment)
       .subscribe( () => { 
         if(!this.sidebarView) {
-          this.router.navigate(['/boards', this.boardId, 'tasks', this.assignmentId])
-            .catch(error => console.log(error))
+          this.router.navigate(['/boards', this.boardId, 'tasks', this.assignmentId]);
         }
       });
   }

@@ -34,9 +34,10 @@ import { UserBoardsAddComponent } from './users/user-boards-add/user-boards-add.
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UserChangePasswordComponent } from './users/user-change-password/user-change-password.component';
 import { SubpartsComponent } from './subparts/subparts.component';
-import { AssignmentsAllBoardsComponent } from './assignments/assignments-all-boards/assignments-all-boards.component';
 import { HomeComponent } from './home/home.component';
 import { BoardDisplayOptionsComponent } from './boards/board-details/board-display-options/board-display-options.component';
+import { AssignmentsSingleBoardModeComponent } from './assignments/components/assignments-single-board-mode/assignments-single-board-mode.component';
+import { AssignmentsMultyBoardsModeComponent } from './assignments/components/assignments-multy-boards-mode/assignments-multy-boards-mode.component';
 
 @NgModule({
   declarations: [
@@ -65,9 +66,10 @@ import { BoardDisplayOptionsComponent } from './boards/board-details/board-displ
     UserEditComponent,
     UserChangePasswordComponent,
     SubpartsComponent,
-    AssignmentsAllBoardsComponent,
     HomeComponent,
-    BoardDisplayOptionsComponent
+    BoardDisplayOptionsComponent,
+    AssignmentsSingleBoardModeComponent,
+    AssignmentsMultyBoardsModeComponent
   ],
   imports: [
     BrowserModule,

@@ -12,12 +12,12 @@ export class StageService {
 
   }
 
-  getStages(boardId: string) : Observable<Stage[]> {
+  getStages(boardId: number | string) : Observable<Stage[]> {
     const url = "/api/boards/" + boardId + "/stages";
     return this.http.get<Stage[]>(url);
   }
 
-  getStage(boardId: string, stageId: string) : Observable<Stage> {
+  getStage(boardId: number | string, stageId: number | string) : Observable<Stage> {
     const url = "/api/boards/" + boardId + "/stages/" + stageId;
     return this.http.get<Stage>(url);
   }

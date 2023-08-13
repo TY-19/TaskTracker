@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Assignment } from 'src/app/models/assignment';
 import { AssignmentService } from '../assignment.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,91 +13,82 @@ import { AuthService } from 'src/app/auth/auth.service';
   templateUrl: './assignment-view.component.html',
   styleUrls: ['./assignment-view.component.scss']
 })
-export class AssignmentViewComponent implements OnInit {
-  @Input() boardId?: string;
-  @Input() assignmentId?: string;
+export class AssignmentViewComponent implements OnInit, OnChanges {
+  @Input() boardId?: number | string;
+  @Input() assignmentId?: number |string;
   @Input() sidebarView: boolean = false;
   assignment?: Assignment;
   stage?: Stage;
   employee?: Employee;
 
-  constructor(private activatedRoute: ActivatedRoute,
-    private router: Router,
+  constructor(public authService: AuthService,
     private assignmentService: AssignmentService,
     private employeeService: EmployeeService,
     private stageService: StageService,
-    public authService: AuthService) { 
+    private activatedRoute: ActivatedRoute,
+    private router: Router) {
 
   }
 
   ngOnInit(): void {
     this.boardId ??= this.activatedRoute.snapshot.paramMap.get('boardId')!;
     this.assignmentId ??= this.activatedRoute.snapshot.paramMap.get('taskId')!;
-    this.getAssignment(this.boardId, this.assignmentId);
+    this.loadAssignment(this.boardId, this.assignmentId);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['assignmentId'] && !changes['assignmentId'].isFirstChange()) {
       this.assignmentId = changes['assignmentId'].currentValue;
-      this.getAssignment(this.boardId ?? "0", this.assignmentId ?? "0");
+      this.loadAssignment(this.boardId!, this.assignmentId!);
     }
   }
 
-  getAssignment(boardId: string, assignmentId: string) {
+  loadAssignment(boardId: number | string, assignmentId: number | string): void {
     this.assignmentService.getAssignment(boardId, assignmentId)
       .subscribe((result) => {
         this.assignment = result;      
-        this.getStage(this.assignment.stageId);
-        this.getEmployee(this.assignment.responsibleEmployeeId);
+        this.loadStage(this.assignment.stageId);
+        this.loadEmployee(this.assignment.responsibleEmployeeId);
       });
   }
 
-  getStage(stageId: number) {
-    if (stageId) {
-      this.stageService.getStage(this.boardId!, stageId.toString())
-        .subscribe((result) => this.stage = result);
-    }
+  loadStage(stageId: number | string): void {
+    this.stageService.getStage(this.boardId!, stageId)
+      .subscribe(result => this.stage = result);
   }
 
-  getEmployee(employeeId: number) {
-    if(employeeId) {
-      this.employeeService.getEmployee(this.boardId!, employeeId)
-        .subscribe(result => {
-          this.employee = result;
-        })
-    }
+  loadEmployee(employeeId: number | string): void {
+    this.employeeService.getEmployee(this.boardId!, employeeId)
+      .subscribe(result => this.employee = result);
   }
 
-  changeTaskStatus(assignment: Assignment) {
+  changeAssignmentStatus(assignment: Assignment): void {
     this.assignmentService
       .changeAssignmentStatus(this.boardId!, assignment.id, !assignment.isCompleted)
-        .subscribe(() => {
-          this.getAssignment(this.boardId!.toString(), assignment.id.toString());
-        })
+        .subscribe(() => this.loadAssignment(this.boardId!, assignment.id));
   }
 
-  isUserAuthorizeToChangeTaskStatus(): boolean {
-    return this.authService.isEmployee() 
-      && this.authService.getEmployeeId() !== null
-      && this.assignment != undefined
-      && this.authService.getEmployeeId() === this.assignment.responsibleEmployeeId.toString();
-  }
-
-  deleteAssignment() {
+  deleteAssignment(): void {
     this.assignmentService.deleteAssignment(this.boardId!, this.assignmentId!)
-      .subscribe(() => {
-        this.router.navigate(['/boards', this.boardId])
-          .catch(error => console.log(error))
-      });
+      .subscribe(() => { this.router.navigate(['/boards', this.boardId]) });
   }
 
-  getAssignmentStatus(responseType: string = "text"): string {
-    if(this.assignment?.isCompleted)
-      return responseType == "class" ? "success-text" : "Completed";
-    if(this.assignment?.deadline && new Date(this.assignment?.deadline) < new Date(Date.now()))
-      return responseType == "class" ? "warn-text" : "Incompleted";
-    return responseType == "class" ? "process-text" : "In progress";
+  get isUserAuthorizeToChangeTaskStatus(): boolean {
+    return (this.authService.isAdmin() || this.authService.isManager()) ||
+      (this.authService.isEmployee()
+        && this.authService.getEmployeeId() !== null
+        && this.assignment != undefined
+        && this.authService.getEmployeeId() === this.assignment.responsibleEmployeeId.toString());
   }
 
-
+  get assignmentStatus(): { class: string; text: string } {
+    if(this.assignment?.isCompleted) {
+      return { class: "success-text", text: "Completed"};
+    } else if(this.assignment?.deadline
+        && new Date(this.assignment?.deadline) < new Date(Date.now())) {
+      return { class: "warn-text", text: "Incompleted"};
+    } else {
+      return { class: "process-text", text: "In progress"};
+    }
+  }
 }
