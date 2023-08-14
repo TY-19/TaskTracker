@@ -37,9 +37,9 @@
                     {{stage.name}}
                 </mat-option>
             </mat-select>
-            <p *ngIf="form.touched && form.controls['stage'].touched
-                && form.controls['stage'].errors">
-                <span *ngIf="form.controls['stage'].errors?.['required']"
+            <p *ngIf="form.touched && form.controls['stageId'].touched
+                && form.controls['stageId'].errors">
+                <span *ngIf="form.controls['stageId'].errors?.['required']"
                     class="small-warn-text">
                     Select the stage
                 </span>

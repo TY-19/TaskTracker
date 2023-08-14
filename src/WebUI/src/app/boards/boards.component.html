@@ -2,7 +2,7 @@
     <div class="title" [routerLink]="['/boards']">
         Boards
     </div>
-    <div *ngIf="isAdmin() || isManager()" class="button-wrapper">
+    <div *ngIf="isAdminOrManager" class="button-wrapper">
         <a mat-flat-button color="primary" [routerLink]="['/boards', 'create']">Create Board</a>
     </div>
     <div *ngIf="boards" class="canvas">
@@ -15,9 +15,9 @@
             <mat-card-actions>
                 <a [routerLink]="['/boards', board.id]" 
                     mat-flat-button color="primary">View</a>
-                <a *ngIf="isAdmin() || isManager()" [routerLink]="['/boards', board.id, 'edit']" 
+                <a *ngIf="isAdminOrManager" [routerLink]="['/boards', board.id, 'edit']"
                     mat-flat-button class="edit-button">Edit</a>
-                <a *ngIf="isAdmin() || isManager()" (click)="deleteBoard(board.id)"
+                <a *ngIf="isAdminOrManager" (click)="deleteBoard(board.id)"
                     mat-flat-button color="warn">Delete</a>
             </mat-card-actions>
         </mat-card>

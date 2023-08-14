@@ -38,6 +38,7 @@ import { HomeComponent } from './home/home.component';
 import { BoardDisplayOptionsComponent } from './boards/board-details/board-display-options/board-display-options.component';
 import { AssignmentsSingleBoardModeComponent } from './assignments/components/assignments-single-board-mode/assignments-single-board-mode.component';
 import { AssignmentsMultyBoardsModeComponent } from './assignments/components/assignments-multy-boards-mode/assignments-multy-boards-mode.component';
+import { SidebarComponent } from './boards/board-details/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +70,8 @@ import { AssignmentsMultyBoardsModeComponent } from './assignments/components/as
     HomeComponent,
     BoardDisplayOptionsComponent,
     AssignmentsSingleBoardModeComponent,
-    AssignmentsMultyBoardsModeComponent
+    AssignmentsMultyBoardsModeComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule,

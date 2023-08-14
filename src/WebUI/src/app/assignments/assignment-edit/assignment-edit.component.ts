@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from '../assignment.service';
@@ -128,13 +128,13 @@ export class AssignmentEditComponent implements OnInit {
 
   updateStage(): void {
     this.assignmentService.getAssignment(this.boardId!, this.assignmentId!)
-      .subscribe(result => this.form.patchValue({ 'stage': result.stageId }));
+      .subscribe(result => this.form.patchValue({ 'stageId': result.stageId }));
   }
 
   onSubmit(): void {
     if(this.isFormValid)
     {
-      let assignment = this.getAssignmentFromTheForm();
+      const assignment = this.getAssignmentFromTheForm();
       
       if (this.mode === DisplayModes.Create)
         this.createAssignment(assignment);
@@ -151,7 +151,7 @@ export class AssignmentEditComponent implements OnInit {
       topic: this.form.controls['topic'].value,
       description: this.form.controls['description'].value,
       boardId: Number(this.boardId),
-      stageId: this.form.controls['stage'].value,
+      stageId: this.form.controls['stageId'].value,
       deadline: this.getDeadline(),
       responsibleEmployeeId: this.form.controls['responsibleEmployeeId'].value,
       isCompleted: this.form.controls['isCompleted'].value,
@@ -167,7 +167,7 @@ export class AssignmentEditComponent implements OnInit {
 
   private createAssignment(assignment: Assignment): void {
     this.assignmentService.createAssignment(this.boardId!, assignment)
-      .subscribe( () => { 
+      .subscribe( () => {
         if(!this.sidebarView) {
           this.router.navigate(['/boards', this.boardId]);
         }
@@ -176,7 +176,7 @@ export class AssignmentEditComponent implements OnInit {
 
   private updateAssignment(assignment: Assignment): void {
     this.assignmentService.updateAssignment(this.boardId!, assignment)
-      .subscribe( () => { 
+      .subscribe( () => {
         if(!this.sidebarView) {
           this.router.navigate(['/boards', this.boardId, 'tasks', this.assignmentId]);
         }

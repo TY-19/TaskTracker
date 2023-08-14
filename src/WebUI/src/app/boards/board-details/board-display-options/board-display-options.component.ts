@@ -20,31 +20,30 @@ export class BoardDisplayOptionsComponent implements OnInit {
     this.setFields();
   }
 
-  setFields() {
+  private setFields(): void {
     this.sortingFieldSelected = this.boardDisplayService.getSortField();
     this.sortingOrderSelected = this.boardDisplayService.getSortOrder();
-    this.showOnlyMyTasksSelected = this.boardDisplayService.getShowOnlyMyTasks() === 'true';
-    this.showCompletedTasksSelected = this.boardDisplayService.getShowCompletedTasks() === 'true';
+    this.showOnlyMyTasksSelected = this.boardDisplayService.getShowOnlyMyTasks();
+    this.showCompletedTasksSelected = this.boardDisplayService.getShowCompletedTasks();
   }
 
-  sortBy(sortingField: string) {
+  sortBy(sortingField: string): void {
     this.boardDisplayService.setSortField(sortingField);
     this.boardDisplayService.doSorting();
   }
 
-  sortInOrder(order: string) {
+  sortInOrder(order: string): void {
     this.boardDisplayService.setSortOrder(order);
     this.boardDisplayService.doSorting();
   }
 
-  changeShowOnlyMyTasks(checked: boolean) {
+  changeShowOnlyMyTasks(checked: boolean): void {
     this.boardDisplayService.setShowOnlyMyTasks(checked);
     this.boardDisplayService.doFiltration();
   }
 
-  changeShowCompletedTasks(checked: boolean) {
+  changeShowCompletedTasks(checked: boolean): void {
     this.boardDisplayService.setShowCompletedTasks(checked);
     this.boardDisplayService.doFiltration();
   }
-
 }

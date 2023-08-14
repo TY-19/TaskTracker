@@ -1,7 +1,3 @@
-.content.no-right-padding {
-    padding-right: 0px;
-}
-
 .sidebar-container {
     position: fixed;
     top: 80px;
@@ -12,26 +8,8 @@
     z-index: 1;
 }
 
-.sidebar-view-margin {
-    margin-left: 225px;
-}
-
-.sidebar-edit-margin {
-    margin-left: 200px;
-}
-
-.panel-container {
-    display: flex;
-    align-items: center;
-    border: none;
-    margin-left: 20px;
-}
-.panel-text {
-    margin-left: 3px;
-}
-
-.sidebar-buttons {
-    margin-left: 20px;
+.content.no-right-padding {
+    padding-right: 0px;
 }
 
 h2 {

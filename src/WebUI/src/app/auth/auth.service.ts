@@ -6,7 +6,7 @@ import { LoginResult } from "../models/login-result";
 import { DefaultRolesNames } from "../config/default-roles-names";
 import { RegistrationRequest } from "../models/registration-request";
 import { RegistrationResult } from "../models/registration-result";
-import { Router } from "@angular/router";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn: 'root',
@@ -26,39 +26,73 @@ export class AuthService {
     public userName = this._userName.asObservable();
 
     private employeeIdKey: string = "EmployeeId";
-    private employeeId: number | null = null;
 
-    constructor(private router: Router,
-        protected http: HttpClient) {
-            this.init();
+    constructor(protected http: HttpClient) {
+        this.init();
     }
 
-    init() : void {
+    init(): void {
         this.setAuthStatus(this.isAuthenticated());
         this.userRoles = this.getRoles();
     }
 
-    setAuthStatus(isAuthenticated: boolean): void {
+    private setAuthStatus(isAuthenticated: boolean): void {
         this._authStatus.next(isAuthenticated);
     }
 
-    isAuthenticated() : boolean {
-        return this.getToken() != null;
+    registration(registrationRequest: RegistrationRequest): Observable<RegistrationResult> {
+        const url = environment.baseUrl + "api/Account/registration";
+        return this.http.post<RegistrationResult>(url, registrationRequest);
     }
 
-    getToken() : string | null {
-        return localStorage.getItem(this.tokenKey);
+    login(loginRequest: LoginRequest): Observable<LoginResult> {
+        const url = environment.baseUrl + "api/Account/login";
+        return this.http.post<LoginResult>(url, loginRequest)
+            .pipe(tap(loginResult => {
+                if(loginResult.success && loginResult.token) {
+                    this.setAuthStatus(true);
+                    this.setUserName(loginResult.userName);
+                    this.userRoles = loginResult.roles;
+                    this.writeToLocalStorage(loginResult);
+                }
+            }));
     }
-
-    setUserName(userName?: string | null) : void {
+    private setUserName(userName?: string | null) : void {
         if (!userName)
             this._userName.next(null);
         else
             this._userName.next(userName);
     }
 
+    private writeToLocalStorage(loginResult: LoginResult): void {
+        localStorage.setItem(this.tokenKey, loginResult.token!);
+        localStorage.setItem(this.rolesKey, JSON.stringify(loginResult.roles));
+        if(loginResult.userName)
+            localStorage.setItem(this.userNameKey, loginResult.userName);
+        if(loginResult.employeeId)
+            localStorage.setItem(this.employeeIdKey, loginResult.employeeId.toString());
+    }
+
+    logout(): void {
+        this.clearLocalStorage();
+        this.setAuthStatus(false);
+        this.setUserName(null);
+        this.userRoles = [];
+      }
+
+    private clearLocalStorage(): void {
+        localStorage.removeItem(this.tokenKey);
+        localStorage.removeItem(this.rolesKey);
+        localStorage.removeItem(this.userNameKey);
+        localStorage.removeItem(this.employeeIdKey);
+    }
+
+    getToken() : string | null {
+        return localStorage.getItem(this.tokenKey);
+    }
+
     getRoles() : string[] {
-        let roles = localStorage.getItem(this.rolesKey);
+        const roles = localStorage.getItem(this.rolesKey);
         if (roles) return JSON.parse(roles);
         else return [];
     }
@@ -71,46 +105,8 @@ export class AuthService {
         return localStorage.getItem(this.employeeIdKey);
     }
 
-    registration(registrationRequest: RegistrationRequest): Observable<RegistrationResult> {
-        const url = "api/Account/registration";
-        return this.http.post<RegistrationResult>(url, registrationRequest);
-    }
-
-    login(loginRequest: LoginRequest): Observable<LoginResult> {
-        const url = "api/Account/login";
-        return this.http.post<LoginResult>(url, loginRequest)
-            .pipe(tap(loginResult => {
-                if(loginResult.success && loginResult.token) {
-                    this.setAuthStatus(true);
-                    this.setUserName(loginResult.userName);
-                    this.userRoles = loginResult.roles;
-                    this.employeeId = loginResult.employeeId ?? null;
-                    this.writeToLocalStorage(loginResult);
-                }
-            }));
-    }
-
-    private writeToLocalStorage(loginResult: LoginResult) {
-        localStorage.setItem(this.tokenKey, loginResult.token!);
-        localStorage.setItem(this.rolesKey, JSON.stringify(loginResult.roles));
-        if(loginResult.userName)
-            localStorage.setItem(this.userNameKey, loginResult.userName);
-        if(loginResult.employeeId)
-            localStorage.setItem(this.employeeIdKey, loginResult.employeeId.toString());
-    }
-
-    logout() {
-        this.clearLocalStorage();
-        this.setAuthStatus(false);
-        this.setUserName(null);
-        this.userRoles = [];
-      }
-
-    clearLocalStorage() {
-        localStorage.removeItem(this.tokenKey);
-        localStorage.removeItem(this.rolesKey);
-        localStorage.removeItem(this.userNameKey);
-        localStorage.removeItem(this.employeeIdKey);
+    isAuthenticated() : boolean {
+        return this.getToken() != null;
     }
 
     isAdmin() : boolean {

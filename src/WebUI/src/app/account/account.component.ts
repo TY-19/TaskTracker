@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AccountService } from './account.service';
 import { UserProfile } from '../models/user-profile';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { UserUpdateModel } from '../models/update-models/user-update-model';
 
 @Component({
   selector: 'tt-account',
@@ -11,25 +11,21 @@ import { Router } from '@angular/router';
 })
 export class AccountComponent implements OnInit {
 
-  profile! : UserProfile;
-
   form!: FormGroup;
-
+  profile! : UserProfile;
   updateResult: boolean | null = null;
   updateErrors?: string;
 
-  constructor(private router: Router,
-    private accountService: AccountService) { 
+  constructor(private accountService: AccountService) {
 
   }
 
   ngOnInit(): void {
-    this.getUserProfile();
     this.initiateForm();
     this.loadProfile();
   }
 
-  private initiateForm()
+  private initiateForm(): void
   {
     this.form = new FormGroup({
       id: new FormControl("", [
@@ -56,12 +52,7 @@ export class AccountComponent implements OnInit {
     });
   }
 
-  private getUserProfile() {
-    this.accountService.getUserProfile()
-      .subscribe(result => this.profile = result);
-  }
-
-  private loadProfile() {
+  private loadProfile(): void {
     this.accountService.getUserProfile()
       .subscribe(result => {
         this.profile = result;
@@ -69,22 +60,26 @@ export class AccountComponent implements OnInit {
       });
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if(this.form.valid)
     {
-      let profile = {
-        username: this.form.controls['userName'].value,
-        email: this.form.controls['email'].value,
-        firstName: this.form.controls['firstName'].value,
-        lastName: this.form.controls['lastName'].value
-      }
+      const profile: UserUpdateModel = this.getProfileFromForm();
       this.updateProfile(profile)
     } else {
       this.form.markAllAsTouched();
     }
   }
 
-  updateProfile(profile: any) {
+  private getProfileFromForm(): UserUpdateModel {
+    return {
+      username: this.form.controls['userName'].value,
+      email: this.form.controls['email'].value,
+      firstName: this.form.controls['firstName'].value,
+      lastName: this.form.controls['lastName'].value
+    }
+  }
+
+  private updateProfile(profile: UserUpdateModel) {
     this.accountService.updateUserProfile(profile)
       .subscribe({
         next: response => {
@@ -97,5 +92,4 @@ export class AccountComponent implements OnInit {
         }
     });
   }
-
 }

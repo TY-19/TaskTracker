@@ -7,6 +7,7 @@ import { StageService } from 'src/app/stages/stage.service';
 import { Employee } from 'src/app/models/employee';
 import { EmployeeService } from 'src/app/employees/employee.service';
 import { AuthService } from 'src/app/auth/auth.service';
+import { AssignmentDisplayService } from '../assignment-display.service';
 
 @Component({
   selector: 'tt-assignment-view',
@@ -21,8 +22,9 @@ export class AssignmentViewComponent implements OnInit, OnChanges {
   stage?: Stage;
   employee?: Employee;
 
-  constructor(public authService: AuthService,
+  constructor(private authService: AuthService,
     private assignmentService: AssignmentService,
+    private assignmentDisplayService: AssignmentDisplayService,
     private employeeService: EmployeeService,
     private stageService: StageService,
     private activatedRoute: ActivatedRoute,
@@ -73,12 +75,12 @@ export class AssignmentViewComponent implements OnInit, OnChanges {
       .subscribe(() => { this.router.navigate(['/boards', this.boardId]) });
   }
 
+  get isAdminOrManager(): boolean {
+    return this.authService.isAdmin() || this.authService.isManager();
+  }
+
   get isUserAuthorizeToChangeTaskStatus(): boolean {
-    return (this.authService.isAdmin() || this.authService.isManager()) ||
-      (this.authService.isEmployee()
-        && this.authService.getEmployeeId() !== null
-        && this.assignment != undefined
-        && this.authService.getEmployeeId() === this.assignment.responsibleEmployeeId.toString());
+    return this.assignmentDisplayService.isUserAuthorizeToModifyTask(this.assignment!);
   }
 
   get assignmentStatus(): { class: string; text: string } {

@@ -7,30 +7,26 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {
+
+  constructor(private router: Router,
+    private authService: AuthService) {
+
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
     Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
-    if (this.authService.isAuthenticated() && this.doesRoleHaveAccess(route)) {
-      return true;
-    }
-    this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } })
-        .catch(error => console.log(error));
-    return false;
+      if (this.authService.isAuthenticated() && this.doesRoleHaveAccess(route)) {
+        return true;
+      }
+      this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+      return false;
   }
 
   private doesRoleHaveAccess(route: ActivatedRouteSnapshot) : boolean {
-
     let roles = route.data['roles'] as Array<string>;
-    
-    if(!roles || roles.length === 0) 
+    if(!roles || roles.length === 0) {
       return true;
-    
+    }
     return roles.some(r => this.authService.getRoles().includes(r));
   }
 }

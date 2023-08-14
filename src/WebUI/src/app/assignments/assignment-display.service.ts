@@ -5,6 +5,7 @@ import { Board } from "../models/board";
 import { Stage } from "../models/stage";
 import { Employee } from "../models/employee";
 import * as moment from 'moment';
+import { Assignment } from "../models/assignment";
 
 @Injectable({
     providedIn: 'root',
@@ -85,5 +86,13 @@ export class AssignmentDisplayService {
     }
     const momentDateTime = moment(dateTime, 'YYYY-MM-DDTHH:mm:ss');
     return momentDateTime.hours() + ":" + momentDateTime.minutes();
+  }
+
+  isUserAuthorizeToModifyTask(assignment: Assignment): boolean {
+    return this.authService.isAdmin() || this.authService.isManager() ||
+      (this.authService.isEmployee()
+        && this.authService.getEmployeeId() !== null
+        && assignment != undefined
+        && this.authService.getEmployeeId() === assignment.responsibleEmployeeId.toString());
   }
 }

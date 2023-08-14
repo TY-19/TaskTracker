@@ -38,7 +38,7 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
   );
   displayedColumns = ['topic', 'description', 'deadline', 'board', 'stage', 'buttons'];
 
-  constructor(public authService: AuthService,
+  constructor(private authService: AuthService,
     private assignmentService: AssignmentService,
     private assignmentDisplayService: AssignmentDisplayService,
     private boardService: BoardService,
@@ -62,6 +62,10 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
   }
   get isInMultyBoardsMode(): boolean {
     return this.mode === AssignmentsModes.MultyBoards;
+  }
+
+  get isAdminOrManager(): boolean {
+    return this.authService.isAdmin() || this.authService.isManager();
   }
 
   private setMode(): void {

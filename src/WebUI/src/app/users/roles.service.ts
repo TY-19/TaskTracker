@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { DefaultRolesNames } from "../config/default-roles-names";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn: 'root',
@@ -31,7 +32,7 @@ export class RolesService {
   }
 
   getAllRoles(): Observable<string[]> {
-    const url = "/api/users/roles"
+    const url = environment.baseUrl + "api/users/roles"
     return this.http.get<string[]>(url);
   }
 }

@@ -14,7 +14,6 @@ import { CustomValidators } from 'src/app/common/custom-validators';
 export class RegistrationComponent implements OnInit {
 
   form!: FormGroup;
-
   registrationResult?: RegistrationResult;
 
   constructor(private router: Router,
@@ -26,7 +25,7 @@ export class RegistrationComponent implements OnInit {
     this.initiateForm();
   }
 
-  private initiateForm() {
+  private initiateForm(): void {
     this.form = new FormGroup({
       userName: new FormControl('', [
         Validators.required,
@@ -53,17 +52,16 @@ export class RegistrationComponent implements OnInit {
 
   onSubmit(): void {
     if(this.form.valid) {
-      let registrationRequest: RegistrationRequest = {
+      const registrationRequest: RegistrationRequest = {
         userName: this.form.controls['userName'].value,
         email: this.form.controls['email'].value,
         password: this.form.controls['password'].value
       }
 
       this.authService.registration(registrationRequest)
-        .subscribe((result) => {
+        .subscribe(result => {
           if(result.success) {
-            this.router.navigate(["/"])
-              .catch(error => console.log(error));
+            this.router.navigate(["/"]);
           } else {
             this.registrationResult = result;
           }
@@ -72,5 +70,4 @@ export class RegistrationComponent implements OnInit {
       this.form.markAllAsTouched();
     }
   }
-
 }

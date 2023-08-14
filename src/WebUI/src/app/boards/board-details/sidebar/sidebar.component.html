@@ -1,0 +1,43 @@
+<button class="panel-container" (click)="hideSidebar()">
+    <mat-icon>
+        arrow_back
+    </mat-icon>
+    <p class="panel-text">Hide panel</p>
+</button>
+<tt-assignment-view *ngIf="isInViewMode"
+    [sidebarView]="true"
+    [boardId]="boardId"
+    [assignmentId]="currentTaskId">
+</tt-assignment-view>
+<tt-assignment-edit *ngIf="isInCreateMode || isInEditMode"
+    [sidebarView]="true"
+    [boardId]="boardId"
+    [assignmentId]="currentTaskId">
+</tt-assignment-edit>
+<div class="sidebar-buttons" *ngIf="isInViewMode">
+    <a mat-flat-button color="primary"
+        [routerLink]="['/boards', boardId, 'tasks', currentTaskId]">
+        Details
+    </a>
+    <a *ngIf="isAdminOrManager" 
+        mat-flat-button class="edit-button" (click)="editTask(currentTaskId!)">
+        Edit
+    </a>
+    <a *ngIf="isAdminOrManager"
+        mat-flat-button color="warn" (click)="deleteAssignment()">
+        Delete
+    </a>
+    <a *ngIf="isUserAuthorizeToChangeTaskStatus"
+        mat-flat-button [color]="assignment?.isCompleted ? 'warn' : 'primary'"
+        (click)="changeAssignmentStatus(assignmentView.assignment!)">
+        {{ assignment?.isCompleted ? 'Cancel completion' : 'Complete task' }}
+    </a>
+</div>
+<div class="sidebar-buttons" *ngIf="isInCreateMode || isInEditMode">
+    <button mat-flat-button color="primary" (click)="onSubmit()">
+        {{ isInCreateMode ? "Add" : "Save" }}
+    </button>
+    <a mat-flat-button color="accent" (click)="showSidebar=false">
+        Cancel
+    </a>
+</div>

@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Board } from "../models/board";
 import { Observable } from "rxjs";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn: 'root',
@@ -12,33 +13,33 @@ export class BoardService {
 
   }
 
-  getBoards() : Observable<Board[]> {
-      const url = "/api/boards";
+  getBoards(): Observable<Board[]> {
+      const url = environment.baseUrl + "api/boards";
       return this.http.get<Board[]>(url);
   }
 
-  getBoardsOfTheEmployee() : Observable<Board[]> {
-    const url = "/api/boards/accessible";
+  getBoardsOfTheEmployee(): Observable<Board[]> {
+    const url = environment.baseUrl + "api/boards/accessible";
     return this.http.get<Board[]>(url);
 }
 
-  getBoard(id: number | string) : Observable<Board> {
-      const url = "/api/boards/" + id;
+  getBoard(id: number | string): Observable<Board> {
+      const url = environment.baseUrl + "api/boards/" + id;
       return this.http.get<Board>(url);
   }
 
-  createBoard(board: Board) {
-    const url = "/api/boards/";
+  createBoard(board: Board): Observable<Object> {
+    const url = environment.baseUrl + "api/boards/";
     return this.http.post(url, board);
   }
 
-  updateBoard(id: string, board: Board) {
-      const url = "/api/boards/" + id;
+  updateBoard(id: number | string, board: Board): Observable<Object> {
+      const url = environment.baseUrl + "api/boards/" + id;
       return this.http.put(url, board, { observe: 'response' });
   }
 
-  deleteBoard(id: string) {
-    const url = "/api/boards/" + id;
+  deleteBoard(id: number | string): Observable<Object> {
+    const url = environment.baseUrl + "api/boards/" + id;
     return this.http.delete(url);
   }
 }

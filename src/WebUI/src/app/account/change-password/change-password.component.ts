@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '../account.service';
 import { CustomValidators } from 'src/app/common/custom-validators';
+import { ChangePasswordModel } from 'src/app/models/update-models/change-password.model';
 
 @Component({
   selector: 'tt-change-password',
@@ -25,7 +26,7 @@ export class ChangePasswordComponent implements OnInit {
     this.initiateForm();
   }
 
-  initiateForm() {
+  private initiateForm(): void {
     this.form = new FormGroup({
       oldPassword: new FormControl("", [
         Validators.required
@@ -44,33 +45,32 @@ export class ChangePasswordComponent implements OnInit {
     });
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.form.valid)
     {
-      let passwordModel = {
+      const passwordModel: ChangePasswordModel = {
         oldPassword: this.form.controls['oldPassword'].value,
         newPassword: this.form.controls['password'].value
       }
-    
-      this.accountService.changePassword(passwordModel)
-        .subscribe({
-          next: response => {
-            if (response.status == 204) {
-              this.isSuccessful = true;
-              this.router.navigate(['/profile'])
-                .catch(error => console.log(error));
-            }
-          },
-          error: response => {
-            this.isSuccessful = false;
-            if (typeof(response.error) === 'string') {
-              this.errors = response.error;
-            } else {
-              this.errors = "Make sure that you use the correct old password!";
-            }
-          }});
+      this.changePassword(passwordModel);
     } else {
       this.form.markAllAsTouched();
     }
+  }
+
+  private changePassword(passwordModel: ChangePasswordModel): void {
+    this.accountService.changePassword(passwordModel)
+      .subscribe({
+        next: response => {
+          if (response.status == 204) {
+            this.isSuccessful = true;
+            this.router.navigate(['/profile']);
+          }
+        },
+        error: response => {
+          this.isSuccessful = false;
+          this.errors = response.error;
+        }
+      });
   }
 }

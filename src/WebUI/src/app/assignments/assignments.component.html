@@ -63,12 +63,12 @@
                     [routerLink]="['/boards', assignment.boardId, 'tasks', assignment.id]">
                     Details
                 </a>
-                <a *ngIf="authService.isAdmin() || authService.isManager()"
+                <a *ngIf="isAdminOrManager"
                     mat-flat-button class="edit-button"
                     [routerLink]="['/boards', assignment.boardId, 'tasks', assignment.id, 'edit']">
                     Edit
                 </a>
-                <a *ngIf="authService.isAdmin() || authService.isManager()"
+                <a *ngIf="isAdminOrManager"
                     mat-flat-button color="warn"
                     (click)="deleteAssignment(assignment.boardId, assignment.id)">
                     Delete

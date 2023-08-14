@@ -13,44 +13,26 @@ export class BoardsComponent implements OnInit {
   boards!: Board[];
 
   constructor(private boardService: BoardService,
-    private auth: AuthService) { 
+    private authService: AuthService) {
   }
 
   ngOnInit(): void {
     this.getData();
   }
 
-  getData(): void {
-    if (this.auth.isAdmin() || this.auth.isManager()) {
-      this.boardService.getBoards()
-        .subscribe({
-          next: response => this.boards = response,
-          error: error => console.log(error)
-        });
-    } else {
+  private getData(): void {
       this.boardService.getBoardsOfTheEmployee()
-        .subscribe({
-          next: response => this.boards = response,
-          error: error => console.log(error)
-        });
-    }
+        .subscribe(response => this.boards = response);
   }
 
-  deleteBoard(id: number) {
+  deleteBoard(id: number): void {
     if(confirm("Do you really want to delete the board? All tasks will be deleted as well"))
     {
-      this.boardService.deleteBoard(id.toString()).subscribe({
-        next: () => this.getData()
-      });
+      this.boardService.deleteBoard(id)
+        .subscribe(() => this.getData());
     }
   }
-
-  isAdmin() : boolean {
-    return this.auth.isAdmin();
+  get isAdminOrManager(): boolean {
+    return this.authService.isAdmin() || this.authService.isManager();
   }
-  
-  isManager() : boolean {
-    return this.auth.isManager();
-  }
-
 }

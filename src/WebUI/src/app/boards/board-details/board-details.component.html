@@ -1,54 +1,14 @@
-<div *ngIf="showSidebar" [@openClose] class="sidebar-container" >
-    <button class="panel-container" (click)="showSidebar=false">
-        <mat-icon>
-            arrow_back
-        </mat-icon>
-        <p class="panel-text">Hide panel</p>
-    </button>
-    <tt-assignment-view *ngIf="isInViewMode"
-        [sidebarView]="true"
-        [boardId]="board.id"
-        [assignmentId]="currentTaskId">
-    </tt-assignment-view>
-    <tt-assignment-edit *ngIf="isInCreateMode || isInEditMode"
-        [sidebarView]="true"
-        [boardId]="board.id"
-        [assignmentId]="currentTaskId">
-    </tt-assignment-edit>
-    <div class="sidebar-buttons" *ngIf="isInViewMode">
-        <a mat-flat-button color="primary"
-            [routerLink]="['/boards', board.id, 'tasks', currentTaskId]">
-            Details
-        </a>
-        <a *ngIf="authService.isAdmin() || authService.isManager()" 
-            mat-flat-button class="edit-button" (click)="editTask(currentTaskId!)">
-            Edit
-        </a>
-        <a *ngIf="authService.isAdmin() || authService.isManager()"
-            mat-flat-button color="warn" (click)="deleteAssignment()">
-            Delete
-        </a>
-        <a *ngIf="isUserAuthorizeToChangeTaskStatus"
-            mat-flat-button [color]="assignmentView.assignment!.isCompleted ? 'warn' : 'primary'"
-            (click)="changeAssignmentStatus(assignmentView.assignment!)">
-            {{assignmentView.assignment!.isCompleted ? 'Cancel completion' : 'Complete task' }}
-        </a>
-    </div>
-    <div class="sidebar-buttons" *ngIf="isInCreateMode || isInEditMode">
-        <button mat-flat-button color="primary" (click)="onSubmit()">
-            {{ isInCreateMode ? "Add" : "Save" }}
-        </button>
-        <a mat-flat-button color="accent" (click)="showSidebar=false">
-            Cancel
-        </a>
-    </div>
-</div>
+<tt-sidebar *ngIf="showSidebar" [@openClose] class="sidebar-container"
+    [boardId]="board.id" [currentTaskId]="currentTaskId"
+    [(showSidebar)]="showSidebar" [(sidebarContent)]="sidebarContent"
+    (reloadBoard)="loadBoard()">
+</tt-sidebar>
 
 <div *ngIf="board" class="content no-right-padding board-container" 
     [@moveBoard]="getSidebarClass()">
     <h2 class="title">{{board.name}}</h2>
     <div class="buttons-container">
-        <div *ngIf="authService.isAdmin() || authService.isManager()">
+        <div *ngIf="isAdminOrManager">
             <a mat-flat-button color="primary" 
                 (click)="createTask()">
                 Create Task
@@ -74,20 +34,23 @@
             </a>
         </div>
     </div>
-    <tt-board-display-options *ngIf="showDisplayOption"></tt-board-display-options>
+
+    <tt-board-display-options *ngIf="showDisplayOption">
+    </tt-board-display-options>
+
     <div *ngIf="showBoard">
         <div cdkDropListGroup class="board">
             <div class="stage" cdkDropList (cdkDropListDropped)="drop($event)"
                 *ngFor="let stage of getSortedStages()"
                 [attr.stage-id]="stage.id">
-                    <div class="stage-name">{{stage.name}}</div>
-                    <div *ngFor="let task of filterAssignmentOfTheStage(stage.id)">
-                        <div cdkDrag [cdkDragData]="task" class="task" [class]="getTaskClass(task.id)">
-                            <div (click)="viewTask(task.id)">
-                                {{task.topic}}
-                            </div>
+                <div class="stage-name">{{stage.name}}</div>
+                <div *ngFor="let task of filterAssignmentOfTheStage(stage.id)">
+                    <div cdkDrag [cdkDragData]="task" class="task" [class]="getTaskClass(task.id)">
+                        <div (click)="viewTask(task.id)">
+                            {{task.topic}}
                         </div>
                     </div>
+                </div>
             </div>
         </div>
     </div>

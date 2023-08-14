@@ -7,11 +7,12 @@ import { Assignment } from 'src/app/models/assignment';
 import { AssignmentService } from 'src/app/assignments/assignment.service';
 import { Stage } from 'src/app/models/stage';
 import { BoardAnimations, SidebarAnimations } from 'src/app/common/animations/sidebar-animation';
-import { AssignmentEditComponent } from 'src/app/assignments/assignment-edit/assignment-edit.component';
-import { AssignmentViewComponent } from 'src/app/assignments/assignment-view/assignment-view.component';
 import { AuthService } from 'src/app/auth/auth.service';
-import { AssignmentComparator, AssignmentFilter, BoardDisplayService } from './board-display-options/board-display.service';
+import { BoardDisplayService } from './board-display-options/board-display.service';
 import { DisplayModes } from 'src/app/common/enums/display-modes';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { BoardDisplayOptions } from './board-display-options/board-display-options';
+import { AssignmentDisplayService } from 'src/app/assignments/assignment-display.service';
 
 @Component({
   selector: 'tt-board-details',
@@ -19,120 +20,112 @@ import { DisplayModes } from 'src/app/common/enums/display-modes';
   styleUrls: ['./board-details.component.scss'],
   animations: [ 
     SidebarAnimations.showHideSidebar,
-    BoardAnimations.moveBoard 
+    BoardAnimations.moveBoard
   ]
 })
 export class BoardDetailsComponent implements OnInit {
-  @ViewChild(AssignmentViewComponent) assignmentView!: AssignmentViewComponent;
-  @ViewChild(AssignmentEditComponent) assignmentEdit!: AssignmentEditComponent;
-  board! : Board;
-  showSidebar: boolean = false;
-  sidebarContent: DisplayModes = DisplayModes.View;
-  currentTaskId?: number;
-  showDisplayOption: boolean = false;
+  @ViewChild(SidebarComponent) sidebar?: SidebarComponent;
 
+  board! : Board;
+  currentTaskId?: number;
+
+  showSidebar: boolean = false;
+  showDisplayOption: boolean = false;
+  showBoard: boolean = true;
+  sidebarContent: DisplayModes = DisplayModes.View;
+  boardDisplayOptions!: BoardDisplayOptions;
+
+  get isAdminOrManager(): boolean {
+    return this.authService.isAdmin() || this.authService.isManager();
+  }
 
   constructor(private activatedRoute: ActivatedRoute,
     private boardService: BoardService,
-    private boardDisplayService: BoardDisplayService,
     private assignmentService: AssignmentService,
-    public authService: AuthService) { 
-
+    private assignmentDisplayService: AssignmentDisplayService,
+    private authService: AuthService,
+    boardDisplayService: BoardDisplayService) {
+      this.boardDisplayOptions = new BoardDisplayOptions(boardDisplayService);
   }
-
-  showBoard: boolean = true;
-  private sortingFunction?: AssignmentComparator;
-  private filterPredicate?: AssignmentFilter;
 
   ngOnInit(): void {
-    this.setDisplayOptions();
-    this.boardDisplayService.doSorting();
-    this.boardDisplayService.doFiltration();
-    this.getBoard();
+    this.configureDisplayOptions();
+    this.loadBoard();
   }
 
-  setDisplayOptions() {
-    this.boardDisplayService.sortingFunction
-      .subscribe(func => {
-        this.sortingFunction = func;
-        this.refreshBoard();
-      });
-    this.boardDisplayService.filterFunction
-      .subscribe(filter => {
-        this.filterPredicate = filter;
-        this.refreshBoard();
-      });
+  private configureDisplayOptions(): void {
+    this.boardDisplayOptions.applyDisplayOptions();
+    this.refreshBoard();
   }
 
-  refreshBoard() {
+  private refreshBoard(): void {
     this.showBoard = false;
     this.showBoard = true;
   }
 
-  getBoard() {
-    let idParam = this.activatedRoute.snapshot.paramMap.get('id');
+  loadBoard(): void {
+    const idParam = this.activatedRoute.snapshot.paramMap.get('id');
     this.boardService.getBoard(idParam!)
       .subscribe(result => this.board = result);
   }
 
-  getSortedStages() : Stage[] {
+  getSortedStages(): Stage[] {
     return this.board.stages?.sort((a, b) => a.position - b.position) ?? [];
   }
   
   filterAssignmentOfTheStage(stageId: number): Assignment[] {
-    let sortingOption = this.sortingFunction;
-    sortingOption ??= (a, b) => a.topic.toLowerCase() > b.topic.toLowerCase() ? 1 : -1;
-    let filterOption = this.filterPredicate ?? ((a) => true);
-    let employeeId = Number(this.authService.getEmployeeId());
-
-    return this.board.assignments?.filter(a => a.stageId == stageId && filterOption(a, employeeId))
-      .sort(sortingOption) ?? [];
+    const employeeId = Number(this.authService.getEmployeeId());
+    return this.board.assignments?.filter(a => a.stageId == stageId
+        && this.boardDisplayOptions.filterFunction(a, employeeId))
+      .sort(this.boardDisplayOptions.sortingFunction) ?? [];
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<string[]>): void {
     if (!this.isAuthorizedToMoveTask(event.item.data as Assignment)) {
       return;
     }
 
     if (event.previousContainer !== event.container) {
-      let stageId = event.container.element.nativeElement.getAttribute('stage-id');
-      let task = event.item.data as Assignment;
-      if (stageId && task)
+      const stageId = event.container.element.nativeElement.getAttribute('stage-id');
+      const assignment = event.item.data as Assignment;
+      if (stageId && assignment)
       {
-        task.stageId = Number(stageId);
+        assignment.stageId = Number(stageId);
         this.assignmentService
-          .moveAssignmentToTheStage(this.board.id, task.id, task.stageId)
+          .moveAssignmentToTheStage(this.board.id, assignment.id, assignment.stageId)
             .subscribe(() => {
-              this.getBoard();
-              this.updateChildren(task);
+              this.loadBoard();
+              this.updateChildren(assignment);
             });
       }
     } 
   }
 
-  isAuthorizedToMoveTask(task: Assignment): boolean {
-    if (this.authService.isAdmin() || this.authService.isManager()) {
-      return true;
+  private updateChildren(assignment: Assignment): void {
+    if(this.sidebar) {
+      this.sidebar.updateChildren(assignment);
     }
-    let responsibleEmployeeId = task?.responsibleEmployeeId?.toString();
-    if(!this.authService.getEmployeeId() || !responsibleEmployeeId) {
-      return false;
-    }
-    return this.authService.getEmployeeId() === responsibleEmployeeId;
   }
 
-  get isUserAuthorizeToChangeTaskStatus(): boolean {
-    if (this.assignmentView)
-      return this.assignmentView.isUserAuthorizeToChangeTaskStatus;
-    return false;
+  isAuthorizedToMoveTask(assignment: Assignment): boolean {
+    return this.assignmentDisplayService.isUserAuthorizeToModifyTask(assignment);
   }
 
-  updateChildren(task: Assignment) {
-    if(this.showSidebar && this.currentTaskId == task.id) {
-      if(this.sidebarContent == DisplayModes.View)
-        this.assignmentView.loadStage(task.stageId);
-      if(this.sidebarContent == DisplayModes.Edit)
-        this.assignmentEdit.updateStage();
+  viewTask(taskId: number): void {
+    this.currentTaskId = taskId;
+    this.showSidebar = true;
+    this.sidebarContent = DisplayModes.View;
+    if (this.sidebar) {
+      this.sidebar.viewTask();
+    }
+  }
+
+  createTask(): void {
+    this.currentTaskId = undefined;
+    this.showSidebar = true;
+    this.sidebarContent = DisplayModes.Create;
+    if (this.sidebar) {
+      this.sidebar.createTask();
     }
   }
 
@@ -148,79 +141,12 @@ export class BoardDetailsComponent implements OnInit {
     }
   }
 
-  viewTask(taskId: number) {
-    this.currentTaskId = taskId;
-    this.showSidebar = true;
-    this.sidebarContent = DisplayModes.View;
-  }
-
-  createTask() {
-    this.currentTaskId = undefined;
-    this.showSidebar = true;
-    this.sidebarContent = DisplayModes.Create;
-    if (this.assignmentEdit) {
-      this.assignmentEdit.mode = DisplayModes.Create;
-      this.assignmentEdit.assignmentId = "0";
-      this.assignmentEdit?.ngOnInit();
-    }
-  }
-
-  editTask(taskId: number) {
-    this.currentTaskId = taskId;
-    this.showSidebar = true;
-    this.sidebarContent = DisplayModes.Edit;
-  }
-
-  async onSubmit() {
-    await new Promise<void>(resolve => {
-      this.assignmentEdit.onSubmit();
-      resolve();
-    });
-    if (this.assignmentEdit.isFormValid) {
-      this.showSidebar = false;
-    }
-    await new Promise(f => setTimeout(f, 300));
-    this.getBoard();
-  }
-
-  changeAssignmentStatus(assignment: Assignment) {
-    this.assignmentService
-      .changeAssignmentStatus(this.board.id, assignment.id, !assignment.isCompleted)
-        .subscribe(() => {
-          this.assignmentView.loadAssignment(this.board.id.toString(), assignment.id.toString());
-        })
-  }
-
-  deleteAssignment() {
-    this.assignmentService
-      .deleteAssignment(this.board.id.toString(), this.currentTaskId!.toString())
-        .subscribe(() => {
-          this.getBoard();
-          this.currentTaskId = 0;
-          this.showSidebar = false;
-          this.sidebarContent = DisplayModes.View;
-        });
-  }
-
   getTaskClass(taskId: number): string {
-    let responsibleEmployeeId = this.board.assignments
+    const responsibleEmployeeId = this.board.assignments
       ?.find(a => a.id == taskId)?.responsibleEmployeeId.toString();
-    let currentUserEmployeeId = this.authService.getEmployeeId();
-    let doesTaskBelongsToEmployee = currentUserEmployeeId !== null 
-      && responsibleEmployeeId !== undefined
+    const currentUserEmployeeId = this.authService.getEmployeeId();
+    const doesTaskBelongsToEmployee = currentUserEmployeeId && responsibleEmployeeId
       && currentUserEmployeeId === responsibleEmployeeId;
     return doesTaskBelongsToEmployee ? 'employees-task' : 'non-employees-task';
-  }
-
-  get isInViewMode(): boolean {
-    return this.sidebarContent === DisplayModes.View;
-  }
-
-  get isInCreateMode(): boolean {
-    return this.sidebarContent === DisplayModes.Create;
-  }
-
-  get isInEditMode(): boolean {
-    return this.sidebarContent === DisplayModes.Edit;
   }
 }
