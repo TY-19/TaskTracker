@@ -1,5 +1,6 @@
 import { Assignment } from "src/app/models/assignment";
 import { Employee } from "src/app/models/employee";
+import { Stage } from "src/app/models/stage";
 
 export function employeeByFirstNameComparator(firstEmployee: Employee, 
     secondEmployee: Employee) : number {
@@ -33,4 +34,8 @@ export function sortTasksByDeadlineDesc(a: Assignment, b: Assignment): number {
             return -1;
     }
     return b.deadline ? 1 : 0;
+}
+
+export function sortStagesByPosition(a: Stage, b: Stage): number {
+    return a.position - b.position;
 }

@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StageService } from '../stage.service';
 import { ActivatedRoute } from '@angular/router';
+import { DisplayModes } from 'src/app/common/enums/display-modes';
+import { StageUpdateModel } from 'src/app/models/update-models/stage-update-model';
 
 @Component({
   selector: 'tt-stage-create-edit',
@@ -10,11 +12,11 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class StageCreateEditComponent implements OnInit {
   @Input() stageId: number = 0;
-  @Input() mode: string = "view";
+  @Input() mode: DisplayModes = DisplayModes.View;
   @Output() updateNotification: EventEmitter<void> = new EventEmitter<void>();
   
   form!: FormGroup;
-  boardId: string = "";
+  boardId!: string;
 
   constructor(private activatedRoute: ActivatedRoute,
     private stageService: StageService) {     
@@ -25,7 +27,7 @@ export class StageCreateEditComponent implements OnInit {
     this.initiateForm();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['stageId']?.currentValue)
       this.loadStage(changes['stageId'].currentValue);
     else 
@@ -42,14 +44,24 @@ export class StageCreateEditComponent implements OnInit {
       ])
     });
   }
+
+  private loadStage(stageId: number): void {
+    if(this.stageId && this.stageId != 0) {
+      this.stageService.getStage(this.boardId, stageId.toString())
+        .subscribe( (result) => this.form.patchValue(result))
+    }
+    if(this.stageId == 0)
+      this.form?.reset({id: 0});
+  }
   
-  onSubmit() {
+  onSubmit(): void {
     if(this.form.valid)
     {
-      if (!this.stageId || this.stageId == 0)
+      if (!this.stageId || this.stageId == 0) {
         this.createStage();
-      else
+      } else {
         this.editStage(this.stageId);
+      }
 
       this.form?.reset({id: 0});
     } else {
@@ -57,32 +69,23 @@ export class StageCreateEditComponent implements OnInit {
     }
   }
 
-  createStage() {
-    let toCreate = { id: 0, 
+  createStage(): void {
+    const stage: StageUpdateModel = {
       name: this.form.controls['name'].value,
-      position: 0, 
-      boardId: Number(this.boardId)
     };
-    this.stageService.createStage(this.boardId, toCreate)
+    this.stageService.createStage(this.boardId, stage)
       .subscribe(() => this.updateNotification.emit());
   }
 
-  editStage(stageId: number) {
-    let toUpdate = { id: stageId, 
+  editStage(stageId: number): void {
+    const stage: StageUpdateModel = {
       name: this.form.controls['name'].value,
-      position: 0, 
-      boardId: Number(this.boardId)
     }
-    this.stageService.updateStage(this.boardId, toUpdate)
+    this.stageService.updateStage(this.boardId, stageId, stage)
       .subscribe(() => this.updateNotification.emit());
   }
 
-  loadStage(stageId: number) {
-    if(this.stageId && this.stageId != 0) {        
-      this.stageService.getStage(this.boardId, stageId.toString())
-        .subscribe( (result) => this.form.patchValue(result))
-    }
-    if(this.stageId == 0)
-      this.form?.reset({id: 0});
+  get isInEditMode(): boolean {
+    return this.mode === DisplayModes.Edit;
   }
 }

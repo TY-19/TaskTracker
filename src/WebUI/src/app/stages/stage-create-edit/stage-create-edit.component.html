@@ -17,7 +17,7 @@
     </mat-form-field>
     <div>
         <button mat-flat-button color="primary" type="submit">
-            {{mode == "edit" ? 'Save' : 'Add'}}
+            {{ isInEditMode ? 'Save' : 'Add'}}
         </button>
     </div>
 </form>

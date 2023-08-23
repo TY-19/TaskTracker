@@ -3,6 +3,8 @@ import { Stage } from '../models/stage';
 import { StageService } from './stage.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
+import { DisplayModes } from '../common/enums/display-modes';
+import { sortStagesByPosition } from '../common/helpers/comparators';
 
 @Component({
   selector: 'tt-stages',
@@ -11,11 +13,12 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 export class StagesComponent implements OnInit {
 
-  boardId: string = "";
+  boardId!: string;
   stages!: MatTableDataSource<Stage>;
   
   showPanel: boolean = false;
-  mode: string = "view";
+  mode: DisplayModes = DisplayModes.View;
+
   currentStageId: number = 0;
   highlightedRow: number | null = null;
 
@@ -26,47 +29,63 @@ export class StagesComponent implements OnInit {
 
   ngOnInit(): void {
     this.boardId = this.activatedRoute.snapshot.paramMap.get('boardId')!;
-    this.getStages();
+    this.loadStages();
   }
 
-  getStages() {
+  private loadStages(): void {
     this.stageService.getStages(this.boardId)
       .subscribe(result => {
-        result.sort((a, b) => a.position - b.position);
+        result.sort(sortStagesByPosition);
         this.stages = new MatTableDataSource(result);
       });
   }
 
-  refreshStages()
+  refreshStages(): void
   {
-    this.getStages();
-    this.changeMode('view');
+    this.loadStages();
+    this.changeMode(DisplayModes.View);
   }
 
-  setStageId(stageId: number) {
+  setStageId(stageId: number): void {
     this.currentStageId = stageId;
   }
 
-  moveStage(stageId: number, forward: boolean) {
-    this.stageService.moveStage(this.boardId, stageId.toString(), forward)
-      .subscribe( () => this.getStages() );
+  moveStage(stageId: number, forward: boolean): void {
+    this.stageService.moveStage(this.boardId, stageId, forward)
+      .subscribe(() => this.loadStages());
   }
 
-  deleteStage(stageId: number) {
+  deleteStage(stageId: number): void {
     this.stageService.deleteStage(this.boardId, stageId.toString())
-      .subscribe(() => this.getStages());
+      .subscribe(() => this.loadStages());
   }
 
-  changeMode(mode: string) {
+  get isInCreateMode(): boolean {
+    return this.mode === DisplayModes.Create;
+  }
+
+  get isInEditMode(): boolean {
+    return this.mode === DisplayModes.Edit;
+  }
+
+  setModeToView(): void {
+    this.changeMode(DisplayModes.View);
+  }
+
+  setModeToCreate(): void {
+    this.changeMode(DisplayModes.Create);
+  }
+
+  setModeToEdit(): void {
+    this.changeMode(DisplayModes.Edit);
+  }
+
+  private changeMode(mode: DisplayModes): void {
     this.mode = mode;
-    if (mode === 'create' || mode === 'edit')    
-        this.showPanel = true;
-    else
-        this.showPanel = false;
+    this.showPanel = this.isInEditMode;
   }
   
-  highlightRow(rowIndex: number) {
+  highlightRow(rowIndex: number): void {
     this.highlightedRow = rowIndex;
   }
-
 }

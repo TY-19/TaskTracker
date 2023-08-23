@@ -54,18 +54,6 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  getSidebarClass(): string {
-    if (!this.showSidebar)
-      return "full-page";
-
-    switch(this.sidebarContent) {
-      case DisplayModes.View: return "sidebar-view-margin";
-      case DisplayModes.Create: return "sidebar-edit-margin";
-      case DisplayModes.Edit: return "sidebar-edit-margin";
-      default: return "full-page";
-    }
-  }
-
   viewTask(): void {
     if (this.assignmentView) {
       this.assignmentView?.ngOnInit();

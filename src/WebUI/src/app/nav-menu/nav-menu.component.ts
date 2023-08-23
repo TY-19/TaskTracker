@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, takeUntil, } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
@@ -8,27 +8,21 @@ import { AuthService } from '../auth/auth.service';
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.scss']
 })
-export class NavMenuComponent implements OnInit {
+export class NavMenuComponent implements OnInit, OnDestroy {
   
   private destroySubject = new Subject();
   isLoggedIn: boolean = false;
   username: string | null = null;
 
-  constructor(public authService: AuthService,
+  constructor(private authService: AuthService,
     private router: Router) { 
-      this.authService.authStatus
-      .pipe(takeUntil(this.destroySubject))
-      .subscribe({
-        next:result => {
-          this.isLoggedIn = result;
-        }
-      })
+      this.getLoginStatus();
   }
 
-  onLogout(): void {
-    this.authService.logout();
-    this.router.navigate(["/login"])
-      .catch(error => {console.log(error)});
+  private getLoginStatus(): void {
+    this.authService.authStatus
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(result => this.isLoggedIn = result);
   }
 
   ngOnInit(): void {
@@ -38,9 +32,18 @@ export class NavMenuComponent implements OnInit {
       .subscribe(username => this.username = username);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject.next(true);
     this.destroySubject.complete();
   }
 
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(["/login"])
+      .catch(error => {console.log(error)});
+  }
+
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
 }

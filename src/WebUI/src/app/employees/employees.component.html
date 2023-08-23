@@ -27,11 +27,11 @@
             </th>
             <td mat-cell *matCellDef="let employee" class="first-column"> 
                 {{employee.userName}} 
-                <span *ngIf="rolesService.isAdmin(employee.roles)" class="badge admin-badge">
-                    {{rolesService.adminRole}}
+                <span *ngIf="isAdmin(employee.roles)" class="badge admin-badge">
+                    {{adminRoleName}}
                 </span>
-                <span *ngIf="rolesService.isManager(employee.roles)" class="badge manager-badge">
-                    {{rolesService.managerRole}}
+                <span *ngIf="isManager(employee.roles)" class="badge manager-badge">
+                    {{managerRoleName}}
                 </span>
             </td>
         </ng-container>
@@ -77,17 +77,17 @@
     </mat-paginator>
 
     <div class="button-wrapper">
-        <a *ngIf="mode !== 'create' && mode !== 'edit'"
-            mat-flat-button color="primary" (click)="changeMode('create');">
+        <a *ngIf="!isInEditMode"
+            mat-flat-button color="primary" (click)="setModeToEdit()">
             Add employee to the board
         </a>
-        <a *ngIf="mode === 'create' || mode === 'edit'"
-            mat-flat-button color="accent" (click)="changeMode('view')">
+        <a *ngIf="isInEditMode"
+            mat-flat-button color="accent" (click)="setModeToView()">
             Collapse
         </a>
     </div>
     
     <tt-employee-add [boardEmployees]="boardEmployees" 
         (employeeAdded)="onAddingEmployee($event)"
-        [hidden]="mode === 'view'"></tt-employee-add>
+        [hidden]="!isInEditMode"></tt-employee-add>
 </div>

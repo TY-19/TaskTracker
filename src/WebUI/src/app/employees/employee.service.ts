@@ -28,13 +28,21 @@ export class EmployeeService {
     return this.http.get<Employee>(url);
   }
 
-  addEmployeeToTheBoard(boardId: string, userName: string) {
+  addEmployeeToTheBoard(boardId: number | string, userName: string): Observable<Object> {
     const url = environment.baseUrl + "api/boards/" + boardId + "/employees/" + userName;
     return this.http.post(url, null);
   }
 
-  removeEmployeeFromTheBoard(boardId: string, employeeId: string | number) {
-    const url = environment.baseUrl + "api/boards/" + boardId + "/employees/" + employeeId;
-    return this.http.delete(url);
+  removeEmployeeFromTheBoard(boardId: number | string, employeeId: string | number)
+    : Observable<Object> {
+      const url = environment.baseUrl + "api/boards/" + boardId + "/employees/" + employeeId;
+      return this.http.delete(url);
+  }
+
+  filterEmployees(filterText: string, employees: Employee[]): Employee[] {
+    return employees.filter(x => x.userName.toLowerCase().includes(filterText.toLowerCase())
+      || (x.lastName?.toLowerCase().includes(filterText.toLowerCase()) ?? false)
+      || (x.firstName?.toLowerCase().includes(filterText.toLowerCase()) ?? false)
+      || (x.roles.filter(r => r.toLowerCase().includes(filterText.toLowerCase())).length > 0));
   }
 }

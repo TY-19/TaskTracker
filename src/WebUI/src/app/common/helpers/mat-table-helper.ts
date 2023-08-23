@@ -12,21 +12,23 @@ export class MatTableHelper<T extends Record<string, any>> {
 
     }
 
-    initiateTable(dataSource?: MatTableDataSource<T>, sort?: MatSort, paginator?: MatPaginator) {
+    initiateTable(dataSource?: MatTableDataSource<T>, sort?: MatSort,
+      paginator?: MatPaginator): void {
         if (dataSource) {
             this.initiateSort(dataSource, sort);
             this.initiatePagination(dataSource, paginator);
         }
     }
 
-    private initiatePagination(dataSource?: MatTableDataSource<T>, paginator?: MatPaginator) {
+    private initiatePagination(dataSource?: MatTableDataSource<T>,
+      paginator?: MatPaginator): void {
         if (!this.isPaginationInitiated && paginator) {
           dataSource!.paginator = paginator;
           this.isPaginationInitiated = true;
         }
       }
     
-    private initiateSort(dataSource?: MatTableDataSource<T>, sort?: MatSort) {
+    private initiateSort(dataSource?: MatTableDataSource<T>, sort?: MatSort): void {
         if (!this.isSortInitiated && sort) {
             sort.disableClear = true;
             dataSource!.sort = sort;

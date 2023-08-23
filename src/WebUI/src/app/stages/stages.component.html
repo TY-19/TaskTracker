@@ -42,10 +42,10 @@
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let stage, let i = index" class="button-column align-center"> 
                 <p>
-                    <a mat-flat-button class="edit-button" (click)="changeMode('edit'); highlightRow(i); setStageId(stage.id)">
+                    <a mat-flat-button class="edit-button" (click)="setModeToEdit(); highlightRow(i); setStageId(stage.id)">
                         Edit
                     </a>
-                    <a mat-flat-button color="warn" (click)="deleteStage(stage.id); changeMode('view')">
+                    <a mat-flat-button color="warn" (click)="deleteStage(stage.id); setModeToView()">
                         Delete
                     </a>
                 </p>
@@ -55,17 +55,17 @@
         <tr mat-header-row *matHeaderRowDef="['position', 'move', 'name', 'buttons']"></tr>
         <tr mat-row *matRowDef="let row; let i = index;
             columns: ['position', 'move', 'name', 'buttons']"
-            [class.highlight-row]="i === highlightedRow && mode === 'edit'">
+            [class.highlight-row]="i === highlightedRow && isInEditMode">
         </tr>
     </table>
 
     <div class="button-wrapper">
-        <a *ngIf="mode !== 'create' && mode !== 'edit'"
-            mat-flat-button color="primary" (click)="changeMode('create'); setStageId(0);">
+        <a *ngIf="!isInCreateMode && !isInEditMode"
+            mat-flat-button color="primary" (click)="setModeToEdit(); setStageId(0);">
             Add stage
         </a>
-        <a *ngIf="mode === 'create' || mode === 'edit'"
-            mat-flat-button color="accent" (click)="changeMode('view')">
+        <a *ngIf="isInCreateMode || isInEditMode"
+            mat-flat-button color="accent" (click)="setModeToView()">
             Collapse
         </a>
     </div>

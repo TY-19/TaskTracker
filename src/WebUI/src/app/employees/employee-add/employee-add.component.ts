@@ -19,14 +19,14 @@ export class EmployeeAddComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @Input() boardEmployees: Employee[] = [];
   @Output() employeeAdded = new EventEmitter<Employee>();
-  tableHelper = new MatTableHelper<Employee>();
   
   boardId!: number;
-  employeesTable!: MatTableDataSource<Employee>;
   allEmployees!: Employee[];
+  employeesTable!: MatTableDataSource<Employee>;
+  tableHelper = new MatTableHelper<Employee>();
 
   constructor(private employeeService: EmployeeService,
-    public rolesService: RolesService,
+    private rolesService: RolesService,
     private activatedRoute: ActivatedRoute) { 
 
   }
@@ -36,48 +36,58 @@ export class EmployeeAddComponent implements OnInit {
     this.loadEmployees();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.tableHelper.initiateTable(this.employeesTable, this.sort, this.paginator);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if(changes['boardEmployees'] && this.allEmployees)
-      this.employeesTable.data = this.filterEmployees();
+      this.employeesTable.data = this.filterTheBoardEmployees();
   }
 
-  filterEmployees(): Employee[] {
+  private filterTheBoardEmployees(): Employee[] {
     return this.allEmployees.filter((e => !this.boardEmployees
       .some(be => be.userName === e.userName)))
   }
 
-  loadEmployees() {
+  private loadEmployees(): void {
     this.employeeService.getAllEmployees()
       .subscribe(result => {
         this.allEmployees = result;
-        this.employeesTable = new MatTableDataSource(this.filterEmployees());
+        this.employeesTable = new MatTableDataSource(this.filterTheBoardEmployees());
         this.tableHelper.initiateTable(this.employeesTable, this.sort, this.paginator);
       });
   }
 
-  onFilterTextChanged(filterText: string) {
-    this.employeesTable.data = this.filterEmployees()
-      .filter(x => x.userName.toLowerCase()
-        .includes(filterText.toLowerCase()) 
-          || (x.lastName?.includes(filterText.toLowerCase()) ?? false)
-          || (x.firstName?.includes(filterText.toLowerCase()) ?? false)
-          || (x.roles.filter(r => r.toLowerCase().includes(filterText.toLowerCase())).length > 0));
+  onFilterTextChanged(filterText: string): void {
+    this.employeesTable.data = this.employeeService
+      .filterEmployees(filterText, this.filterTheBoardEmployees());
   }
 
-  clearFilter() {
+  clearFilter(): void {
     this.filter.nativeElement['value'] = '';
     this.onFilterTextChanged('');
   }
 
-  onAddEmployeeToBoard(employee: Employee) {
-    this.employeeService.addEmployeeToTheBoard(this.boardId.toString(), employee.userName)
+  onAddEmployeeToBoard(employee: Employee): void {
+    this.employeeService.addEmployeeToTheBoard(this.boardId, employee.userName)
       .subscribe(() => {
         this.employeeAdded.emit(employee);
         this.filter.nativeElement['value'] = '';
       });
+  }
+
+  isAdmin(roles: string[]): boolean {
+    return this.rolesService.isAdmin(roles);
+  }
+  get adminRoleName(): string {
+    return this.rolesService.adminRole;
+  }
+
+  isManager(roles: string[]): boolean {
+    return this.rolesService.isManager(roles);
+  }
+  get managerRoleName(): string {
+    return this.rolesService.managerRole;
   }
 }
