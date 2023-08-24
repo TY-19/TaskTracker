@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -13,17 +13,18 @@ import { Board } from 'src/app/models/board';
   templateUrl: './user-boards-add.component.html',
   styleUrls: ['./user-boards-add.component.scss']
 })
-export class UserBoardsAddComponent implements OnInit {
-  @Input() employeeId?: number;
-  @Output() boardAdded = new EventEmitter<number>();
+export class UserBoardsAddComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('filter') filter!: ElementRef;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  tableHelper = new MatTableHelper<Board>();
 
+  @Input() employeeId?: number;
+  @Output() boardAdded = new EventEmitter<number>();
+
+  userName!: string;
   boards: Board[] = [];
   boardsTable!: MatTableDataSource<Board>;
-  userName!: string;
+  tableHelper = new MatTableHelper<Board>();
 
   constructor(private boardService: BoardService,
     private employeeService: EmployeeService,
@@ -36,11 +37,11 @@ export class UserBoardsAddComponent implements OnInit {
     this.loadBoards();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.tableHelper.initiateTable(this.boardsTable, this.sort, this.paginator);
   }
 
-  loadBoards() {
+  private loadBoards(): void {
     this.boardService.getBoards()
       .subscribe(result => {
         this.boards = result;
@@ -49,7 +50,7 @@ export class UserBoardsAddComponent implements OnInit {
       })
   }
 
-  reloadBoards() {
+  reloadBoards(): void {
     this.boardService.getBoards()
       .subscribe(result => {
         this.boards = result;
@@ -62,7 +63,7 @@ export class UserBoardsAddComponent implements OnInit {
       || !b.employees?.some(e => e.id == this.employeeId));
   }
 
-  onAddUserToBoard(boardId: number) {
+  onAddUserToBoard(boardId: number): void {
     this.employeeService.addEmployeeToTheBoard(boardId.toString(), this.userName)
       .subscribe(() => {
         this.reloadBoards();
@@ -70,15 +71,14 @@ export class UserBoardsAddComponent implements OnInit {
       });
   }
 
-  onFilterTextChanged(filterText: string) {
+  onFilterTextChanged(filterText: string): void {
     this.boardsTable.data = this.filterBoards()
       .filter(b => b.name.toLowerCase().includes(filterText.toLowerCase()) 
         || b.id.toString().toLowerCase().includes(filterText.toLowerCase()));
   }
 
-  clearFilter() {
+  clearFilter(): void {
     this.filter.nativeElement['value'] = '';
     this.onFilterTextChanged('');
   }
-
 }

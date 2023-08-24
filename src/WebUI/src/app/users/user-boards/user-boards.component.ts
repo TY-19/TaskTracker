@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { EmployeeService } from 'src/app/employees/employee.service';
 import { UserBoardsAddComponent } from '../user-boards-add/user-boards-add.component';
 import { Assignment } from 'src/app/models/assignment';
+import { DisplayModes } from 'src/app/common/enums/display-modes';
 
 @Component({
   selector: 'tt-user-boards',
@@ -18,7 +19,7 @@ export class UserBoardsComponent implements OnInit {
   userName!: string;
   user?: UserProfile;
   userBoards?: Board[];
-  mode: string = 'view';
+  mode: DisplayModes = DisplayModes.View;
   
   constructor(private userService: UserService,
     private employeeService: EmployeeService,
@@ -36,7 +37,7 @@ export class UserBoardsComponent implements OnInit {
       });
   }
 
-  loadBoards() {
+  private loadBoards(): void {
     this.boardService.getBoards()
       .subscribe(result => {
         this.userBoards = result.filter(b => b.employees?.some(e => e.id == this.user?.employeeId));
@@ -47,15 +48,28 @@ export class UserBoardsComponent implements OnInit {
     return board.assignments?.filter(a => a.responsibleEmployeeId === this.user?.employeeId) ?? [];
   }
 
-  changeMode(mode: string) {
+  get isInViewMode(): boolean {
+    return this.mode === DisplayModes.View;
+  }
+  get isInCreateMode(): boolean {
+    return this.mode === DisplayModes.Create;
+  }
+
+  changeModeToView(): void {
+    this.changeMode(DisplayModes.View);
+  }
+  changeModeToCreate(): void {
+    this.changeMode(DisplayModes.Create);
+  }
+  private changeMode(mode: DisplayModes): void {
     this.mode = mode;
   }
 
-  onBoardAdded() {
+  onBoardAdded(): void {
     this.loadBoards();
   }
 
-  onBoardRemoved(boardId: number) {
+  onBoardRemoved(boardId: number): void {
     if (this.user?.employeeId) {
       this.employeeService.removeEmployeeFromTheBoard(boardId.toString(), this.user?.employeeId)
         .subscribe(() => {
@@ -64,5 +78,4 @@ export class UserBoardsComponent implements OnInit {
         });
     }
   }
-
 }

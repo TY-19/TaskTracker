@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StageService } from '../stage.service';
 import { ActivatedRoute } from '@angular/router';
@@ -10,7 +10,7 @@ import { StageUpdateModel } from 'src/app/models/update-models/stage-update-mode
   templateUrl: './stage-create-edit.component.html',
   styleUrls: ['./stage-create-edit.component.scss']
 })
-export class StageCreateEditComponent implements OnInit {
+export class StageCreateEditComponent implements OnInit, OnChanges {
   @Input() stageId: number = 0;
   @Input() mode: DisplayModes = DisplayModes.View;
   @Output() updateNotification: EventEmitter<void> = new EventEmitter<void>();

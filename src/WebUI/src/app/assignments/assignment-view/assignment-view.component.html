@@ -41,7 +41,11 @@
             </tr>
             <tr>
                 <td colspan="2" class="last-column">
-                    <tt-subparts [subparts]="assignment?.subparts"></tt-subparts>
+                    <tt-subparts [subparts]="subparts"
+                        [assignmentId]="assignment?.id"
+                        [isUserAllowToChangeSubpartStatus]="isUserAuthorizeToChangeTaskStatus"
+                        (subpartUpdated)="loadSubparts()">
+                    </tt-subparts>
                 </td>
             </tr>
             <tr>

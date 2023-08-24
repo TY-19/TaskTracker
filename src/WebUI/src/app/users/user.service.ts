@@ -31,19 +31,18 @@ export class UserService {
     return this.http.post<RegistrationResult>(url, user);
   }
 
-  updateUser(userName: string, updateModel: UserUpdateModel) {
+  updateUser(userName: string, updateModel: UserUpdateModel): Observable<Object> {
     const url = environment.baseUrl + "api/users/" + userName;
     return this.http.put(url, updateModel);
   }
 
-  changePassword(userName: string, newPassword: string) {
+  changePassword(userName: string, newPassword: string): Observable<Object> {
     const url = environment.baseUrl + "api/users/" + userName + "/changepassword";
     return this.http.put(url, { newPassword: newPassword });
   }
 
-  deleteUser(userName: string) {
+  deleteUser(userName: string): Observable<Object> {
     const url = environment.baseUrl + "api/users/" + userName;
     return this.http.delete(url);
   }
-
 }

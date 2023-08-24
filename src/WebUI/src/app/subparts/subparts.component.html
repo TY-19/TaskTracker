@@ -1,17 +1,28 @@
-<table *ngIf="mode != 'details' || (subparts && subparts.length != 0)"
+<table *ngIf="!isInViewMode || (subparts && subparts.length != 0)"
     class="subpart-table" aria-labelledby="subparts">
     <tr>
         <th>Subpart</th>
         <th>Value</th>
-        <th *ngIf="mode=='edit'"></th>
+        <th></th>
+        <th *ngIf="isInEditMode"></th>
     </tr>
-    <ng-container *ngIf="mode=='details'" >
+    <ng-container *ngIf="isInViewMode" >
         <tr *ngFor="let subpart of subparts; let i = index">
             <td class="padding-4">{{subpart.name}}</td>
-            <td class="value-column">{{subpart.percentValue}}</td>
+            <td class="small-column">{{subpart.percentValue}}</td>
+            <td class="small-column">
+                <mat-icon *ngIf="subpart.isCompleted" color="primary"
+                    (click)="onUpdateSubpartStatus(subpart)">
+                    check
+                </mat-icon>
+                <mat-icon *ngIf="!subpart.isCompleted" color="warn"
+                    (click)="onUpdateSubpartStatus(subpart)">
+                    close
+                </mat-icon>
+            </td>
         </tr>
     </ng-container>
-    <ng-container *ngIf="mode=='edit'">
+    <ng-container *ngIf="isInEditMode">
         <ng-container *ngFor="let form of forms; let i = index">
             <tr [formGroup]="form">
                 <td class="padding-4">
@@ -28,8 +39,11 @@
                         </span>
                     </p>
                 </td>
-                <td class="value-column">
+                <td class="small-column">
                     <input matInput formControlName="percentValue" type="number" min="0" max="100" value="0" required />
+                </td>
+                <td class="small-column">
+                    <mat-checkbox formControlName="isCompleted"></mat-checkbox>
                 </td>
                 <td>
                     <a mat-flat-button color="warn" class="sign-button"
@@ -38,7 +52,7 @@
             </tr>
         </ng-container>
     </ng-container>
-    <tr *ngIf="mode=='edit'">
+    <tr *ngIf="isInEditMode">
         <td colspan="4" class="padding-4">
             <a mat-flat-button color="primary" class="sign-button"
                 (click)="onAddSubpart()">+</a> 

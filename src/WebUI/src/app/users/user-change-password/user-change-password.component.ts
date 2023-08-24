@@ -24,7 +24,7 @@ export class UserChangePasswordComponent implements OnInit {
     this.initiateForm();
   }
 
-  private initiateForm() {
+  private initiateForm(): void {
     this.form = new FormGroup({
       password: new FormControl("", [
         Validators.required,
@@ -40,13 +40,11 @@ export class UserChangePasswordComponent implements OnInit {
     });
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if(this.form.valid) {
-      let newPassword = this.form.controls['password'].value;
+      const newPassword = this.form.controls['password'].value;
       this.userService.changePassword(this.userName, newPassword)
-        .subscribe(() => {
-          this.router.navigate(['/users', this.userName]);
-        });
+        .subscribe(() => { this.router.navigate(['/users', this.userName]) } );
     } else {
       this.form.markAllAsTouched();
     }

@@ -27,18 +27,18 @@
 
     <div>
         <a mat-flat-button color="primary" 
-            *ngIf="mode !== 'add'"
-            (click)="changeMode('add')">
+            *ngIf="!isInCreateMode"
+            (click)="changeModeToCreate()">
             Add the user to a board
         </a>
         <a mat-flat-button color="accent" 
-            *ngIf="mode !== 'view'"
-            (click)="changeMode('view')">
+            *ngIf="!isInViewMode"
+            (click)="changeModeToView()">
             Close
         </a>
     </div>
 
-    <tt-user-boards-add [hidden]="mode === 'view'"
+    <tt-user-boards-add [hidden]="isInViewMode"
         [employeeId]="user?.employeeId" (boardAdded)="onBoardAdded()">
     </tt-user-boards-add>
 </div>

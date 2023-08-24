@@ -25,7 +25,7 @@ export class UserCreateComponent implements OnInit {
     this.initiateForm();
   }
 
-  private initiateForm() {
+  private initiateForm(): void {
     this.form = new FormGroup({
       userName: new FormControl('', [
         Validators.required,
@@ -50,9 +50,9 @@ export class UserCreateComponent implements OnInit {
     );
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if(this.form.valid) {
-      let registrationRequest: RegistrationRequest = {
+      const registrationRequest: RegistrationRequest = {
         userName: this.form.controls['userName'].value,
         email: this.form.controls['email'].value,
         password: this.form.controls['password'].value

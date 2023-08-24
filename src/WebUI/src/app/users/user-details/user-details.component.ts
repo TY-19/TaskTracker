@@ -29,7 +29,7 @@ export class UserDetailsComponent implements OnInit {
       });
   }
 
-  onDeleteUser() {
+  onDeleteUser(): void {
     this.userService.deleteUser(this.userName)
       .subscribe(() => {
         this.router.navigate(['/users']);

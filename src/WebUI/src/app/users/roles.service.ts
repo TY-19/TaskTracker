@@ -12,22 +12,20 @@ export class RolesService {
   constructor(private http: HttpClient) {
 
   }
-
-  allRoles: string[] = [];
   
-  adminRole = DefaultRolesNames.DEFAULT_ADMIN_ROLE;
-  managerRole = DefaultRolesNames.DEFAULT_MANAGER_ROLE;
-  employeeRole = DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE;
+  adminRole: string = DefaultRolesNames.DEFAULT_ADMIN_ROLE;
+  managerRole: string = DefaultRolesNames.DEFAULT_MANAGER_ROLE;
+  employeeRole: string = DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE;
 
-  isAdmin(roles: string[]) : boolean {
+  isAdmin(roles: string[]): boolean {
     return roles.includes(DefaultRolesNames.DEFAULT_ADMIN_ROLE);
   }
 
-  isManager(roles: string[]) : boolean {
+  isManager(roles: string[]): boolean {
     return roles.includes(DefaultRolesNames.DEFAULT_MANAGER_ROLE);
   }
 
-  isEmployee(roles: string[]) : boolean {
+  isEmployee(roles: string[]): boolean {
     return roles.includes(DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE);
   }
 

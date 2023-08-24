@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { EmployeeService } from '../employee.service';
 import { ActivatedRoute } from '@angular/router';
@@ -13,7 +13,7 @@ import { MatTableHelper } from 'src/app/common/helpers/mat-table-helper';
   templateUrl: './employee-add.component.html',
   styleUrls: ['./employee-add.component.scss']
 })
-export class EmployeeAddComponent implements OnInit {
+export class EmployeeAddComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('filter') filter!: ElementRef;
   @ViewChild(MatPaginator) paginator!: MatPaginator;

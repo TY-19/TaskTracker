@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { EmployeeService } from './employee.service';
 import { ActivatedRoute } from '@angular/router';
 import { Employee } from '../models/employee';
@@ -14,7 +14,7 @@ import { DisplayModes } from '../common/enums/display-modes';
   templateUrl: './employees.component.html',
   styleUrls: ['./employees.component.scss']
 })
-export class EmployeesComponent implements OnInit {
+export class EmployeesComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('filter') filter!: ElementRef;

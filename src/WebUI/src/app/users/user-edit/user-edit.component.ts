@@ -11,9 +11,10 @@ import { UserUpdateModel } from 'src/app/models/update-models/user-update-model'
   styleUrls: ['./user-edit.component.scss']
 })
 export class UserEditComponent implements OnInit {
+
   userName!: string;
-  form!: FormGroup;
   allRoles!: string[];
+  form!: FormGroup;
 
   constructor(private userService: UserService,
     private rolesService: RolesService,
@@ -29,12 +30,12 @@ export class UserEditComponent implements OnInit {
     this.loadUser();
   }
 
-  private loadRoles() {
+  private loadRoles(): void {
     this.rolesService.getAllRoles()
       .subscribe(result => this.allRoles = result);
   }
 
-  private initiateForm() {
+  private initiateForm(): void {
     this.form = new FormGroup({
       userName: new FormControl('', [
         Validators.required,
@@ -58,23 +59,21 @@ export class UserEditComponent implements OnInit {
     });
   }
 
-  loadUser() {
+  private loadUser(): void {
     this.userService.getUser(this.userName)
-      .subscribe(result => {
-        this.form.patchValue(result);
-      });
+      .subscribe(result => this.form.patchValue(result));
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if(this.form.valid) {
-      let updateUserModel: UserUpdateModel = {
+      const updateUserModel: UserUpdateModel = {
         userName: this.form.controls['userName'].value,
         email: this.form.controls['email'].value,
         roles: this.form.controls['roles'].value,
         firstName: this.form.controls['firstName'].value,
         lastName: this.form.controls['lastName'].value
       };
-      let userName = updateUserModel.userName ?? this.userName;
+      const userName = updateUserModel.userName ?? this.userName;
       this.userService.updateUser(this.userName, updateUserModel)
         .subscribe(() => {
           this.router.navigate(['/users', userName]);
@@ -83,5 +82,4 @@ export class UserEditComponent implements OnInit {
       this.form.markAllAsTouched();
     }
   }
-
 }

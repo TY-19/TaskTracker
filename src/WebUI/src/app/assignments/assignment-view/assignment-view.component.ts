@@ -8,6 +8,8 @@ import { Employee } from 'src/app/models/employee';
 import { EmployeeService } from 'src/app/employees/employee.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { AssignmentDisplayService } from '../assignment-display.service';
+import { SubpartService } from 'src/app/subparts/subpart.service';
+import { Subpart } from 'src/app/models/subpart';
 
 @Component({
   selector: 'tt-assignment-view',
@@ -21,12 +23,14 @@ export class AssignmentViewComponent implements OnInit, OnChanges {
   assignment?: Assignment;
   stage?: Stage;
   employee?: Employee;
+  subparts?: Subpart[];
 
   constructor(private authService: AuthService,
     private assignmentService: AssignmentService,
     private assignmentDisplayService: AssignmentDisplayService,
     private employeeService: EmployeeService,
     private stageService: StageService,
+    private subpartService: SubpartService,
     private activatedRoute: ActivatedRoute,
     private router: Router) {
 
@@ -47,8 +51,9 @@ export class AssignmentViewComponent implements OnInit, OnChanges {
 
   loadAssignment(boardId: number | string, assignmentId: number | string): void {
     this.assignmentService.getAssignment(boardId, assignmentId)
-      .subscribe((result) => {
-        this.assignment = result;      
+      .subscribe(result => {
+        this.assignment = result;
+        this.subparts = result.subparts;
         this.loadStage(this.assignment.stageId);
         this.loadEmployee(this.assignment.responsibleEmployeeId);
       });
@@ -62,6 +67,11 @@ export class AssignmentViewComponent implements OnInit, OnChanges {
   loadEmployee(employeeId: number | string): void {
     this.employeeService.getEmployee(this.boardId!, employeeId)
       .subscribe(result => this.employee = result);
+  }
+
+  loadSubparts(): void {
+    this.subpartService.getSubparts(this.boardId!, this.assignmentId!)
+      .subscribe(result => this.subparts = result);
   }
 
   changeAssignmentStatus(assignment: Assignment): void {

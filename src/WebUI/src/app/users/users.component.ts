@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from './user.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { UserProfile } from '../models/user-profile';
@@ -12,14 +12,14 @@ import { MatTableHelper } from '../common/helpers/mat-table-helper';
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('filter') filter!: ElementRef;
-  tableHelper = new MatTableHelper<UserProfile>();
-  users!: UserProfile[];
-  usersTable! : MatTableDataSource<UserProfile>;
   
+  users!: UserProfile[];
+  usersTable!: MatTableDataSource<UserProfile>;
+  tableHelper = new MatTableHelper<UserProfile>();
 
   constructor(private userSevice: UserService,
     public rolesService: RolesService) { 
@@ -30,11 +30,11 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.tableHelper.initiateTable(this.usersTable, this.sort, this.paginator);
   }
 
-  loadUsers() {
+  private loadUsers(): void {
     this.userSevice.getUsers()
       .subscribe(result => {
         this.users = result;
@@ -43,7 +43,7 @@ export class UsersComponent implements OnInit {
       });
   }
 
-  reloadUsers() {
+  private reloadUsers(): void {
     this.userSevice.getUsers()
       .subscribe(result => {
         this.users = result;
@@ -51,7 +51,7 @@ export class UsersComponent implements OnInit {
       });
   }
 
-  onFilterTextChanged(filterText: string) {
+  onFilterTextChanged(filterText: string): void {
     this.usersTable.data = this.users
       .filter(x => x.userName.toLowerCase().includes(filterText.toLowerCase()) 
           || (x.lastName?.includes(filterText.toLowerCase()) ?? false)
@@ -60,21 +60,18 @@ export class UsersComponent implements OnInit {
           || (x.roles.filter(r => r.toLowerCase().includes(filterText.toLowerCase())).length > 0));
   }
 
-  filterByRole(role: string) {
+  filterByRole(role: string): void {
     this.filter.nativeElement['value'] = role;
     this.onFilterTextChanged(role);
   }
 
-  clearFilter() {
+  clearFilter(): void {
     this.filter.nativeElement['value'] = '';
     this.onFilterTextChanged('');
   }
 
-  onDeleteUser(userName: string) {
+  onDeleteUser(userName: string): void {
     this.userSevice.deleteUser(userName)
-      .subscribe(() => {
-        this.reloadUsers();
-      })
+      .subscribe(() => this.reloadUsers());
   }
-
 }
