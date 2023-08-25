@@ -36,9 +36,17 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     if(this.currentTaskId && this.currentTaskId != 0) {
-      this.assignmentService.getAssignment(this.boardId, this.currentTaskId)
-        .subscribe(result => this.assignment = result);
+      this.loadAssignment();
     }
+  }
+
+  private loadAssignment(): void {
+    this.assignmentService.getAssignment(this.boardId, this.currentTaskId!)
+        .subscribe(result => this.assignment = result);
+  }
+
+  onReloadAssignment(assignment: Assignment): void {
+    this.assignment = assignment;
   }
 
   hideSidebar(): void {

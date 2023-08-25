@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AssignmentViewFullComponent } from './assignment-view.component';
+import { AssignmentViewComponent } from './assignment-view.component';
 
 describe('AssignmentViewFullComponent', () => {
-  let component: AssignmentViewFullComponent;
-  let fixture: ComponentFixture<AssignmentViewFullComponent>;
+  let component: AssignmentViewComponent;
+  let fixture: ComponentFixture<AssignmentViewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AssignmentViewFullComponent ]
+      declarations: [ AssignmentViewComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AssignmentViewFullComponent);
+    fixture = TestBed.createComponent(AssignmentViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Assignment } from 'src/app/models/assignment';
 import { AssignmentService } from '../assignment.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,6 +20,7 @@ export class AssignmentViewComponent implements OnInit, OnChanges {
   @Input() boardId?: number | string;
   @Input() assignmentId?: number |string;
   @Input() sidebarView: boolean = false;
+  @Output() reloadAssignment = new EventEmitter<Assignment>();
   assignment?: Assignment;
   stage?: Stage;
   employee?: Employee;
@@ -56,6 +57,7 @@ export class AssignmentViewComponent implements OnInit, OnChanges {
         this.subparts = result.subparts;
         this.loadStage(this.assignment.stageId);
         this.loadEmployee(this.assignment.responsibleEmployeeId);
+        this.reloadAssignment.emit(result);
       });
   }
 

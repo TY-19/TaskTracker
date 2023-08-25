@@ -7,7 +7,8 @@
 <tt-assignment-view *ngIf="isInViewMode"
     [sidebarView]="true"
     [boardId]="boardId"
-    [assignmentId]="currentTaskId">
+    [assignmentId]="currentTaskId"
+    (reloadAssignment)="onReloadAssignment($event)">
 </tt-assignment-view>
 <tt-assignment-edit *ngIf="isInCreateMode || isInEditMode"
     [sidebarView]="true"

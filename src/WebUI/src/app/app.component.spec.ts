@@ -1,29 +1,49 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { AuthService } from './auth/auth.service';
 
 describe('AppComponent', () => {
+  let authServiceMock: Partial<AuthService>;
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    authServiceMock = {
+      init: jasmine.createSpy('init')
+    }
+
+    TestBed.configureTestingModule({
       imports: [
         RouterTestingModule
       ],
       declarations: [
         AppComponent
       ],
-    }).compileComponents();
-  });
+      providers: [
+        { provide: AuthService, useValue: authServiceMock }
+      ]
+    })
+    .compileComponents();
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('WebUI app is running!');
+  });
+
+  it('should create the app', () => expect(component).toBeTruthy());
+
+  it('should initialize authService during ngOnInit', () => {
+    expect(authServiceMock.init).toHaveBeenCalled();
+  });
+
+  it('should render navigation menu', () => {
+    const compiled = fixture.nativeElement;
+    expect(compiled.querySelector('tt-nav-menu')).toBeTruthy();
+  });
+
+  it('should render router-outlet', () => {
+    const compiled = fixture.nativeElement;
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });
