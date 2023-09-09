@@ -1,4 +1,5 @@
 import { HttpEventType, HttpHeaders, HttpResponse } from "@angular/common/http";
+import { ChangePasswordModel } from "src/app/models/update-models/change-password.model";
 import { UserProfile } from "src/app/models/user-profile";
 
 export class DummyDataHelper {
@@ -34,5 +35,13 @@ export class DummyDataHelper {
         1, 6, 7
       ]
     };
+  }
+
+  static getDummyChangePasswordModel() {
+    return {
+      oldPassword: "oldPassword",
+      password: "newPassword",
+      passwordConfirm: "newPassword"
+    }
   }
 }
