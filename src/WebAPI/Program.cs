@@ -13,16 +13,11 @@ using (var scope = app.Services.CreateScope())
     await seeder.SeedDefaultRolesAndUsersAsync();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("ConfiguredPolicy");
 app.UseHttpsRedirection();
-
-app.MapGet("/api/test", () => new { Response = "The server has returned result" });
 
 app.UseAuthentication();
 app.UseAuthorization();

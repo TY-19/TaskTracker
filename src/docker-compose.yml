@@ -1,0 +1,34 @@
+version: '3'
+services:
+  ms-sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "PaSSw0rd"
+    ports:
+      - "1433:1433"
+  backend:
+    container_name: task-tracker-backend
+    build: .
+    entrypoint: ["sh", "-c", "sleep 10 && dotnet WebAPI.dll"]
+    ports:
+      - "8080:80"
+      - "8081:443"
+    environment:
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_HTTPS_PORT: "8081"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "Password"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/localhost.pfx"
+      ConnectionStrings__TrackerConnection: "Server=ms-sql-server,1433;Initial Catalog=TaskTrackerDocker;User Id=SA;Password=PaSSw0rd;Encrypt=False;TrustServerCertificate=True;MultipleActiveResultSets=true"
+    depends_on:
+      - ms-sql-server
+    links:
+      - ms-sql-server
+  frontend:
+    build:
+      context: ./WebUI
+      dockerfile: Dockerfile
+    ports:
+      - "8090:80"
+    depends_on:
+      - backend
