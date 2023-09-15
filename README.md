@@ -25,11 +25,6 @@ Task Tracker is a simple and user-friendly solution designed to streamline task 
 2. Launch the frontend dev server by running the following command from the **/src/WebUI** folder:  
 `ng serve`
 
-#### Use docker-compose (alternative)  
-You may use docker-compose to run the application. Navigate to **/src/** folder and run the following commands:  
-`docker-compose build`  
-`docker-compose up`  
-
 ### Application functionality
 #### Role-based Access Control
 Task Tracker implements a role-based access control system to ensure that users have appropriate permissions based on their roles within the organization. The following roles are supported:

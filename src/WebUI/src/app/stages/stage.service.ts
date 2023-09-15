@@ -33,7 +33,7 @@ export class StageService {
   }
 
   createStage(boardId: number | string, stage: StageUpdateModel): Observable<Object> {
-    const url = environment.baseUrl + "api/boards/" + boardId + "/stages/";
+    const url = environment.baseUrl + "api/boards/" + boardId + "/stages";
     return this.http.post(url, stage);
   }
 
@@ -43,7 +43,7 @@ export class StageService {
       return this.http.put(url, stage);
   }
 
-  deleteStage(boardId: number | string, stageId: string): Observable<Object> {
+  deleteStage(boardId: number | string, stageId: number | string): Observable<Object> {
     const url = environment.baseUrl + "api/boards/" + boardId + "/stages/" + stageId;
     return this.http.delete(url);
   }

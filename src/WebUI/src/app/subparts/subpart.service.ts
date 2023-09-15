@@ -14,7 +14,7 @@ export class SubpartService {
   }
 
   getSubparts(boardId: number | string, taskId: number | string): Observable<Subpart[]> {
-    const url = environment.baseUrl + "api/boards/" + boardId + "/tasks/" + taskId + "/subparts/";
+    const url = environment.baseUrl + "api/boards/" + boardId + "/tasks/" + taskId + "/subparts";
     return this.http.get<Subpart[]>(url);
   }
 

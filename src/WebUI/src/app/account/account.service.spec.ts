@@ -35,7 +35,7 @@ describe('AccountService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should call GET api/account/profile', () => {
+  it('getUserProfile should call GET api/account/profile', () => {
     const dummyUserProfile: UserProfile = DummyDataHelper.getDummyUserProfile();
 
     service.getUserProfile().subscribe(result => {
@@ -47,7 +47,7 @@ describe('AccountService', () => {
     req.flush(dummyUserProfile);
   });
 
-  it('should call PUT api/account/profile', () => {
+  it('updateUserProfile should call PUT api/account/profile', () => {
     const updateUser: UserUpdateModel = {
       lastName: 'New last name'
     };
@@ -62,7 +62,7 @@ describe('AccountService', () => {
     req.flush(null, { status: 204, statusText: 'No content' });
   });
 
-  it('should call PUT api/account/profile/changepassword', () => {
+  it('changePassword should call PUT api/account/profile/changepassword', () => {
     const changePasswordModel: ChangePasswordModel = {
       oldPassword: 'oldPassword',
       newPassword: 'newPassword'

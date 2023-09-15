@@ -29,7 +29,7 @@ export class BoardService {
   }
 
   createBoard(board: Board): Observable<Object> {
-    const url = environment.baseUrl + "api/boards/";
+    const url = environment.baseUrl + "api/boards";
     return this.http.post(url, board);
   }
 
