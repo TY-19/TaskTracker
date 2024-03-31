@@ -22,7 +22,7 @@ public class JwtHandlerService
 
     public async Task<JwtSecurityToken> GetTokenAsync(User user)
     {
-        EnsureUserIsNotNull(user);
+        ArgumentNullException.ThrowIfNull(user);
 
         return new JwtSecurityToken(
             issuer: _configuration?["JwtSettings:Issuer"] ?? "TaskTracker",
@@ -36,17 +36,18 @@ public class JwtHandlerService
     private SigningCredentials GetSigningCredentials()
     {
         var key = Encoding.UTF8.GetBytes(
-            _configuration?["JwtSettings:SecurityKey"] ?? "defaultKey");
+            _configuration?["JwtSettings:SecurityKey"] 
+                ?? "defaultSecurityKeyThatHasAProperLength");
         var secret = new SymmetricSecurityKey(key);
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 
     private async Task<List<Claim>> GetClaimsAsync(User user)
     {
-        var claims = new List<Claim>()
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email)
+            new(ClaimTypes.Name, user.UserName ?? ""),
+            new(ClaimTypes.Email, user.Email ?? "")
         };
 
         foreach (string role in await _userManager.GetRolesAsync(user))
@@ -54,11 +55,5 @@ public class JwtHandlerService
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
         return claims;
-    }
-
-    private static void EnsureUserIsNotNull(User user)
-    {
-        if (user == null)
-            throw new ArgumentNullException(nameof(user));
     }
 }

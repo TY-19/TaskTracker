@@ -2,7 +2,10 @@ import { HttpEventType, HttpHeaders, HttpResponse } from "@angular/common/http";
 import { Assignment } from "src/app/models/assignment";
 import { Board } from "src/app/models/board";
 import { Employee } from "src/app/models/employee";
+import { LoginRequest } from "src/app/models/login-request";
+import { LoginResult } from "src/app/models/login-result";
 import { RegistrationRequest } from "src/app/models/registration-request";
+import { RegistrationResult } from "src/app/models/registration-result";
 import { Stage } from "src/app/models/stage";
 import { Subpart } from "src/app/models/subpart";
 import { UserProfile } from "src/app/models/user-profile";
@@ -111,6 +114,44 @@ export class DummyDataHelper {
       userName: "TestUser",
       email: "testUser@example.com",
       password: "password"
+    }
+  }
+
+  static getDummyRegistrationSuccessResult(): RegistrationResult {
+    return {
+      success: true,
+      message: "Success!"
+    }
+  }
+
+  static getDummyRegistrationFailResult(): RegistrationResult {
+    return {
+      success: false,
+      message: "Fail!"
+    }
+  }
+
+  static getDummyLoginRequest(): LoginRequest {
+    return {
+      nameOrEmail: "TestUser",
+      password: "password"
+    }
+  }
+  static getDummySuccessLoginResult(): LoginResult {
+    return {
+      success: true,
+      message: "Success!",
+      token: "Fake token",
+      userName: "TestUser",
+      employeeId: 1,
+      roles: ["Employee"]
+    }
+  }
+  static getDummyFailLoginResult(): LoginResult {
+    return {
+      success: false,
+      message: "Fail!",
+      roles: []
     }
   }
 }

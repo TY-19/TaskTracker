@@ -30,7 +30,8 @@ namespace TaskTracker.WebAPI.Configuration
                 ValidAudience = _configuration?["JwtSettings:Audience"] ?? "*",
                 IssuerSigningKey = new SymmetricSecurityKey(
                         System.Text.Encoding.UTF8.GetBytes(
-                            _configuration?["JwtSettings:SecurityKey"] ?? "defaultKey"))
+                            _configuration?["JwtSettings:SecurityKey"] 
+                                ?? "defaultSecurityKeyThatHasAProperLength"))
             };
         }
     }

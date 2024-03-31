@@ -46,7 +46,7 @@ describe('RolesService', () => {
 			];
       const result = service.isAdmin(roles)
 
-			expect(result).toEqual(true);
+			expect(result).toBeTrue();
     });
 
 		it('isAdmin should return false if user is not admin', () => {
@@ -56,7 +56,7 @@ describe('RolesService', () => {
 			];
       const result = service.isAdmin(roles)
 
-			expect(result).toEqual(false);
+			expect(result).toBeFalse();
     });
 
 		it('isManager should return true if user is manager', () => {
@@ -67,17 +67,17 @@ describe('RolesService', () => {
 			];
       const result = service.isManager(roles)
 
-			expect(result).toEqual(true);
+			expect(result).toBeTrue();
     });
 
-		it('isManager should return true if user is not manager', () => {
+		it('isManager should return false if user is not manager', () => {
       const roles = [
 				DefaultRolesNames.DEFAULT_ADMIN_ROLE,
 				DefaultRolesNames.DEFAULT_EMPLOYEE_ROLE
 			];
       const result = service.isManager(roles)
 
-			expect(result).toEqual(false);
+			expect(result).toBeFalse();
     });
 
 		it('isEmployee should return true if user is employee', () => {
@@ -88,16 +88,16 @@ describe('RolesService', () => {
 			];
       const result = service.isEmployee(roles)
 
-			expect(result).toEqual(true);
+			expect(result).toBeTrue();
     });
 
-		it('isEmployee should return true if user is not employee', () => {
+		it('isEmployee should return false if user is not employee', () => {
       const roles = [
 				DefaultRolesNames.DEFAULT_ADMIN_ROLE,
 				DefaultRolesNames.DEFAULT_MANAGER_ROLE,
 			];
       const result = service.isEmployee(roles)
 
-			expect(result).toEqual(false);
+			expect(result).toBeFalse();
     });
 });
