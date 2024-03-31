@@ -34,7 +34,7 @@ describe('AuthGuard', () => {
   it('should allow access when user is authenticated', () => {
     spyOn(authService, 'isAuthenticated').and.returnValue(true);
 
-    const route: ActivatedRouteSnapshot = {} as ActivatedRouteSnapshot;
+    const route: ActivatedRouteSnapshot = { title: "auth" } as ActivatedRouteSnapshot;
     route.data = { roles: [] };
     const state: RouterStateSnapshot = {} as RouterStateSnapshot;
 

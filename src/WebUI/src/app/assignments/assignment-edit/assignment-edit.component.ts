@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from '../assignment.service';
 import { StageService } from 'src/app/stages/stage.service';
@@ -29,7 +29,7 @@ export class AssignmentEditComponent implements OnInit {
   subparts: Subpart[] = [];
   employees: Employee[] = [];
 
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   get isFormValid(): boolean {
     return this.subpartsComponent.areAllSubpartsValid() && this.form.valid;
   };
@@ -60,26 +60,26 @@ export class AssignmentEditComponent implements OnInit {
   }
 
   private initiateForm(): void {
-    this.form = new FormGroup({
-      id: new FormControl(0, [
+    this.form = new UntypedFormGroup({
+      id: new UntypedFormControl(0, [
         Validators.required
       ]),
-      topic: new FormControl("", [
+      topic: new UntypedFormControl("", [
         Validators.required,
         Validators.maxLength(50)
       ]),
-      description: new FormControl(),
-      stageId: new FormControl(null, [
+      description: new UntypedFormControl(),
+      stageId: new UntypedFormControl(null, [
         Validators.required
       ]),
-      deadlineDate: new FormControl(new Date(), [
+      deadlineDate: new UntypedFormControl(new Date(), [
         Validators.required
       ]),
-      deadlineTime: new FormControl("23:00"),
-      responsibleEmployeeId: new FormControl("", [
+      deadlineTime: new UntypedFormControl("23:00"),
+      responsibleEmployeeId: new UntypedFormControl("", [
         Validators.required
       ]),
-      isCompleted: new FormControl(false)
+      isCompleted: new UntypedFormControl(false)
     }, {
       validators: CustomValidators.dateInTheFutureValidator()
     });

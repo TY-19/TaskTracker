@@ -23,7 +23,7 @@ import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UserChangePasswordComponent } from './users/user-change-password/user-change-password.component';
 import { HomeComponent } from './home/home.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'login', component: AuthComponent },
   { path: 'registration', component: RegistrationComponent },

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LoginRequest } from '../models/login-request';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { LoginResult } from '../models/login-result';
 
 @Component({
@@ -15,7 +15,7 @@ export class AuthComponent implements OnInit {
   title?: string;
   loginResult?: LoginResult;
 
-  form!: FormGroup;
+  form!: UntypedFormGroup;
 
   constructor(private router: Router,
     private authService: AuthService) {
@@ -27,9 +27,9 @@ export class AuthComponent implements OnInit {
   }
 
   private initiateForm(): void {
-    this.form = new FormGroup({
-      nameOrEmail: new FormControl('', Validators.required),
-      password: new FormControl('', Validators.required),
+    this.form = new UntypedFormGroup({
+      nameOrEmail: new UntypedFormControl('', Validators.required),
+      password: new UntypedFormControl('', Validators.required),
     });
   }
 

@@ -6,7 +6,7 @@
         <p class="back-text">Back to the board</p>
     </button>
 
-    <mat-form-field [hidden]="!employeesTable" class="filter" floatLabel="never">
+    <mat-form-field [hidden]="!employeesTable" class="filter">
         <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
             placeholder="Find user on the board" />
         <button *ngIf="filter.value" matSuffix mat-icon-button aria-label="Clear" 

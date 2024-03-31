@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { StageService } from '../stage.service';
 import { ActivatedRoute } from '@angular/router';
 import { DisplayModes } from 'src/app/common/enums/display-modes';
@@ -15,7 +15,7 @@ export class StageCreateEditComponent implements OnInit, OnChanges {
   @Input() mode: DisplayModes = DisplayModes.View;
   @Output() updateNotification: EventEmitter<void> = new EventEmitter<void>();
   
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   boardId!: string;
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -36,9 +36,9 @@ export class StageCreateEditComponent implements OnInit, OnChanges {
 
   private initiateForm()
   {
-    this.form = new FormGroup({
-      id: new FormControl(0),
-      name: new FormControl("", [
+    this.form = new UntypedFormGroup({
+      id: new UntypedFormControl(0),
+      name: new UntypedFormControl("", [
         Validators.required,
         Validators.maxLength(50),
       ])

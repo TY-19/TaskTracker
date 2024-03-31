@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '../account.service';
 import { CustomValidators } from 'src/app/common/custom-validators';
@@ -12,7 +12,7 @@ import { ChangePasswordModel } from 'src/app/models/update-models/change-passwor
 })
 export class ChangePasswordComponent implements OnInit {
 
-  form!: FormGroup;
+  form!: UntypedFormGroup;
 
   isSuccessful: boolean | null = null;
   errors?: string;
@@ -27,16 +27,16 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   private initiateForm(): void {
-    this.form = new FormGroup({
-      oldPassword: new FormControl("", [
+    this.form = new UntypedFormGroup({
+      oldPassword: new UntypedFormControl("", [
         Validators.required
       ]),
-      password: new FormControl("", [
+      password: new UntypedFormControl("", [
         Validators.required,
         Validators.minLength(8),
         Validators.maxLength(20)
       ]),
-      passwordConfirm: new FormControl("", [
+      passwordConfirm: new UntypedFormControl("", [
         Validators.required
       ])
     },

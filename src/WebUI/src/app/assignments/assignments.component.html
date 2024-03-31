@@ -7,7 +7,7 @@
         [boards]="boards">
     </tt-assignments-multy-boards-mode>
 
-    <mat-form-field [hidden]="!assignmentsTable" class="filter" floatLabel="never">
+    <mat-form-field [hidden]="!assignmentsTable" class="filter">
         <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
             placeholder="Find task by topic or employee" />
         <button *ngIf="filter.value" matSuffix mat-icon-button aria-label="Clear" 

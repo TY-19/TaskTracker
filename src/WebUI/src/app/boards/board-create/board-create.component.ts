@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { BoardService } from '../board.service';
 import { Router } from '@angular/router';
 import { Board } from 'src/app/models/board';
@@ -13,7 +13,7 @@ import { CustomValidators } from 'src/app/common/custom-validators';
 export class BoardCreateComponent implements OnInit {
 
   board!: Board;
-  form!: FormGroup;
+  form!: UntypedFormGroup;
 
   constructor(private router: Router,
     private boardService: BoardService) { 
@@ -26,8 +26,8 @@ export class BoardCreateComponent implements OnInit {
 
   private initiateForm(): void
   {
-    this.form = new FormGroup({
-      name: new FormControl("", [
+    this.form = new UntypedFormGroup({
+      name: new UntypedFormControl("", [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(50),

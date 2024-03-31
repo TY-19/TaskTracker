@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Subpart } from '../models/subpart';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DisplayModes } from '../common/enums/display-modes';
 import { SubpartService } from './subpart.service';
@@ -18,11 +18,11 @@ export class SubpartsComponent implements OnInit, OnChanges {
   @Input() mode: DisplayModes = DisplayModes.View;
   @Output() subpartUpdated: EventEmitter<void> = new EventEmitter<void>();
 
-  forms: FormGroup[] = [];
+  forms: UntypedFormGroup[] = [];
   
   constructor(private subpartService: SubpartService,
     private activatedRoute: ActivatedRoute,
-    private formBuilder: FormBuilder) { 
+    private formBuilder: UntypedFormBuilder) { 
 
   }
 
@@ -63,7 +63,7 @@ export class SubpartsComponent implements OnInit, OnChanges {
     this.forms.splice(index, 1);
   }
 
-  private createSubpartFormGroup(subpart?: Subpart): FormGroup {
+  private createSubpartFormGroup(subpart?: Subpart): UntypedFormGroup {
     return this.formBuilder.group({
       name: [subpart?.name ?? '',
         [

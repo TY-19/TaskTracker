@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RolesService } from '../roles.service';
@@ -14,7 +14,7 @@ export class UserEditComponent implements OnInit {
 
   userName!: string;
   allRoles!: string[];
-  form!: FormGroup;
+  form!: UntypedFormGroup;
 
   constructor(private userService: UserService,
     private rolesService: RolesService,
@@ -36,23 +36,23 @@ export class UserEditComponent implements OnInit {
   }
 
   private initiateForm(): void {
-    this.form = new FormGroup({
-      userName: new FormControl('', [
+    this.form = new UntypedFormGroup({
+      userName: new UntypedFormControl('', [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(25),
         Validators.pattern("^[a-zA-Z0-9_]*$")
       ]),
-      email: new FormControl('', [
+      email: new UntypedFormControl('', [
         Validators.required,
         Validators.email
       ]),
-      roles: new FormControl(''),
-      firstName: new FormControl('', [
+      roles: new UntypedFormControl(''),
+      firstName: new UntypedFormControl('', [
         Validators.required,
         Validators.maxLength(50)
       ]),
-      lastName: new FormControl('', [
+      lastName: new UntypedFormControl('', [
         Validators.required,
         Validators.maxLength(50)
       ])

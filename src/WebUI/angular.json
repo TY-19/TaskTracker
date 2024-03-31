@@ -33,7 +33,11 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "moment",
+              "luxon"
+            ]
           },
           "configurations": {
             "production": {
@@ -94,11 +98,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "WebUI:build:production"
+              "buildTarget": "WebUI:build:production"
             },
             "development": {
-              "browserTarget": "WebUI:build:development",
-              "proxyConfig": "src/proxy.conf.js"
+              "buildTarget": "WebUI:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -106,7 +109,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "WebUI:build"
+            "buildTarget": "WebUI:build"
           }
         },
         "test": {
@@ -129,6 +132,5 @@
         }
       }
     }
-  },
-  "defaultProject": "WebUI"
+  }
 }

@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
-import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatCheckboxModule as MatCheckboxModule } from '@angular/material/checkbox'
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MAT_DATE_LOCALE } from '@angular/material/core';

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AccountService } from './account.service';
 import { UserProfile } from '../models/user-profile';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { UserUpdateModel } from '../models/update-models/user-update-model';
 
 @Component({
@@ -11,7 +11,7 @@ import { UserUpdateModel } from '../models/update-models/user-update-model';
 })
 export class AccountComponent implements OnInit {
 
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   profile! : UserProfile;
   updateResult: boolean | null = null;
   updateErrors?: string;
@@ -27,25 +27,25 @@ export class AccountComponent implements OnInit {
 
   private initiateForm(): void
   {
-    this.form = new FormGroup({
-      id: new FormControl("", [
+    this.form = new UntypedFormGroup({
+      id: new UntypedFormControl("", [
         Validators.required
       ]),
-      userName: new FormControl("", [
+      userName: new UntypedFormControl("", [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(25),
         Validators.pattern("^[a-zA-Z0-9_]*$")
       ]),
-      email: new FormControl("", [
+      email: new UntypedFormControl("", [
         Validators.required,
         Validators.email
       ]),
-      firstName: new FormControl("", [
+      firstName: new UntypedFormControl("", [
         Validators.required,
         Validators.maxLength(50)
       ]),
-      lastName: new FormControl("", [
+      lastName: new UntypedFormControl("", [
         Validators.required,
         Validators.maxLength(50)
       ])

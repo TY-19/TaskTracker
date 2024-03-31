@@ -1,10 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { AuthService } from "./auth.service";
 import { Router } from "@angular/router";
-import { AuthInterceptor } from "./auth.interceptor";
+import { authInterceptor } from "./auth.interceptor";
 import { TestBed } from "@angular/core/testing";
-import { HTTP_INTERCEPTORS, HttpClient } from "@angular/common/http";
-import { RouterTestingModule } from "@angular/router/testing";
+import { HttpClient, provideHttpClient, withInterceptors } from "@angular/common/http";
 
 describe('AuthInterceptor', () => {
     let http: HttpClient;
@@ -16,19 +15,9 @@ describe('AuthInterceptor', () => {
       authService = jasmine.createSpyObj('AuthService', ['getToken', 'logout']);
 
       TestBed.configureTestingModule({
-        imports: [
-          HttpClientTestingModule,
-          RouterTestingModule
-        ],
         providers: [
-          AuthInterceptor,
-          HttpClient,
-          { provide: AuthService, useValue: authService },
-          {
-            provide: HTTP_INTERCEPTORS,
-            useClass: AuthInterceptor,
-            multi: true,
-          },
+          provideHttpClient(withInterceptors([authInterceptor])),
+          provideHttpClientTesting(),
         ],
       });
 

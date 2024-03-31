@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http'
+import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http'
 import { AngularMaterialModule } from './angular-material.module';
 
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule, routes } from './app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { AuthInterceptor } from './auth/auth.interceptor';
+import { authInterceptor } from './auth/auth.interceptor';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -39,6 +39,7 @@ import { BoardDisplayOptionsComponent } from './boards/board-details/board-displ
 import { AssignmentsSingleBoardModeComponent } from './assignments/components/assignments-single-board-mode/assignments-single-board-mode.component';
 import { AssignmentsMultyBoardsModeComponent } from './assignments/components/assignments-multy-boards-mode/assignments-multy-boards-mode.component';
 import { SidebarComponent } from './boards/board-details/sidebar/sidebar.component';
+import { provideRouter } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -83,10 +84,10 @@ import { SidebarComponent } from './boards/board-details/sidebar/sidebar.compone
     AngularMaterialModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
+    provideHttpClient(withInterceptors([
+      authInterceptor
+    ])),
+    provideRouter(routes),
   ],
   bootstrap: [AppComponent]
 })

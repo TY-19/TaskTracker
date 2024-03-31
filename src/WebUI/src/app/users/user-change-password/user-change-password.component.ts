@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomValidators } from 'src/app/common/custom-validators';
@@ -11,7 +11,7 @@ import { CustomValidators } from 'src/app/common/custom-validators';
 })
 export class UserChangePasswordComponent implements OnInit {
   userName!: string;
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   
   constructor(private userService: UserService,
     private router: Router,
@@ -25,13 +25,13 @@ export class UserChangePasswordComponent implements OnInit {
   }
 
   private initiateForm(): void {
-    this.form = new FormGroup({
-      password: new FormControl("", [
+    this.form = new UntypedFormGroup({
+      password: new UntypedFormControl("", [
         Validators.required,
         Validators.minLength(8),
         Validators.maxLength(20)
       ]),
-      passwordConfirm: new FormControl("", [
+      passwordConfirm: new UntypedFormControl("", [
         Validators.required
       ])
     },

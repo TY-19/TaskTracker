@@ -8,7 +8,7 @@
         </a>
     </div>
 
-    <mat-form-field [hidden]="!usersTable" class="filter" floatLabel="never">
+    <mat-form-field [hidden]="!usersTable" class="filter">
         <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
             placeholder="Find user" />
         <button *ngIf="filter.value" matSuffix mat-icon-button aria-label="Clear" 

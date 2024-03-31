@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { RegistrationResult } from 'src/app/models/registration-result';
 import { CustomValidators } from 'src/app/common/custom-validators';
 import { RegistrationRequest } from 'src/app/models/registration-request';
@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 })
 export class UserCreateComponent implements OnInit {
 
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   registrationResult?: RegistrationResult;
 
   constructor(private userService: UserService,
@@ -26,23 +26,23 @@ export class UserCreateComponent implements OnInit {
   }
 
   private initiateForm(): void {
-    this.form = new FormGroup({
-      userName: new FormControl('', [
+    this.form = new UntypedFormGroup({
+      userName: new UntypedFormControl('', [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(25),
         Validators.pattern("^[a-zA-Z0-9_]*$")
       ]),
-      email: new FormControl('', [
+      email: new UntypedFormControl('', [
         Validators.required, 
         Validators.email
       ]),
-      password: new FormControl('', [
+      password: new UntypedFormControl('', [
         Validators.required,
         Validators.minLength(8),
         Validators.maxLength(20)
       ]),
-      passwordConfirm: new FormControl('', Validators.required),
+      passwordConfirm: new UntypedFormControl('', Validators.required),
     },
     { 
       validators: CustomValidators.passwordMatchValidator()
