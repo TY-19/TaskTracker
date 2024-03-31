@@ -7,7 +7,8 @@ namespace TaskTracker.WebAPI.Configuration
         private readonly string _connectionString;
         public DbContextConfiguration(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("TrackerConnection");
+            _connectionString = configuration.GetConnectionString("TrackerConnection")
+                ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public void ConfigureDbContext(DbContextOptionsBuilder builder)

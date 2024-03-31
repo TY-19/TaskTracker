@@ -116,7 +116,7 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
     }
 
-    public IEnumerable<string> GetAllRoles()
+    public IEnumerable<string?> GetAllRoles()
     {
         return _roleManager.Roles.Select(r => r.Name);
     }
